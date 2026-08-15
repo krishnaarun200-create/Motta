@@ -396,7 +396,7 @@
 
     function closePaymentModal() { document.getElementById('payment-modal').classList.add('hidden'); document.getElementById('payment-modal').classList.remove('flex'); }
 
- async function sendOrderToWhatsAppAfterPayment() {
+async function sendOrderToWhatsAppAfterPayment() {
       const name = document.getElementById('cust-name').value.trim(); 
       const phone = document.getElementById('cust-phone').value.trim();
       const addressInput = document.getElementById('cust-address').value.trim(); 
@@ -417,46 +417,38 @@
       const btn = event.currentTarget;
       if(btn) btn.innerHTML = `<span>⏳ Saving order to cloud...</span>`;
 
-      // BULLETPROOF METHOD: Create a hidden temporary form and submit it to the hidden iframe
-      const form = document.createElement('form');
-      form.action = GOOGLE_SCRIPT_URL;
-      form.method = 'GET';
-      form.target = 'hidden_sheet_frame';
-
-      const dataPayload = {
-        action: "new_order",
-        name: name,
-        phone: phone,
-        address: finalAddress,
-        slot: slot,
-        items: itemsText,
-        total: `₹${total}`,
-        planType: primaryPlan
-      };
-
-      for (const key in dataPayload) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = dataPayload[key];
-        form.appendChild(input);
+      // 1. Send data via POST with JSON (Safely handles all text, addresses, and emojis)
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "new_order",
+            name: name,
+            phone: phone,
+            address: finalAddress,
+            slot: slot,
+            items: itemsText,
+            total: `₹${total}`,
+            planType: primaryPlan
+          })
+        });
+      } catch (e) {
+        console.error("Sheet sync error:", e);
       }
 
-      document.body.appendChild(form);
-      form.submit();
-      document.body.removeChild(form);
-
-      // Prepare WhatsApp message
+      // 2. Prepare WhatsApp message
       let msg = `🥚 *NEW മുട്ട (MOTTA) ORDER* 🌾\n\n👤 *Details:*\n• ${name}\n• ${phone}\n• ${addressInput} (${pincode})${whatsappMapLink}\n• ${slot}\n\n📦 *Items:*\n${cart.map(i => `• ${i.title} x${i.qty}`).join('\n')}\n\n💰 *Paid via UPI:* ₹${total}\n\n✅ I made the payment. Please confirm!`;
       
       if(btn) btn.innerHTML = `<span>✅ Opening WhatsApp...</span>`;
       
-      // Open WhatsApp smoothly
+      // 3. Wait 1.5 seconds to guarantee Google Sheets receives the data before leaving the page
       setTimeout(() => {
         window.location.href = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
         closePaymentModal();
         if(btn) btn.innerHTML = `<span>✅ Confirm Order on WhatsApp</span>`;
-      }, 600);
+      }, 1500);
     }
   </script>
   <!-- Hidden iframe so the page doesn't reload when saving to Google Sheets -->
