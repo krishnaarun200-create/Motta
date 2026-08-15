@@ -396,7 +396,7 @@
 
     function closePaymentModal() { document.getElementById('payment-modal').classList.add('hidden'); document.getElementById('payment-modal').classList.remove('flex'); }
 
-  async function sendOrderToWhatsAppAfterPayment() {
+    async function sendOrderToWhatsAppAfterPayment() {
       const name = document.getElementById('cust-name').value.trim(); 
       const phone = document.getElementById('cust-phone').value.trim();
       const addressInput = document.getElementById('cust-address').value.trim(); 
@@ -414,38 +414,33 @@
         whatsappMapLink = `\n📍 *Map Location:* ${mapsUrl}`; 
       }
 
-      // 1. Tell the user we are saving 
       const btn = event.currentTarget;
-      if(btn) btn.innerHTML = `<span>⏳ Securing your slot...</span>`;
+      if(btn) btn.innerHTML = `<span>⏳ Securing your order...</span>`;
 
-      // 2. Send to Google Sheets (using text/plain for strict mobile browsers)
+      // SEND TO GOOGLE SHEETS VIA BULLETPROOF GET REQUEST
       try {
-        fetch(GOOGLE_SCRIPT_URL, { 
-          method: "POST", 
-          mode: "no-cors", 
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ 
-            action: "new_order", 
-            name: name, 
-            phone: phone, 
-            address: finalAddress, 
-            slot: slot, 
-            items: itemsText, 
-            total: `₹${total}`, 
-            planType: primaryPlan 
-          })
+        const queryParams = new URLSearchParams({
+          action: "new_order",
+          name: name,
+          phone: phone,
+          address: finalAddress,
+          slot: slot,
+          items: itemsText,
+          total: `₹${total}`,
+          planType: primaryPlan
         });
+
+        // Fire-and-forget fetch
+        fetch(GOOGLE_SCRIPT_URL + "?" + queryParams.toString());
       } catch (e) { console.error(e); }
 
-      // 3. Prepare WhatsApp Message
       let msg = `🥚 *NEW മുട്ട (MOTTA) ORDER* 🌾\n\n👤 *Details:*\n• ${name}\n• ${phone}\n• ${addressInput} (${pincode})${whatsappMapLink}\n• ${slot}\n\n📦 *Items:*\n${cart.map(i => `• ${i.title} x${i.qty}`).join('\n')}\n\n💰 *Paid via UPI:* ₹${total}\n\n✅ I made the payment. Please confirm!`;
       
-      // 4. THE FIX: Wait exactly 1.5 seconds BEFORE opening WhatsApp
       setTimeout(() => {
         window.location.href = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
         closePaymentModal();
         if(btn) btn.innerHTML = `<span>✅ Confirm Order on WhatsApp</span>`;
-      }, 1500);
+      }, 1000);
     }
   </script>
 </body>
