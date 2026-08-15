@@ -388,7 +388,7 @@
 
     function closePaymentModal() { document.getElementById('payment-modal').classList.add('hidden'); document.getElementById('payment-modal').classList.remove('flex'); }
 
-   async function sendOrderToWhatsAppAfterPayment() {
+ async function sendOrderToWhatsAppAfterPayment() {
       const name = document.getElementById('cust-name').value.trim(); 
       const phone = document.getElementById('cust-phone').value.trim();
       const addressInput = document.getElementById('cust-address').value.trim(); 
@@ -406,11 +406,18 @@
         whatsappMapLink = `\n📍 *Map Location:* ${mapsUrl}`; 
       }
 
-      // 1. Send order data to Google Sheets
+      // Change button text to show loading progress
+      const confirmBtn = document.querySelector('#payment-modal button:last-of-type');
+      const originalText = confirmBtn.innerHTML;
+      confirmBtn.innerHTML = "<span>⏳ Saving to Google Sheet...</span>";
+      confirmBtn.disabled = true;
+
+      let orderSuccess = false;
+
+      // 1. Send order data to Google Sheets and WAIT for it to complete
       try {
-        fetch(GOOGLE_SCRIPT_URL, { 
+        const response = await fetch(GOOGLE_SCRIPT_URL, { 
           method: "POST", 
-          mode: "no-cors", 
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ 
             action: "createOrder",
@@ -423,17 +430,26 @@
             planType: primaryPlan 
           })
         });
+        const result = await response.json();
+        if (result.status === "Success") {
+          orderSuccess = true;
+        }
       } catch (e) { 
-        console.error("Sheet logging error:", e); 
+        console.error("Sheet logging error:", e);
+        // Even if json parsing fails due to cross-origin quirks, the row usually still logs, 
+        // but we'll let it proceed to WhatsApp either way.
+        orderSuccess = true; 
       }
+
+      // Restore button
+      confirmBtn.innerHTML = originalText;
+      confirmBtn.disabled = false;
 
       let msg = `🥚 *NEW മുട്ട (MOTTA) ORDER* 🌾\n\n👤 *Details:*\n• ${name}\n• ${phone}\n• ${addressInput} (${pincode})${whatsappMapLink}\n• ${slot}\n\n📦 *Items:*\n${cart.map(i => `• ${i.title} x${i.qty}`).join('\n')}\n\n💰 *Paid via UPI:* ₹${total}\n\n✅ I made the payment. Please confirm!`;
 
-      // 2. Small delay to give Google Sheets time to process the row before opening WhatsApp
-      setTimeout(() => {
-        window.open(`https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
-        closePaymentModal();
-      }, 600); // 600 milliseconds delay
+      // 2. Now that the sheet request has fully finished, open WhatsApp safely
+      closePaymentModal();
+      window.open(`https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
     }
   </script>
 </body>
