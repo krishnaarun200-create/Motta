@@ -53,7 +53,6 @@
       <nav class="hidden md:flex space-x-8 font-semibold text-motta-800 text-sm">
         <a href="#routine" class="hover:text-leaf-600 transition flex items-center gap-1">The Motta Routine ⭐️</a>
         <a href="#single-packs" class="hover:text-leaf-600 transition">Single Packs</a>
-        <a href="admin.html" class="text-leaf-600 font-bold transition">⚙️ Control Panel</a>
       </nav>
       <button onclick="toggleCart()" class="relative bg-motta-100 hover:bg-motta-200 text-motta-900 px-4 py-2 rounded-full font-bold flex items-center gap-2 transition duration-200 text-sm border border-motta-200">
         <span>Basket</span>
@@ -138,7 +137,7 @@
           <input type="text" id="cust-name" placeholder="Your Full Name *" class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600">
           <input type="tel" id="cust-phone" maxlength="10" placeholder="10-Digit WhatsApp / Mobile Number *" class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600">
           
-          <!-- MAP UI INJECTED HERE -->
+          <!-- MAP UI -->
           <div>
             <button type="button" onclick="openMap()" class="w-full bg-leaf-50 hover:bg-leaf-100 text-leaf-700 text-xs font-bold py-2.5 rounded-xl mb-2 border border-leaf-600 border-dashed transition flex justify-center items-center gap-2">
               <span>📍 Pin Exact Location on Map</span>
@@ -190,22 +189,17 @@
     </div>
   </div>
 
-  <!-- THE FIXED SCRIPTS -->
+  <!-- SCRIPTS -->
   <script>
-    // =========================================================================
-    // ⚙️ CONFIGURATION:
-    // =========================================================================
     const MY_UPI_ID = "krishnaarun200-5@okhdfcbank"; 
     const MY_BUSINESS_NAME = "Motta Organics";
     const MY_WHATSAPP_NUMBER = "9809193616"; 
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKmMQVosM6bVhpJKvm5uueebh0N1BuiIUb9Iu1srJZqnrMTJ0QrRNvurK8eABoD0W2IA/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwj3NRnsUXOk2lz3W-uX4BeuJnqCSEP8Zi0SWRMTInYAqMArz0qSzon6pOdfcTrc-tUvQ/exec";
     const SERVICED_PINCODES = ["695"]; 
-    // =========================================================================
 
     let cart = [];
     let customerGps = ""; 
 
-    // CMS FETCH LOGIC
     async function loadStoreData() {
       try {
         const response = await fetch(GOOGLE_SCRIPT_URL + "?action=get_store_data");
@@ -270,7 +264,6 @@
       }
     }
 
-    // MAP LOGIC
     let map, marker;
     function openMap() {
       const mapWrapper = document.getElementById('map-wrapper');
@@ -327,7 +320,6 @@
       }, { enableHighAccuracy: true });
     }
 
-    // CHECKOUT LOGIC
     function isDeliverablePincode(pin) { const clean = pin.trim(); if (clean.length !== 6) return false; return SERVICED_PINCODES.some(prefix => clean.startsWith(prefix)); }
     function checkPincodeRealtime() {
       const pin = document.getElementById('cust-pincode').value.trim();
