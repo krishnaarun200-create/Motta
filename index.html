@@ -388,7 +388,7 @@
 
     function closePaymentModal() { document.getElementById('payment-modal').classList.add('hidden'); document.getElementById('payment-modal').classList.remove('flex'); }
 
-    async function sendOrderToWhatsAppAfterPayment() {
+   async function sendOrderToWhatsAppAfterPayment() {
       const name = document.getElementById('cust-name').value.trim(); 
       const phone = document.getElementById('cust-phone').value.trim();
       const addressInput = document.getElementById('cust-address').value.trim(); 
@@ -406,9 +406,9 @@
         whatsappMapLink = `\n📍 *Map Location:* ${mapsUrl}`; 
       }
 
-      // Send order data to Google Sheets via Apps Script backend
+      // 1. Send order data to Google Sheets
       try {
-        await fetch(GOOGLE_SCRIPT_URL, { 
+        fetch(GOOGLE_SCRIPT_URL, { 
           method: "POST", 
           mode: "no-cors", 
           headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -428,8 +428,12 @@
       }
 
       let msg = `🥚 *NEW മുട്ട (MOTTA) ORDER* 🌾\n\n👤 *Details:*\n• ${name}\n• ${phone}\n• ${addressInput} (${pincode})${whatsappMapLink}\n• ${slot}\n\n📦 *Items:*\n${cart.map(i => `• ${i.title} x${i.qty}`).join('\n')}\n\n💰 *Paid via UPI:* ₹${total}\n\n✅ I made the payment. Please confirm!`;
-      window.open(`https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
-      closePaymentModal();
+
+      // 2. Small delay to give Google Sheets time to process the row before opening WhatsApp
+      setTimeout(() => {
+        window.open(`https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+        closePaymentModal();
+      }, 600); // 600 milliseconds delay
     }
   </script>
 </body>
