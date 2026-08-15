@@ -193,7 +193,7 @@
   <script>
     const MY_UPI_ID = "krishnaarun200-5@okhdfcbank"; 
     const MY_BUSINESS_NAME = "Motta Organics";
-    const MY_WHATSAPP_NUMBER = "9809193616"; 
+    const MY_WHATSAPP_NUMBER = "919809193616"; 
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwj3NRnsUXOk2lz3W-uX4BeuJnqCSEP8Zi0SWRMTInYAqMArz0qSzon6pOdfcTrc-tUvQ/exec";
     const SERVICED_PINCODES = ["695"]; 
 
@@ -389,9 +389,12 @@
     function closePaymentModal() { document.getElementById('payment-modal').classList.add('hidden'); document.getElementById('payment-modal').classList.remove('flex'); }
 
     async function sendOrderToWhatsAppAfterPayment() {
-      const name = document.getElementById('cust-name').value.trim(); const phone = document.getElementById('cust-phone').value.trim();
-      const addressInput = document.getElementById('cust-address').value.trim(); const pincode = document.getElementById('cust-pincode').value.trim();
-      const slot = document.getElementById('cust-slot').value; const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const name = document.getElementById('cust-name').value.trim(); 
+      const phone = document.getElementById('cust-phone').value.trim();
+      const addressInput = document.getElementById('cust-address').value.trim(); 
+      const pincode = document.getElementById('cust-pincode').value.trim();
+      const slot = document.getElementById('cust-slot').value; 
+      const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
       const itemsText = cart.map(i => `${i.title} (${i.planType}) x ${i.qty}`).join(", ");
       const primaryPlan = cart[0]?.planType || "One-Time Order";
 
@@ -403,11 +406,26 @@
         whatsappMapLink = `\n📍 *Map Location:* ${mapsUrl}`; 
       }
 
+      // Send order data to Google Sheets via Apps Script backend
       try {
-        fetch(GOOGLE_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: name, phone: phone, address: finalAddress, slot: slot, items: itemsText, total: `₹${total}`, planType: primaryPlan })
+        await fetch(GOOGLE_SCRIPT_URL, { 
+          method: "POST", 
+          mode: "no-cors", 
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ 
+            action: "createOrder",
+            name: name, 
+            phone: phone, 
+            address: finalAddress, 
+            slot: slot, 
+            items: itemsText, 
+            total: `₹${total}`, 
+            planType: primaryPlan 
+          })
         });
-      } catch (e) { console.error(e); }
+      } catch (e) { 
+        console.error("Sheet logging error:", e); 
+      }
 
       let msg = `🥚 *NEW മുട്ട (MOTTA) ORDER* 🌾\n\n👤 *Details:*\n• ${name}\n• ${phone}\n• ${addressInput} (${pincode})${whatsappMapLink}\n• ${slot}\n\n📦 *Items:*\n${cart.map(i => `• ${i.title} x${i.qty}`).join('\n')}\n\n💰 *Paid via UPI:* ₹${total}\n\n✅ I made the payment. Please confirm!`;
       window.open(`https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
