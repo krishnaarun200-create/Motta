@@ -53,6 +53,7 @@
       <nav class="hidden md:flex space-x-8 font-semibold text-motta-800 text-sm">
         <a href="#routine" class="hover:text-leaf-600 transition flex items-center gap-1">The Motta Routine ⭐️</a>
         <a href="#single-packs" class="hover:text-leaf-600 transition">Single Packs</a>
+        <a href="#purity" class="hover:text-leaf-600 transition">Why മുട്ട?</a>
       </nav>
       <button onclick="toggleCart()" class="relative bg-motta-100 hover:bg-motta-200 text-motta-900 px-4 py-2 rounded-full font-bold flex items-center gap-2 transition duration-200 text-sm border border-motta-200">
         <span>Basket</span>
@@ -137,7 +138,7 @@
           <input type="text" id="cust-name" placeholder="Your Full Name *" class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600">
           <input type="tel" id="cust-phone" maxlength="10" placeholder="10-Digit WhatsApp / Mobile Number *" class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600">
           
-          <!-- MAP UI -->
+          <!-- MAP UI INJECTED HERE -->
           <div>
             <button type="button" onclick="openMap()" class="w-full bg-leaf-50 hover:bg-leaf-100 text-leaf-700 text-xs font-bold py-2.5 rounded-xl mb-2 border border-leaf-600 border-dashed transition flex justify-center items-center gap-2">
               <span>📍 Pin Exact Location on Map</span>
@@ -189,17 +190,22 @@
     </div>
   </div>
 
-  <!-- SCRIPTS -->
+  <!-- THE FIXED SCRIPTS -->
   <script>
+    // =========================================================================
+    // ⚙️ CONFIGURE YOUR DETAILS:
+    // =========================================================================
     const MY_UPI_ID = "krishnaarun200-5@okhdfcbank"; 
     const MY_BUSINESS_NAME = "Motta Organics";
-    const MY_WHATSAPP_NUMBER = "919809193616"; 
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwj3NRnsUXOk2lz3W-uX4BeuJnqCSEP8Zi0SWRMTInYAqMArz0qSzon6pOdfcTrc-tUvQ/exec";
+    const MY_WHATSAPP_NUMBER = "919809193616"; // Your WhatsApp
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKmMQVosM6bVhpJKvm5uueebh0N1BuiIUb9Iu1srJZqnrMTJ0QrRNvurK8eABoD0W2IA/exec";
     const SERVICED_PINCODES = ["695"]; 
+    // =========================================================================
 
     let cart = [];
     let customerGps = ""; 
 
+    // CMS FETCH LOGIC
     async function loadStoreData() {
       try {
         const response = await fetch(GOOGLE_SCRIPT_URL + "?action=get_store_data");
@@ -264,6 +270,7 @@
       }
     }
 
+    // MAP LOGIC
     let map, marker;
     function openMap() {
       const mapWrapper = document.getElementById('map-wrapper');
@@ -320,6 +327,7 @@
       }, { enableHighAccuracy: true });
     }
 
+    // CHECKOUT LOGIC
     function isDeliverablePincode(pin) { const clean = pin.trim(); if (clean.length !== 6) return false; return SERVICED_PINCODES.some(prefix => clean.startsWith(prefix)); }
     function checkPincodeRealtime() {
       const pin = document.getElementById('cust-pincode').value.trim();
@@ -388,13 +396,10 @@
 
     function closePaymentModal() { document.getElementById('payment-modal').classList.add('hidden'); document.getElementById('payment-modal').classList.remove('flex'); }
 
-    function sendOrderToWhatsAppAfterPayment() {
-      const name = document.getElementById('cust-name').value.trim(); 
-      const phone = document.getElementById('cust-phone').value.trim();
-      const addressInput = document.getElementById('cust-address').value.trim(); 
-      const pincode = document.getElementById('cust-pincode').value.trim();
-      const slot = document.getElementById('cust-slot').value; 
-      const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    async function sendOrderToWhatsAppAfterPayment() {
+      const name = document.getElementById('cust-name').value.trim(); const phone = document.getElementById('cust-phone').value.trim();
+      const addressInput = document.getElementById('cust-address').value.trim(); const pincode = document.getElementById('cust-pincode').value.trim();
+      const slot = document.getElementById('cust-slot').value; const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
       const itemsText = cart.map(i => `${i.title} (${i.planType}) x ${i.qty}`).join(", ");
       const primaryPlan = cart[0]?.planType || "One-Time Order";
 
@@ -406,24 +411,15 @@
         whatsappMapLink = `\n📍 *Map Location:* ${mapsUrl}`; 
       }
 
-      const queryParams = new URLSearchParams({
-        action: "createOrder",
-        name: name,
-        phone: phone,
-        address: finalAddress,
-        slot: slot,
-        items: itemsText,
-        total: `₹${total}`,
-        planType: primaryPlan
-      });
-
-      const beaconImg = new Image();
-      beaconImg.src = `${GOOGLE_SCRIPT_URL}?${queryParams.toString()}`;
+      try {
+        fetch(GOOGLE_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: name, phone: phone, address: finalAddress, slot: slot, items: itemsText, total: `₹${total}`, planType: primaryPlan })
+        });
+      } catch (e) { console.error(e); }
 
       let msg = `🥚 *NEW മുട്ട (MOTTA) ORDER* 🌾\n\n👤 *Details:*\n• ${name}\n• ${phone}\n• ${addressInput} (${pincode})${whatsappMapLink}\n• ${slot}\n\n📦 *Items:*\n${cart.map(i => `• ${i.title} x${i.qty}`).join('\n')}\n\n💰 *Paid via UPI:* ₹${total}\n\n✅ I made the payment. Please confirm!`;
-
+      window.location.href = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
       closePaymentModal();
-      window.open(`https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
     }
   </script>
 </body>
