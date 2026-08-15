@@ -415,9 +415,9 @@
       }
 
       const btn = event.currentTarget;
-      if(btn) btn.innerHTML = `<span>⏳ Securing your order...</span>`;
+      if(btn) btn.innerHTML = `<span>⏳ Saving order to cloud...</span>`;
 
-      // SEND TO GOOGLE SHEETS VIA BULLETPROOF GET REQUEST
+      // 1. AWAIT the fetch so the browser GUARANTEES data reaches Google Sheets first
       try {
         const queryParams = new URLSearchParams({
           action: "new_order",
@@ -430,17 +430,22 @@
           planType: primaryPlan
         });
 
-        // Fire-and-forget fetch
-        fetch(GOOGLE_SCRIPT_URL + "?" + queryParams.toString());
-      } catch (e) { console.error(e); }
+        await fetch(GOOGLE_SCRIPT_URL + "?" + queryParams.toString(), { method: 'GET', mode: 'no-cors' });
+      } catch (e) { 
+        console.error("Sheet sync error:", e); 
+      }
 
+      // 2. Prepare WhatsApp message
       let msg = `🥚 *NEW മുട്ട (MOTTA) ORDER* 🌾\n\n👤 *Details:*\n• ${name}\n• ${phone}\n• ${addressInput} (${pincode})${whatsappMapLink}\n• ${slot}\n\n📦 *Items:*\n${cart.map(i => `• ${i.title} x${i.qty}`).join('\n')}\n\n💰 *Paid via UPI:* ₹${total}\n\n✅ I made the payment. Please confirm!`;
       
+      if(btn) btn.innerHTML = `<span>✅ Opening WhatsApp...</span>`;
+      
+      // 3. Now open WhatsApp safely after Google Sheets has recorded it
       setTimeout(() => {
         window.location.href = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
         closePaymentModal();
         if(btn) btn.innerHTML = `<span>✅ Confirm Order on WhatsApp</span>`;
-      }, 1000);
+      }, 500);
     }
   </script>
 </body>
