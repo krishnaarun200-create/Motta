@@ -190,8 +190,7 @@
     </div>
   </div>
 
- 
- <!-- THE FIXED SCRIPTS -->
+  <!-- THE FIXED SCRIPTS -->
   <script>
     // =========================================================================
     // ⚙️ CONFIGURE YOUR DETAILS:
@@ -421,22 +420,21 @@
       const btn = event.currentTarget;
       if(btn) btn.innerHTML = `<span>⏳ Saving order to cloud...</span>`;
 
-      // BULLETPROOF FETCH POST (Now hitting the correct URL!)
       try {
-        await fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            action: "new_order",
-            name: name,
-            phone: phone,
-            address: finalAddress,
-            slot: slot,
-            items: itemsText,
-            total: `₹${total}`,
-            planType: primaryPlan
-          })
+        const queryParams = new URLSearchParams({
+          action: "new_order",
+          name: name,
+          phone: phone,
+          address: finalAddress,
+          slot: slot,
+          items: itemsText,
+          total: `₹${total}`,
+          planType: primaryPlan
+        });
+
+        await fetch(GOOGLE_SCRIPT_URL + "?" + queryParams.toString(), {
+          method: "GET",
+          mode: "no-cors"
         });
       } catch (e) {
         console.error("Sheet sync error:", e);
@@ -447,12 +445,11 @@
       
       if(btn) btn.innerHTML = `<span>✅ Opening WhatsApp...</span>`;
       
-      // Wait 800ms for Google to process the data, then open WhatsApp
       setTimeout(() => {
         window.location.href = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
         closePaymentModal();
         if(btn) btn.innerHTML = `<span>✅ Confirm Order on WhatsApp</span>`;
-      }, 800);
+      }, 1000);
     }
   </script>
 </body>
