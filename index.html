@@ -417,7 +417,7 @@ async function sendOrderToWhatsAppAfterPayment() {
       const btn = event.currentTarget;
       if(btn) btn.innerHTML = `<span>⏳ Saving order to cloud...</span>`;
 
-      // 1. Send data via POST with JSON (Safely handles all text, addresses, and emojis)
+      // Send data to Google Sheets via POST
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST",
@@ -438,17 +438,17 @@ async function sendOrderToWhatsAppAfterPayment() {
         console.error("Sheet sync error:", e);
       }
 
-      // 2. Prepare WhatsApp message
+      // Prepare WhatsApp message
       let msg = `🥚 *NEW മുട്ട (MOTTA) ORDER* 🌾\n\n👤 *Details:*\n• ${name}\n• ${phone}\n• ${addressInput} (${pincode})${whatsappMapLink}\n• ${slot}\n\n📦 *Items:*\n${cart.map(i => `• ${i.title} x${i.qty}`).join('\n')}\n\n💰 *Paid via UPI:* ₹${total}\n\n✅ I made the payment. Please confirm!`;
       
       if(btn) btn.innerHTML = `<span>✅ Opening WhatsApp...</span>`;
       
-      // 3. Wait 1.5 seconds to guarantee Google Sheets receives the data before leaving the page
+      // Wait 1.2 seconds to guarantee the save finishes before opening WhatsApp
       setTimeout(() => {
         window.location.href = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
         closePaymentModal();
         if(btn) btn.innerHTML = `<span>✅ Confirm Order on WhatsApp</span>`;
-      }, 1500);
+      }, 1200);
     }
   </script>
   <!-- Hidden iframe so the page doesn't reload when saving to Google Sheets -->
