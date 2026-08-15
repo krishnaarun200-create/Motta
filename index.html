@@ -179,13 +179,19 @@
 
   <!-- Scripts -->
   <script>
+   <script>
+    // =========================================================================
+    // ⚙️ CONFIGURE YOUR DETAILS:
+    // =========================================================================
     const MY_UPI_ID = "krishnaarun200-5@okhdfcbank"; 
     const MY_BUSINESS_NAME = "Motta Organics";
-    const MY_WHATSAPP_NUMBER = "9809193616"; 
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwj3NRnsUXOk2lz3W-uX4BeuJnqCSEP8Zi0SWRMTInYAqMArz0qSzon6pOdfcTrc-tUvQ/exec"; 
+    const MY_WHATSAPP_NUMBER = "9809193616"; // Your WhatsApp
+    const GOOGLE_SCRIPT_URL = "YOUR_WEB_APP_URL_HERE"; // PASTE YOUR SCRIPT URL
     const SERVICED_PINCODES = ["695"]; 
+    // =========================================================================
 
     let cart = [];
+    let customerGps = ""; // NEW: Stores the exact coordinates
 
     // CMS FETCH LOGIC
     async function loadStoreData() {
@@ -193,18 +199,15 @@
         const response = await fetch(GOOGLE_SCRIPT_URL + "?action=get_store_data");
         const data = await response.json();
         
-        // 1. Apply Settings
         if(data.settings.BrandName) {
           document.querySelectorAll('.cms-brand').forEach(el => el.innerText = data.settings.BrandName);
         }
         if(data.settings.Tagline) document.getElementById('cms-tagline').innerText = `🌱 ${data.settings.Tagline}`;
         if(data.settings.AboutText) document.getElementById('cms-about').innerText = data.settings.AboutText;
 
-        // 2. Separate Products
         const routines = data.products.filter(p => p.planType !== "One-Time" && p.planType !== "One-Time Order");
         const singles = data.products.filter(p => p.planType === "One-Time" || p.planType === "One-Time Order");
 
-        // 3. Draw Routine Cards
         const routineGrid = document.getElementById('routine-grid');
         if(routines.length > 0) {
           routineGrid.innerHTML = routines.map(p => `
@@ -229,7 +232,6 @@
           routineGrid.innerHTML = `<p class="text-center col-span-3 text-motta-700 py-6">No routines added in Control Panel yet.</p>`;
         }
 
-        // 4. Draw Single Pack Cards
         const singleGrid = document.getElementById('single-packs-grid');
         if(singles.length > 0) {
           singleGrid.innerHTML = singles.map(p => `
@@ -256,7 +258,64 @@
       }
     }
 
-    // ORIGINAL CHECKOUT LOGIC
+    // MAP LOGIC
+    let map, marker;
+    function openMap() {
+      const mapWrapper = document.getElementById('map-wrapper');
+      if (!mapWrapper.classList.contains('hidden')) { mapWrapper.classList.add('hidden'); return; }
+      mapWrapper.classList.remove('hidden'); mapWrapper.classList.add('flex');
+
+      if (!map) {
+        map = L.map('map').setView([8.5241, 76.9366], 13); 
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+        marker = L.marker([8.5241, 76.9366], {draggable: true}).addTo(map);
+        
+        marker.on('dragend', async function(e) {
+          const pos = marker.getLatLng();
+          customerGps = `${pos.lat},${pos.lng}`; // SAVE EXACT COORDINATES
+          document.getElementById('cust-address').value = "📍 Fetching address from satellite...";
+          try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.lat}&lon=${pos.lng}`);
+            const data = await res.json();
+            document.getElementById('cust-address').value = data.display_name;
+            if(data.address && data.address.postcode) {
+              document.getElementById('cust-pincode').value = data.address.postcode;
+              checkPincodeRealtime();
+            }
+          } catch(err) { document.getElementById('cust-address').value = "Error fetching address. Please type it manually."; }
+        });
+      }
+      setTimeout(() => map.invalidateSize(), 200);
+    }
+
+    function locateUser() {
+      if (!navigator.geolocation) return alert("GPS is not supported by your browser.");
+      document.getElementById('cust-address').value = "🎯 Locating you via GPS... Please allow location access.";
+      
+      navigator.geolocation.getCurrentPosition(async function(position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        customerGps = `${lat},${lng}`; // SAVE EXACT COORDINATES
+        
+        map.setView([lat, lng], 17);
+        marker.setLatLng([lat, lng]);
+        
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+          const data = await res.json();
+          document.getElementById('cust-address').value = data.display_name;
+          if(data.address && data.address.postcode) {
+            document.getElementById('cust-pincode').value = data.address.postcode;
+            checkPincodeRealtime();
+          }
+        } catch(err) { document.getElementById('cust-address').value = "Error fetching address."; }
+      }, function(error) {
+        alert("Unable to retrieve location. Check if GPS is turned on.");
+        document.getElementById('cust-address').value = "";
+      }, { enableHighAccuracy: true });
+    }
+
+    // CHECKOUT LOGIC
     function isDeliverablePincode(pin) { const clean = pin.trim(); if (clean.length !== 6) return false; return SERVICED_PINCODES.some(prefix => clean.startsWith(prefix)); }
     function checkPincodeRealtime() {
       const pin = document.getElementById('cust-pincode').value.trim();
@@ -265,29 +324,22 @@
       if (pin.length === 6) {
         if (isDeliverablePincode(pin)) {
           feedback.className = "mt-1.5 p-2 rounded-lg text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
-          feedback.innerHTML = "✅ Great! Fresh morning delivery is available.";
-          feedback.classList.remove('hidden');
+          feedback.innerHTML = "✅ Great! Fresh morning delivery is available."; feedback.classList.remove('hidden');
         } else {
           feedback.className = "mt-1.5 p-2 rounded-lg text-[11px] bg-amber-50 text-amber-900 border border-amber-200";
-          feedback.innerHTML = "🌿 Coming Soon! We currently deliver only within active zones.";
-          feedback.classList.remove('hidden');
+          feedback.innerHTML = "🌿 Coming Soon! We deliver only within active zones."; feedback.classList.remove('hidden');
         }
       } else { feedback.classList.add('hidden'); }
     }
 
     function toggleCart() {
-      const drawer = document.getElementById('cart-drawer');
-      const panel = document.getElementById('cart-panel');
-      if (drawer.classList.contains('pointer-events-none')) {
-        drawer.classList.remove('pointer-events-none', 'opacity-0'); panel.classList.remove('translate-x-full');
-      } else {
-        panel.classList.add('translate-x-full'); drawer.classList.add('opacity-0'); setTimeout(() => drawer.classList.add('pointer-events-none'), 300);
-      }
+      const drawer = document.getElementById('cart-drawer'); const panel = document.getElementById('cart-panel');
+      if (drawer.classList.contains('pointer-events-none')) { drawer.classList.remove('pointer-events-none', 'opacity-0'); panel.classList.remove('translate-x-full'); } 
+      else { panel.classList.add('translate-x-full'); drawer.classList.add('opacity-0'); setTimeout(() => drawer.classList.add('pointer-events-none'), 300); }
     }
 
     function addToCart(title, price, planType) {
-      const itemKey = `${title}_${planType}`;
-      const existing = cart.find(item => item.key === itemKey);
+      const itemKey = `${title}_${planType}`; const existing = cart.find(item => item.key === itemKey);
       if (existing) existing.qty += 1; else cart.push({ key: itemKey, title, price, planType, qty: 1 });
       updateCartUI(); toggleCart();
     }
@@ -334,21 +386,31 @@
 
     async function sendOrderToWhatsAppAfterPayment() {
       const name = document.getElementById('cust-name').value.trim(); const phone = document.getElementById('cust-phone').value.trim();
-      const address = document.getElementById('cust-address').value.trim(); const pincode = document.getElementById('cust-pincode').value.trim();
+      const addressInput = document.getElementById('cust-address').value.trim(); const pincode = document.getElementById('cust-pincode').value.trim();
       const slot = document.getElementById('cust-slot').value; const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
       const itemsText = cart.map(i => `${i.title} (${i.planType}) x ${i.qty}`).join(", ");
       const primaryPlan = cart[0]?.planType || "One-Time Order";
 
+      // NEW: Attach Google Maps Link if GPS was used
+      let finalAddress = `${addressInput} (${pincode})`;
+      let whatsappMapLink = "";
+      if (customerGps) {
+        const mapsUrl = `https://maps.google.com/?q=${customerGps}`;
+        finalAddress += ` | Map: ${mapsUrl}`; // This saves to Google Sheets
+        whatsappMapLink = `\n📍 *Map Location:* ${mapsUrl}`; // This goes to WhatsApp
+      }
+
       try {
         fetch(GOOGLE_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: name, phone: phone, address: `${address} (${pincode})`, slot: slot, items: itemsText, total: `₹${total}`, planType: primaryPlan })
+          body: JSON.stringify({ name: name, phone: phone, address: finalAddress, slot: slot, items: itemsText, total: `₹${total}`, planType: primaryPlan })
         });
       } catch (e) { console.error(e); }
 
-      let msg = `🥚 *NEW മുട്ട (MOTTA) ORDER* 🌾\n\n👤 *Details:*\n• ${name}\n• ${phone}\n• ${address} (${pincode})\n• ${slot}\n\n📦 *Items:*\n${cart.map(i => `• ${i.title} x${i.qty}`).join('\n')}\n\n💰 *Paid via UPI:* ₹${total}\n\n✅ I made the payment. Please confirm!`;
+      let msg = `🥚 *NEW മുട്ട (MOTTA) ORDER* 🌾\n\n👤 *Details:*\n• ${name}\n• ${phone}\n• ${addressInput} (${pincode})${whatsappMapLink}\n• ${slot}\n\n📦 *Items:*\n${cart.map(i => `• ${i.title} x${i.qty}`).join('\n')}\n\n💰 *Paid via UPI:* ₹${total}\n\n✅ I made the payment. Please confirm!`;
       window.open(`https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
       closePaymentModal();
     }
   </script>
+
 </body>
 </html>
