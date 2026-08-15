@@ -396,7 +396,7 @@
 
     function closePaymentModal() { document.getElementById('payment-modal').classList.add('hidden'); document.getElementById('payment-modal').classList.remove('flex'); }
 
-    async function sendOrderToWhatsAppAfterPayment() {
+ async function sendOrderToWhatsAppAfterPayment() {
       const name = document.getElementById('cust-name').value.trim(); 
       const phone = document.getElementById('cust-phone').value.trim();
       const addressInput = document.getElementById('cust-address').value.trim(); 
@@ -417,36 +417,49 @@
       const btn = event.currentTarget;
       if(btn) btn.innerHTML = `<span>⏳ Saving order to cloud...</span>`;
 
-      // 1. AWAIT the fetch so the browser GUARANTEES data reaches Google Sheets first
-      try {
-        const queryParams = new URLSearchParams({
-          action: "new_order",
-          name: name,
-          phone: phone,
-          address: finalAddress,
-          slot: slot,
-          items: itemsText,
-          total: `₹${total}`,
-          planType: primaryPlan
-        });
+      // BULLETPROOF METHOD: Create a hidden temporary form and submit it to the hidden iframe
+      const form = document.createElement('form');
+      form.action = GOOGLE_SCRIPT_URL;
+      form.method = 'GET';
+      form.target = 'hidden_sheet_frame';
 
-        await fetch(GOOGLE_SCRIPT_URL + "?" + queryParams.toString(), { method: 'GET', mode: 'no-cors' });
-      } catch (e) { 
-        console.error("Sheet sync error:", e); 
+      const dataPayload = {
+        action: "new_order",
+        name: name,
+        phone: phone,
+        address: finalAddress,
+        slot: slot,
+        items: itemsText,
+        total: `₹${total}`,
+        planType: primaryPlan
+      };
+
+      for (const key in dataPayload) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = dataPayload[key];
+        form.appendChild(input);
       }
 
-      // 2. Prepare WhatsApp message
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
+
+      // Prepare WhatsApp message
       let msg = `🥚 *NEW മുട്ട (MOTTA) ORDER* 🌾\n\n👤 *Details:*\n• ${name}\n• ${phone}\n• ${addressInput} (${pincode})${whatsappMapLink}\n• ${slot}\n\n📦 *Items:*\n${cart.map(i => `• ${i.title} x${i.qty}`).join('\n')}\n\n💰 *Paid via UPI:* ₹${total}\n\n✅ I made the payment. Please confirm!`;
       
       if(btn) btn.innerHTML = `<span>✅ Opening WhatsApp...</span>`;
       
-      // 3. Now open WhatsApp safely after Google Sheets has recorded it
+      // Open WhatsApp smoothly
       setTimeout(() => {
         window.location.href = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
         closePaymentModal();
         if(btn) btn.innerHTML = `<span>✅ Confirm Order on WhatsApp</span>`;
-      }, 500);
+      }, 600);
     }
   </script>
+  <!-- Hidden iframe so the page doesn't reload when saving to Google Sheets -->
+<iframe name="hidden_sheet_frame" id="hidden_sheet_frame" style="display:none;"></iframe>
 </body>
 </html>
