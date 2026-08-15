@@ -417,23 +417,20 @@ async function sendOrderToWhatsAppAfterPayment() {
       const btn = event.currentTarget;
       if(btn) btn.innerHTML = `<span>⏳ Saving order to cloud...</span>`;
 
-      // Send data to Google Sheets via POST
+      // SEND ORDER VIA GET REQUEST (Guaranteed delivery to Google Sheets)
       try {
-        await fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            action: "new_order",
-            name: name,
-            phone: phone,
-            address: finalAddress,
-            slot: slot,
-            items: itemsText,
-            total: `₹${total}`,
-            planType: primaryPlan
-          })
+        const queryParams = new URLSearchParams({
+          action: "new_order",
+          name: name,
+          phone: phone,
+          address: finalAddress,
+          slot: slot,
+          items: itemsText,
+          total: `₹${total}`,
+          planType: primaryPlan
         });
+
+        await fetch(GOOGLE_SCRIPT_URL + "?" + queryParams.toString(), { method: "GET" });
       } catch (e) {
         console.error("Sheet sync error:", e);
       }
@@ -443,12 +440,11 @@ async function sendOrderToWhatsAppAfterPayment() {
       
       if(btn) btn.innerHTML = `<span>✅ Opening WhatsApp...</span>`;
       
-      // Wait 1.2 seconds to guarantee the save finishes before opening WhatsApp
       setTimeout(() => {
         window.location.href = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
         closePaymentModal();
         if(btn) btn.innerHTML = `<span>✅ Confirm Order on WhatsApp</span>`;
-      }, 1200);
+      }, 1000);
     }
   </script>
   <!-- Hidden iframe so the page doesn't reload when saving to Google Sheets -->
