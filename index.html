@@ -396,7 +396,7 @@
 
     function closePaymentModal() { document.getElementById('payment-modal').classList.add('hidden'); document.getElementById('payment-modal').classList.remove('flex'); }
 
-async function sendOrderToWhatsAppAfterPayment() {
+function sendOrderToWhatsAppAfterPayment() {
       const name = document.getElementById('cust-name').value.trim(); 
       const phone = document.getElementById('cust-phone').value.trim();
       const addressInput = document.getElementById('cust-address').value.trim(); 
@@ -417,34 +417,32 @@ async function sendOrderToWhatsAppAfterPayment() {
       const btn = event.currentTarget;
       if(btn) btn.innerHTML = `<span>⏳ Saving order to cloud...</span>`;
 
-      // SEND ORDER VIA GET REQUEST (Guaranteed delivery to Google Sheets)
-      try {
-        const queryParams = new URLSearchParams({
-          action: "new_order",
-          name: name,
-          phone: phone,
-          address: finalAddress,
-          slot: slot,
-          items: itemsText,
-          total: `₹${total}`,
-          planType: primaryPlan
-        });
+      // BULLETPROOF BACKGROUND BEACON (Bypasses CORS completely)
+      const queryParams = new URLSearchParams({
+        action: "new_order",
+        name: name,
+        phone: phone,
+        address: finalAddress,
+        slot: slot,
+        items: itemsText,
+        total: `₹${total}`,
+        planType: primaryPlan
+      });
 
-        await fetch(GOOGLE_SCRIPT_URL + "?" + queryParams.toString(), { method: "GET" });
-      } catch (e) {
-        console.error("Sheet sync error:", e);
-      }
+      const beacon = new Image();
+      beacon.src = GOOGLE_SCRIPT_URL + "?" + queryParams.toString();
 
       // Prepare WhatsApp message
       let msg = `🥚 *NEW മുട്ട (MOTTA) ORDER* 🌾\n\n👤 *Details:*\n• ${name}\n• ${phone}\n• ${addressInput} (${pincode})${whatsappMapLink}\n• ${slot}\n\n📦 *Items:*\n${cart.map(i => `• ${i.title} x${i.qty}`).join('\n')}\n\n💰 *Paid via UPI:* ₹${total}\n\n✅ I made the payment. Please confirm!`;
       
       if(btn) btn.innerHTML = `<span>✅ Opening WhatsApp...</span>`;
       
+      // Small 600ms pause to let the background beacon fire, then open WhatsApp
       setTimeout(() => {
         window.location.href = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
         closePaymentModal();
         if(btn) btn.innerHTML = `<span>✅ Confirm Order on WhatsApp</span>`;
-      }, 1000);
+      }, 600);
     }
   </script>
   <!-- Hidden iframe so the page doesn't reload when saving to Google Sheets -->
