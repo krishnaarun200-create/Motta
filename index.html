@@ -190,7 +190,8 @@
     </div>
   </div>
 
-  <!-- THE FIXED SCRIPTS -->
+ 
+ <!-- THE FIXED SCRIPTS -->
   <script>
     // =========================================================================
     // ⚙️ CONFIGURE YOUR DETAILS:
@@ -198,7 +199,10 @@
     const MY_UPI_ID = "krishnaarun200-5@okhdfcbank"; 
     const MY_BUSINESS_NAME = "Motta Organics";
     const MY_WHATSAPP_NUMBER = "919809193616"; // Your WhatsApp
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwj3NRnsUXOk2lz3W-uX4BeuJnqCSEP8Zi0SWRMTInYAqMArz0qSzon6pOdfcTrc-tUvQ/exec";
+    
+    // 🔥 THE FIX: The correct URL that matches your Admin Panel exactly
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbypt7vKvC_6wDRUvlxBvQM56XAF4Y7rDjOd640U0yxmHBuirnrHCYPocnEn1XVmf3sOyA/exec";
+    
     const SERVICED_PINCODES = ["695"]; 
     // =========================================================================
 
@@ -396,7 +400,7 @@
 
     function closePaymentModal() { document.getElementById('payment-modal').classList.add('hidden'); document.getElementById('payment-modal').classList.remove('flex'); }
 
-function sendOrderToWhatsAppAfterPayment() {
+    async function sendOrderToWhatsAppAfterPayment() {
       const name = document.getElementById('cust-name').value.trim(); 
       const phone = document.getElementById('cust-phone').value.trim();
       const addressInput = document.getElementById('cust-address').value.trim(); 
@@ -417,35 +421,39 @@ function sendOrderToWhatsAppAfterPayment() {
       const btn = event.currentTarget;
       if(btn) btn.innerHTML = `<span>⏳ Saving order to cloud...</span>`;
 
-      // BULLETPROOF BACKGROUND BEACON (Bypasses CORS completely)
-      const queryParams = new URLSearchParams({
-        action: "new_order",
-        name: name,
-        phone: phone,
-        address: finalAddress,
-        slot: slot,
-        items: itemsText,
-        total: `₹${total}`,
-        planType: primaryPlan
-      });
-
-      const beacon = new Image();
-      beacon.src = GOOGLE_SCRIPT_URL + "?" + queryParams.toString();
+      // BULLETPROOF FETCH POST (Now hitting the correct URL!)
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "new_order",
+            name: name,
+            phone: phone,
+            address: finalAddress,
+            slot: slot,
+            items: itemsText,
+            total: `₹${total}`,
+            planType: primaryPlan
+          })
+        });
+      } catch (e) {
+        console.error("Sheet sync error:", e);
+      }
 
       // Prepare WhatsApp message
       let msg = `🥚 *NEW മുട്ട (MOTTA) ORDER* 🌾\n\n👤 *Details:*\n• ${name}\n• ${phone}\n• ${addressInput} (${pincode})${whatsappMapLink}\n• ${slot}\n\n📦 *Items:*\n${cart.map(i => `• ${i.title} x${i.qty}`).join('\n')}\n\n💰 *Paid via UPI:* ₹${total}\n\n✅ I made the payment. Please confirm!`;
       
       if(btn) btn.innerHTML = `<span>✅ Opening WhatsApp...</span>`;
       
-      // Small 600ms pause to let the background beacon fire, then open WhatsApp
+      // Wait 800ms for Google to process the data, then open WhatsApp
       setTimeout(() => {
         window.location.href = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
         closePaymentModal();
         if(btn) btn.innerHTML = `<span>✅ Confirm Order on WhatsApp</span>`;
-      }, 600);
+      }, 800);
     }
   </script>
-  <!-- Hidden iframe so the page doesn't reload when saving to Google Sheets -->
-<iframe name="hidden_sheet_frame" id="hidden_sheet_frame" style="display:none;"></iframe>
 </body>
 </html>
