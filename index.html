@@ -9,6 +9,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
   
+  <!-- Leaflet Map CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -20,7 +24,7 @@
     }
   </script>
 </head>
-<!-- ADDED ONLOAD FUNCTION HERE -->
+
 <body class="bg-motta-50 text-motta-900 font-sans antialiased flex flex-col min-h-screen selection:bg-yolk-500 selection:text-white" onload="loadStoreData()">
 
   <!-- Top Announcement Bar -->
@@ -31,7 +35,6 @@
   <!-- Header -->
   <header class="sticky top-0 bg-white/95 backdrop-blur-md border-b border-motta-200 z-30">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-      
       <a href="#" class="flex items-center space-x-3">
         <svg viewBox="0 0 120 150" class="w-10 h-12 flex-shrink-0" fill="none">
           <path d="M60 6 C32 6 12 48 12 92 C12 126 33 144 60 144 C87 144 108 126 108 92 C108 48 88 6 60 6 Z" fill="#1E5128" stroke="#F4A261" stroke-width="4"/>
@@ -47,13 +50,11 @@
           <span class="block text-[10px] uppercase tracking-wider text-motta-700 font-semibold mt-0.5">100% Free-Range Desi</span>
         </div>
       </a>
-      
       <nav class="hidden md:flex space-x-8 font-semibold text-motta-800 text-sm">
         <a href="#routine" class="hover:text-leaf-600 transition flex items-center gap-1">The Motta Routine ⭐️</a>
         <a href="#single-packs" class="hover:text-leaf-600 transition">Single Packs</a>
         <a href="#purity" class="hover:text-leaf-600 transition">Why മുട്ട?</a>
       </nav>
-
       <button onclick="toggleCart()" class="relative bg-motta-100 hover:bg-motta-200 text-motta-900 px-4 py-2 rounded-full font-bold flex items-center gap-2 transition duration-200 text-sm border border-motta-200">
         <span>Basket</span>
         <span id="cart-count" class="bg-leaf-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
@@ -64,12 +65,9 @@
   <!-- Hero Section -->
   <section class="py-16 md:py-24 bg-gradient-to-b from-motta-100/70 to-motta-50 relative overflow-hidden">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
-      
-      <!-- CMS CONNECTED: Tagline -->
       <span id="cms-tagline" class="inline-block bg-white border border-motta-200 text-leaf-600 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm mb-6">
         🌱 Pure Free-Range Eggs. Just മുട്ട.
       </span>
-
       <h1 class="font-serif text-4xl sm:text-6xl font-black tracking-tight text-motta-900 leading-[1.15] mb-6">
         Real Eggs. Deep Golden Yolks.<br class="hidden sm:block">
         <span class="relative inline-block mt-1">
@@ -77,12 +75,9 @@
           <span class="text-yolk-500 font-sans"> Routine.</span>
         </span>
       </h1>
-
-      <!-- CMS CONNECTED: About Text -->
       <p id="cms-about" class="text-base sm:text-lg text-motta-700 max-w-xl mx-auto mb-10 leading-relaxed font-normal">
         Pasture-raised from native country hens. Zero hormones, zero cages. Never run out of real morning protein with our weekly doorstep drops.
       </p>
-
       <div class="flex flex-wrap justify-center gap-4">
         <a href="#routine" class="bg-leaf-600 hover:bg-leaf-700 text-white px-8 py-4 rounded-xl font-bold text-base shadow-lg shadow-leaf-600/20 transition transform hover:-translate-y-0.5">
           Join The Motta Routine
@@ -101,8 +96,6 @@
       <h2 class="font-serif text-3xl sm:text-4xl font-black text-motta-900 mt-1">The മുട്ട Routine</h2>
       <p class="text-motta-700 text-sm mt-1 max-w-md mx-auto">Subscribe once. Enjoy scheduled morning farm drops with zero effort.</p>
     </div>
-
-    <!-- Routines will draw here -->
     <div id="routine-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div class="col-span-3 text-center text-leaf-600 font-bold animate-pulse py-10">Fetching subscriptions from farm...</div>
     </div>
@@ -115,8 +108,6 @@
         <h2 class="font-serif text-3xl font-bold text-motta-900">Single Packs & Trials</h2>
         <p class="text-motta-700 text-sm mt-1">Want to taste the difference first? Order a single batch.</p>
       </div>
-
-      <!-- Single packs will draw here -->
       <div id="single-packs-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="col-span-3 text-center text-motta-700 font-bold py-10">Fetching trial packs...</div>
       </div>
@@ -135,23 +126,45 @@
           </div>
           <button onclick="toggleCart()" class="text-motta-700 hover:text-motta-900 p-1 text-2xl font-bold">&times;</button>
         </div>
+        
         <div id="cart-items" class="flex-grow overflow-y-auto py-4 space-y-3"></div>
+        
         <div class="pt-4 border-t border-motta-200 space-y-2.5 bg-motta-50/70 -mx-6 px-6 pb-2">
-          <div class="flex justify-between font-bold text-lg text-motta-900">
+          <div class="flex justify-between font-bold text-lg text-motta-900 mb-2">
             <span>Total Payable:</span>
             <span id="cart-total" class="text-leaf-600 font-serif">₹0</span>
           </div>
+          
           <input type="text" id="cust-name" placeholder="Your Full Name *" class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600">
           <input type="tel" id="cust-phone" maxlength="10" placeholder="10-Digit WhatsApp / Mobile Number *" class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600">
-          <input type="text" id="cust-address" placeholder="House / Flat No, Street, Landmark *" class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600">
+          
+          <!-- MAP UI INJECTED HERE -->
+          <div>
+            <button type="button" onclick="openMap()" class="w-full bg-leaf-50 hover:bg-leaf-100 text-leaf-700 text-xs font-bold py-2.5 rounded-xl mb-2 border border-leaf-600 border-dashed transition flex justify-center items-center gap-2">
+              <span>📍 Pin Exact Location on Map</span>
+            </button>
+            <div id="map-wrapper" class="hidden mb-2 rounded-xl overflow-hidden border border-motta-200 shadow-inner flex-col" style="height: 250px;">
+              <div class="bg-motta-100 flex justify-between items-center px-3 py-2 border-b border-motta-200">
+                <span class="text-[10px] font-bold text-motta-800 uppercase tracking-wide">Drag pin to adjust</span>
+                <button type="button" onclick="locateUser()" class="bg-leaf-600 hover:bg-leaf-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1 transition">
+                  🎯 Auto-Locate Me
+                </button>
+              </div>
+              <div id="map" style="height: 190px; width: 100%; z-index: 10;"></div>
+            </div>
+            <textarea id="cust-address" rows="2" placeholder="House / Flat No, Street, Landmark *" class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600"></textarea>
+          </div>
+
           <div>
             <input type="text" id="cust-pincode" maxlength="6" placeholder="6-Digit Delivery Pincode *" oninput="checkPincodeRealtime()" class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600">
             <div id="pincode-feedback" class="hidden mt-1.5 p-2 rounded-lg text-[11px] font-medium leading-tight"></div>
           </div>
+          
           <select id="cust-slot" class="w-full p-2.5 border border-motta-200 rounded-xl text-xs text-motta-800 bg-white">
             <option value="Early Morning (6:30 AM - 8:30 AM)">Morning Slot: 6:30 AM - 8:30 AM</option>
             <option value="Mid-Morning (8:30 AM - 11:00 AM)">Morning Slot: 8:30 AM - 11:00 AM</option>
           </select>
+          
           <button onclick="openUPIPaymentModal()" class="w-full bg-leaf-600 hover:bg-leaf-700 text-white py-3.5 rounded-xl font-bold text-sm shadow-md flex items-center justify-center gap-2 transition">
             <span>⚡️ Proceed to UPI Payment</span>
           </button>
@@ -177,21 +190,20 @@
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- THE FIXED SCRIPTS -->
   <script>
-   <script>
     // =========================================================================
     // ⚙️ CONFIGURE YOUR DETAILS:
     // =========================================================================
     const MY_UPI_ID = "krishnaarun200-5@okhdfcbank"; 
     const MY_BUSINESS_NAME = "Motta Organics";
     const MY_WHATSAPP_NUMBER = "9809193616"; // Your WhatsApp
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwj3NRnsUXOk2lz3W-uX4BeuJnqCSEP8Zi0SWRMTInYAqMArz0qSzon6pOdfcTrc-tUvQ/exec"; // PASTE YOUR SCRIPT URL
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwj3NRnsUXOk2lz3W-uX4BeuJnqCSEP8Zi0SWRMTInYAqMArz0qSzon6pOdfcTrc-tUvQ/exec";
     const SERVICED_PINCODES = ["695"]; 
     // =========================================================================
 
     let cart = [];
-    let customerGps = ""; // NEW: Stores the exact coordinates
+    let customerGps = ""; 
 
     // CMS FETCH LOGIC
     async function loadStoreData() {
@@ -272,7 +284,7 @@
         
         marker.on('dragend', async function(e) {
           const pos = marker.getLatLng();
-          customerGps = `${pos.lat},${pos.lng}`; // SAVE EXACT COORDINATES
+          customerGps = `${pos.lat},${pos.lng}`; 
           document.getElementById('cust-address').value = "📍 Fetching address from satellite...";
           try {
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.lat}&lon=${pos.lng}`);
@@ -295,7 +307,7 @@
       navigator.geolocation.getCurrentPosition(async function(position) {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
-        customerGps = `${lat},${lng}`; // SAVE EXACT COORDINATES
+        customerGps = `${lat},${lng}`; 
         
         map.setView([lat, lng], 17);
         marker.setLatLng([lat, lng]);
@@ -391,13 +403,12 @@
       const itemsText = cart.map(i => `${i.title} (${i.planType}) x ${i.qty}`).join(", ");
       const primaryPlan = cart[0]?.planType || "One-Time Order";
 
-      // NEW: Attach Google Maps Link if GPS was used
       let finalAddress = `${addressInput} (${pincode})`;
       let whatsappMapLink = "";
       if (customerGps) {
         const mapsUrl = `https://maps.google.com/?q=${customerGps}`;
-        finalAddress += ` | Map: ${mapsUrl}`; // This saves to Google Sheets
-        whatsappMapLink = `\n📍 *Map Location:* ${mapsUrl}`; // This goes to WhatsApp
+        finalAddress += ` | Map: ${mapsUrl}`; 
+        whatsappMapLink = `\n📍 *Map Location:* ${mapsUrl}`; 
       }
 
       try {
@@ -411,6 +422,5 @@
       closePaymentModal();
     }
   </script>
-
 </body>
 </html>
