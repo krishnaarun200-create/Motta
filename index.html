@@ -396,10 +396,13 @@
 
     function closePaymentModal() { document.getElementById('payment-modal').classList.add('hidden'); document.getElementById('payment-modal').classList.remove('flex'); }
 
-    async function sendOrderToWhatsAppAfterPayment() {
-      const name = document.getElementById('cust-name').value.trim(); const phone = document.getElementById('cust-phone').value.trim();
-      const addressInput = document.getElementById('cust-address').value.trim(); const pincode = document.getElementById('cust-pincode').value.trim();
-      const slot = document.getElementById('cust-slot').value; const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+   async function sendOrderToWhatsAppAfterPayment() {
+      const name = document.getElementById('cust-name').value.trim(); 
+      const phone = document.getElementById('cust-phone').value.trim();
+      const addressInput = document.getElementById('cust-address').value.trim(); 
+      const pincode = document.getElementById('cust-pincode').value.trim();
+      const slot = document.getElementById('cust-slot').value; 
+      const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
       const itemsText = cart.map(i => `${i.title} (${i.planType}) x ${i.qty}`).join(", ");
       const primaryPlan = cart[0]?.planType || "One-Time Order";
 
@@ -412,14 +415,30 @@
       }
 
       try {
-        fetch(GOOGLE_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: name, phone: phone, address: finalAddress, slot: slot, items: itemsText, total: `₹${total}`, planType: primaryPlan })
+        // ADDED 'await' so the browser waits to finish uploading, 
+        // and added the 'action: "new_order"' label so Google accepts it!
+        await fetch(GOOGLE_SCRIPT_URL, { 
+          method: "POST", 
+          mode: "no-cors", 
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            action: "new_order", 
+            name: name, 
+            phone: phone, 
+            address: finalAddress, 
+            slot: slot, 
+            items: itemsText, 
+            total: `₹${total}`, 
+            planType: primaryPlan 
+          })
         });
       } catch (e) { console.error(e); }
 
       let msg = `🥚 *NEW മുട്ട (MOTTA) ORDER* 🌾\n\n👤 *Details:*\n• ${name}\n• ${phone}\n• ${addressInput} (${pincode})${whatsappMapLink}\n• ${slot}\n\n📦 *Items:*\n${cart.map(i => `• ${i.title} x${i.qty}`).join('\n')}\n\n💰 *Paid via UPI:* ₹${total}\n\n✅ I made the payment. Please confirm!`;
+      
       window.location.href = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
       closePaymentModal();
+    }
     }
   </script>
 </body>
