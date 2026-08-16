@@ -18,18 +18,13 @@
 
 <body class="bg-gray-950 text-gray-100 min-h-screen antialiased flex flex-col selection:bg-emerald-500 selection:text-white" onload="initDashboard()">
 
-  <!-- Header -->
   <header class="bg-gray-900/90 backdrop-blur-md border-b border-gray-800 sticky top-0 z-30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
 
       <div class="flex items-center gap-3">
         <span class="font-malayalam text-2xl font-black text-amber-500">മുട്ട</span>
-
         <div>
-          <h1 class="font-bold text-white text-base leading-tight">
-            Command Center
-          </h1>
-
+          <h1 class="font-bold text-white text-base leading-tight">Command Center</h1>
           <span class="text-xs text-emerald-400 font-semibold flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
             Live Database Active
@@ -37,366 +32,260 @@
         </div>
       </div>
 
-      <!-- Module Tabs -->
       <div class="flex bg-gray-950 p-1 rounded-2xl border border-gray-800 overflow-x-auto">
-
-        <button
-          onclick="switchTab('orders')"
-          id="tab-btn-orders"
-          class="px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-emerald-600 text-white shadow">
+        <button onclick="switchTab('orders')" id="tab-btn-orders" class="px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-emerald-600 text-white shadow">
           📦 Orders & Logistics
         </button>
 
-        <button
-          onclick="switchTab('subs')"
-          id="tab-btn-subs"
-          class="px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition text-gray-400 hover:text-white">
+        <button onclick="switchTab('subs')" id="tab-btn-subs" class="px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition text-gray-400 hover:text-white">
           ⭐️ Subscriptions
         </button>
 
-        <button
-          onclick="switchTab('store')"
-          id="tab-btn-store"
-          class="px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition text-gray-400 hover:text-white">
+        <button onclick="switchTab('store')" id="tab-btn-store" class="px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition text-gray-400 hover:text-white">
           🛠️ Store & Inventory
         </button>
 
+        <button onclick="switchTab('content')" id="tab-btn-content" class="px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition text-gray-400 hover:text-white">
+          ✍️ Site Content
+        </button>
       </div>
 
     </div>
   </header>
 
-
   <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-grow w-full">
 
-    <!-- =================================================================== -->
     <!-- TAB 1: ORDERS & LOGISTICS -->
-    <!-- =================================================================== -->
-
     <div id="tab-orders" class="space-y-6">
 
-      <!-- Metrics -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
         <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl flex items-center justify-between">
           <div>
-            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">
-              Total Revenue
-            </span>
-
-            <div
-              id="stat-revenue"
-              class="text-2xl sm:text-3xl font-black text-emerald-400 mt-1 font-serif">
-              ₹0
-            </div>
+            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Revenue</span>
+            <div id="stat-revenue" class="text-2xl sm:text-3xl font-black text-emerald-400 mt-1 font-serif">₹0</div>
           </div>
-
-          <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-xl">
-            💰
-          </div>
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-xl">💰</div>
         </div>
-
 
         <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl flex items-center justify-between">
           <div>
-            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">
-              Pending Orders
-            </span>
-
-            <div
-              id="stat-orders-count"
-              class="text-2xl sm:text-3xl font-black text-white mt-1">
-              0
-            </div>
+            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Pending Orders</span>
+            <div id="stat-orders-count" class="text-2xl sm:text-3xl font-black text-white mt-1">0</div>
           </div>
-
-          <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-xl">
-            📦
-          </div>
+          <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-xl">📦</div>
         </div>
-
 
         <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl flex items-center justify-between">
           <div>
-            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">
-              Active Routines
-            </span>
-
-            <div
-              id="stat-subscriptions"
-              class="text-2xl sm:text-3xl font-black text-amber-400 mt-1">
-              0
-            </div>
+            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Active Routines</span>
+            <div id="stat-subscriptions" class="text-2xl sm:text-3xl font-black text-amber-400 mt-1">0</div>
           </div>
-
-          <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-xl">
-            ⭐️
-          </div>
+          <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-xl">⭐️</div>
         </div>
 
       </div>
 
-
-      <!-- Controls & Filters -->
       <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between bg-gray-900 p-4 rounded-2xl border border-gray-800">
 
         <div class="relative flex-grow max-w-md">
-          <input
-            type="text"
-            id="order-search"
-            oninput="filterOrders()"
-            placeholder="Search name, phone, items..."
-            class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500">
+          <input type="text" id="order-search" oninput="filterOrders()" placeholder="Search name, phone, items..." class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500">
         </div>
-
 
         <div class="flex items-center gap-3 flex-wrap">
 
-          <select
-            id="order-filter-status"
-            onchange="filterOrders()"
-            class="bg-gray-950 border border-gray-700 rounded-xl px-3 py-2.5 text-xs text-gray-200 focus:outline-none focus:border-emerald-500">
-
-            <option value="ACTIVE">
-              Active Pipeline (New & Delivering)
-            </option>
-
-            <option value="New">
-              Status: New
-            </option>
-
-            <option value="Out for Delivery">
-              Status: Out for Delivery
-            </option>
-
-            <option value="Closed">
-              Archived / Closed Orders
-            </option>
-
-            <option value="ALL">
-              View Everything
-            </option>
-
+          <select id="order-filter-status" onchange="filterOrders()" class="bg-gray-950 border border-gray-700 rounded-xl px-3 py-2.5 text-xs text-gray-200 focus:outline-none focus:border-emerald-500">
+            <option value="ACTIVE">Active Pipeline (New & Delivering)</option>
+            <option value="New">Status: New</option>
+            <option value="Out for Delivery">Status: Out for Delivery</option>
+            <option value="Closed">Archived / Closed Orders</option>
+            <option value="ALL">View Everything</option>
           </select>
 
-
-          <button
-            onclick="fetchAllData(true)"
-            class="bg-gray-800 hover:bg-gray-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl border border-gray-700 transition flex items-center gap-1.5 flex-shrink-0">
-
-            <span id="refresh-icon">🔄</span>
-            Refresh
-
+          <button onclick="fetchAllData(true)" class="bg-gray-800 hover:bg-gray-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl border border-gray-700 transition flex items-center gap-1.5 flex-shrink-0">
+            <span id="refresh-icon">🔄</span> Refresh
           </button>
 
         </div>
-
       </div>
 
-
-      <!-- Orders Feed -->
       <div id="orders-container" class="space-y-4">
-
-        <div class="text-center py-16 text-gray-500 font-medium">
-          Fetching orders from cloud...
-        </div>
-
+        <div class="text-center py-16 text-gray-500 font-medium">Fetching orders from cloud...</div>
       </div>
 
     </div>
 
-
-    <!-- =================================================================== -->
     <!-- TAB 2: SUBSCRIBERS HUB -->
-    <!-- =================================================================== -->
-
     <div id="tab-subs" class="hidden space-y-6">
 
       <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl flex justify-between items-center">
-
         <div>
+          <h2 class="font-bold text-base text-white">Recurring "Motta Routine" Subscribers</h2>
+          <p class="text-xs text-gray-400 mt-0.5">Manage recurring morning drop routines and vacation pauses.</p>
+        </div>
+      </div>
 
-          <h2 class="font-bold text-base text-white">
-            Recurring "Motta Routine" Subscribers
-          </h2>
+      <div id="subs-container" class="space-y-4">
+        <div class="text-center py-16 text-gray-500 font-medium">Fetching subscriptions...</div>
+      </div>
 
-          <p class="text-xs text-gray-400 mt-0.5">
-            Manage recurring morning drop routines and vacation pauses.
-          </p>
+    </div>
 
+    <!-- TAB 3: STORE & INVENTORY -->
+    <div id="tab-store" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+      <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-sm space-y-4">
+
+        <div class="border-b border-gray-800 pb-3">
+          <h2 class="font-bold text-lg text-white">🌾 Live Inventory Manager</h2>
+          <p class="text-xs text-gray-400 mt-0.5">Toggle products out of stock to instantly hide them from the website.</p>
+        </div>
+
+        <div id="inventory-container" class="space-y-3">
+          <div class="text-sm text-gray-500">Loading products...</div>
         </div>
 
       </div>
 
+      <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-sm space-y-4">
 
-      <div id="subs-container" class="space-y-4">
-
-        <div class="text-center py-16 text-gray-500 font-medium">
-          Fetching subscriptions...
+        <div class="border-b border-gray-800 pb-3">
+          <h2 class="font-bold text-lg text-white">➕ Add New Product / Routine</h2>
+          <p class="text-xs text-gray-400 mt-0.5">Instantly publish items to the live storefront.</p>
         </div>
+
+        <div class="grid grid-cols-3 gap-3">
+
+          <div class="col-span-2">
+            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Product Name</label>
+            <input type="text" id="prod-name" placeholder="e.g. 30 Egg Tray" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Price (₹)</label>
+            <input type="number" id="prod-price" placeholder="450" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+          </div>
+
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+
+          <div class="col-span-2">
+            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Plan Category</label>
+            <select id="prod-plan" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+              <option value="One-Time Order">One-Time Order</option>
+              <option value="Weekly Plan (4 Drops)">Weekly Plan (4 Drops)</option>
+              <option value="Bi-Weekly Plan (2 Drops)">Bi-Weekly Plan (2 Drops)</option>
+              <option value="Monthly Plan (3 Drops)">Monthly Plan (3 Drops)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Emoji Icon</label>
+            <input type="text" id="prod-icon" value="🥚" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-center text-white focus:outline-none focus:border-emerald-500">
+          </div>
+
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Description</label>
+          <input type="text" id="prod-desc" placeholder="e.g. Pasture-foraged country hen eggs" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <button onclick="addNewProduct()" id="btn-add-prod" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl text-xs transition flex items-center justify-center gap-2">
+          <span>🚀 Publish Product to Store</span>
+        </button>
 
       </div>
 
     </div>
 
+    <!-- TAB 4: SITE CONTENT -->
+    <div id="tab-content" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-    <!-- =================================================================== -->
-    <!-- TAB 3: STORE & INVENTORY -->
-    <!-- =================================================================== -->
-
-    <div id="tab-store" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-      <!-- Inventory & Stock Toggles -->
-      <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-sm space-y-4">
+      <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-sm space-y-4 lg:col-span-2">
 
         <div class="border-b border-gray-800 pb-3">
-
-          <h2 class="font-bold text-lg text-white">
-            🌾 Live Inventory Manager
-          </h2>
-
-          <p class="text-xs text-gray-400 mt-0.5">
-            Toggle products out of stock to instantly hide them from the website.
-          </p>
-
+          <h2 class="font-bold text-lg text-white">🌟 "Why മുട്ട?" Section</h2>
+          <p class="text-xs text-gray-400 mt-0.5">Edit the 4 promise cards shown on the website. Leave a field blank to keep its current default.</p>
         </div>
 
+        <div>
+          <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Section Heading</label>
+          <input type="text" id="why-heading-input" placeholder="Why മുട്ട?" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+        </div>
 
-        <div id="inventory-container" class="space-y-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-          <div class="text-sm text-gray-500">
-            Loading products...
+          <div class="bg-gray-950 p-4 rounded-2xl border border-gray-800 space-y-2">
+            <span class="text-xs font-bold text-amber-400">Card 1</span>
+            <input type="text" id="why-icon-input-1" placeholder="Icon e.g. 🐔" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="text" id="why-title-input-1" placeholder="Title" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="text" id="why-text-input-1" placeholder="Description" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+          </div>
+
+          <div class="bg-gray-950 p-4 rounded-2xl border border-gray-800 space-y-2">
+            <span class="text-xs font-bold text-amber-400">Card 2</span>
+            <input type="text" id="why-icon-input-2" placeholder="Icon e.g. 🌿" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="text" id="why-title-input-2" placeholder="Title" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="text" id="why-text-input-2" placeholder="Description" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+          </div>
+
+          <div class="bg-gray-950 p-4 rounded-2xl border border-gray-800 space-y-2">
+            <span class="text-xs font-bold text-amber-400">Card 3</span>
+            <input type="text" id="why-icon-input-3" placeholder="Icon e.g. 🌅" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="text" id="why-title-input-3" placeholder="Title" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="text" id="why-text-input-3" placeholder="Description" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+          </div>
+
+          <div class="bg-gray-950 p-4 rounded-2xl border border-gray-800 space-y-2">
+            <span class="text-xs font-bold text-amber-400">Card 4</span>
+            <input type="text" id="why-icon-input-4" placeholder="Icon e.g. 🚪" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="text" id="why-title-input-4" placeholder="Title" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="text" id="why-text-input-4" placeholder="Description" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
           </div>
 
         </div>
+
+        <button onclick="saveWhySection()" id="btn-save-why" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs transition">
+          💾 Save "Why മുട്ട?" Section
+        </button>
 
       </div>
 
-
-      <!-- Add Product -->
-      <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-sm space-y-4">
+      <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-sm space-y-4 lg:col-span-2">
 
         <div class="border-b border-gray-800 pb-3">
-
-          <h2 class="font-bold text-lg text-white">
-            ➕ Add New Product / Routine
-          </h2>
-
-          <p class="text-xs text-gray-400 mt-0.5">
-            Instantly publish items to the live storefront.
-          </p>
-
+          <h2 class="font-bold text-lg text-white">🔗 Social Media Links</h2>
+          <p class="text-xs text-gray-400 mt-0.5">Paste full profile URLs. Leave blank to hide that icon from the website footer.</p>
         </div>
 
-
-        <div class="grid grid-cols-3 gap-3">
-
-          <div class="col-span-2">
-
-            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">
-              Product Name
-            </label>
-
-            <input
-              type="text"
-              id="prod-name"
-              placeholder="e.g. 30 Egg Tray"
-              class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
-
-          </div>
-
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
           <div>
-
-            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">
-              Price (₹)
-            </label>
-
-            <input
-              type="number"
-              id="prod-price"
-              placeholder="450"
-              class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
-
+            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">📸 Instagram URL</label>
+            <input type="url" id="social-instagram-input" placeholder="https://instagram.com/yourpage" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
           </div>
-
-        </div>
-
-
-        <div class="grid grid-cols-3 gap-3">
-
-          <div class="col-span-2">
-
-            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">
-              Plan Category
-            </label>
-
-            <select
-              id="prod-plan"
-              class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
-
-              <option value="One-Time Order">
-                One-Time Order
-              </option>
-
-              <option value="Weekly Plan (4 Drops)">
-                Weekly Plan (4 Drops)
-              </option>
-
-              <option value="Bi-Weekly Plan (2 Drops)">
-                Bi-Weekly Plan (2 Drops)
-              </option>
-
-              <option value="Monthly Plan (3 Drops)">
-                Monthly Plan (3 Drops)
-              </option>
-
-            </select>
-
-          </div>
-
 
           <div>
+            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">📘 Facebook URL</label>
+            <input type="url" id="social-facebook-input" placeholder="https://facebook.com/yourpage" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+          </div>
 
-            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">
-              Emoji Icon
-            </label>
+          <div>
+            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">▶️ YouTube URL</label>
+            <input type="url" id="social-youtube-input" placeholder="https://youtube.com/@yourchannel" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+          </div>
 
-            <input
-              type="text"
-              id="prod-icon"
-              value="🥚"
-              class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-center text-white focus:outline-none focus:border-emerald-500">
-
+          <div>
+            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">💬 WhatsApp Channel/Link</label>
+            <input type="url" id="social-whatsapp-input" placeholder="https://wa.me/919809193616" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
           </div>
 
         </div>
 
-
-        <div>
-
-          <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">
-            Description
-          </label>
-
-          <input
-            type="text"
-            id="prod-desc"
-            placeholder="e.g. Pasture-foraged country hen eggs"
-            class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
-
-        </div>
-
-
-        <button
-          onclick="addNewProduct()"
-          id="btn-add-prod"
-          class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl text-xs transition flex items-center justify-center gap-2">
-
-          <span>
-            🚀 Publish Product to Store
-          </span>
-
+        <button onclick="saveSocialLinks()" id="btn-save-social" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs transition">
+          💾 Save Social Media Links
         </button>
 
       </div>
@@ -405,281 +294,145 @@
 
   </main>
 
-
-  <!-- DASHBOARD CONTROLLER SCRIPT -->
   <script>
-
-    // IMPORTANT: This URL MUST be identical to the one in index.html.
-    // After you redeploy the Apps Script, paste the new /exec URL here AND in index.html.
-
-    const GOOGLE_SCRIPT_URL =
-      "https://script.google.com/macros/s/AKfycby7X1-eVawUj9Yy1Gxwn9Z0wh8DPRY3TjbHPPRrkMHmhhipeqPPpsmlusU9GE6qTcRdPg/exec";
-
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKmMQVosM6bVhpJKvm5uueebh0N1BuiIUb9Iu1srJZqnrMTJ0QrRNvurK8eABoD0W2IA/exec";
 
     let rawOrders = [];
     let rawSubs = [];
     let rawProducts = [];
-
+    let rawSettings = {};
 
     async function initDashboard() {
       fetchAllData();
     }
 
-
     function switchTab(tab) {
-
       document.getElementById('tab-orders').classList.add('hidden');
       document.getElementById('tab-subs').classList.add('hidden');
       document.getElementById('tab-store').classList.add('hidden');
+      document.getElementById('tab-content').classList.add('hidden');
 
-
-      document.getElementById('tab-btn-orders').className =
-        "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition text-gray-400 hover:text-white";
-
-      document.getElementById('tab-btn-subs').className =
-        "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition text-gray-400 hover:text-white";
-
-      document.getElementById('tab-btn-store').className =
-        "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition text-gray-400 hover:text-white";
-
+      document.getElementById('tab-btn-orders').className = "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition text-gray-400 hover:text-white";
+      document.getElementById('tab-btn-subs').className = "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition text-gray-400 hover:text-white";
+      document.getElementById('tab-btn-store').className = "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition text-gray-400 hover:text-white";
+      document.getElementById('tab-btn-content').className = "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition text-gray-400 hover:text-white";
 
       if (tab === 'orders') {
-
         document.getElementById('tab-orders').classList.remove('hidden');
-
-        document.getElementById('tab-btn-orders').className =
-          "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-emerald-600 text-white shadow";
-
-      }
-
-      else if (tab === 'subs') {
-
+        document.getElementById('tab-btn-orders').className = "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-emerald-600 text-white shadow";
+      } else if (tab === 'subs') {
         document.getElementById('tab-subs').classList.remove('hidden');
-
-        document.getElementById('tab-btn-subs').className =
-          "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-emerald-600 text-white shadow";
-
-      }
-
-      else {
-
+        document.getElementById('tab-btn-subs').className = "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-emerald-600 text-white shadow";
+      } else if (tab === 'store') {
         document.getElementById('tab-store').classList.remove('hidden');
-
-        document.getElementById('tab-btn-store').className =
-          "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-emerald-600 text-white shadow";
-
+        document.getElementById('tab-btn-store').className = "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-emerald-600 text-white shadow";
+      } else {
+        document.getElementById('tab-content').classList.remove('hidden');
+        document.getElementById('tab-btn-content').className = "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-emerald-600 text-white shadow";
       }
-
     }
 
-
     async function fetchAllData(showSpinner = false) {
-
       const icon = document.getElementById('refresh-icon');
 
-      if (showSpinner && icon) {
-        icon.classList.add('animate-spin');
-      }
-
+      if (showSpinner && icon) icon.classList.add('animate-spin');
 
       try {
-
-        const res = await fetch(
-          GOOGLE_SCRIPT_URL + "?action=get_admin_data"
-        );
-
+        const res = await fetch(GOOGLE_SCRIPT_URL + "?action=get_admin_data");
         const data = await res.json();
-
 
         rawOrders = data.orders || [];
         rawSubs = data.subscribers || [];
         rawProducts = data.products || [];
-
+        rawSettings = data.settings || {};
 
         updateMetrics();
         filterOrders();
         renderSubscribers();
         renderInventory();
+        prefillContentForm();
 
-      }
-
-      catch (err) {
-
+      } catch (err) {
         console.error("Dashboard error:", err);
-
+      } finally {
+        if (icon) icon.classList.remove('animate-spin');
       }
-
-      finally {
-
-        if (icon) {
-          icon.classList.remove('animate-spin');
-        }
-
-      }
-
     }
 
-
     function updateMetrics() {
-
       let revenue = 0;
 
       rawOrders.forEach(o => {
-
-        const num =
-          parseInt(String(o.total).replace(/[^0-9]/g, '')) || 0;
-
+        const num = parseInt(String(o.total).replace(/[^0-9]/g, '')) || 0;
         revenue += num;
-
       });
 
+      const pendingOrders = rawOrders.filter(o => o.status !== "Closed").length;
+      const activeSubs = rawSubs.filter(s => s.status === "Active").length;
 
-      const pendingOrders =
-        rawOrders.filter(o => o.status !== "Closed").length;
-
-      const activeSubs =
-        rawSubs.filter(s => s.status === "Active").length;
-
-
-      document.getElementById('stat-revenue').textContent =
-        `₹${revenue.toLocaleString('en-IN')}`;
-
-      document.getElementById('stat-orders-count').textContent =
-        pendingOrders;
-
-      document.getElementById('stat-subscriptions').textContent =
-        activeSubs;
-
+      document.getElementById('stat-revenue').textContent = `₹${revenue.toLocaleString('en-IN')}`;
+      document.getElementById('stat-orders-count').textContent = pendingOrders;
+      document.getElementById('stat-subscriptions').textContent = activeSubs;
     }
 
-
-    // --- ORDERS LOGIC ---
-
     function filterOrders() {
-
-      const q =
-        document.getElementById('order-search').value.toLowerCase().trim();
-
-      const statusFilter =
-        document.getElementById('order-filter-status').value;
-
+      const q = document.getElementById('order-search').value.toLowerCase().trim();
+      const statusFilter = document.getElementById('order-filter-status').value;
 
       const filtered = rawOrders.filter(o => {
-
         const matchesQuery = (
-
           (o.name && o.name.toLowerCase().includes(q)) ||
-
           (o.phone && String(o.phone).includes(q)) ||
-
           (o.items && o.items.toLowerCase().includes(q)) ||
-
           (o.address && o.address.toLowerCase().includes(q))
-
         );
-
 
         if (!matchesQuery) return false;
 
-
-        if (statusFilter === "ACTIVE") {
-          return o.status !== "Closed";
-        }
-
-
-        if (statusFilter !== "ALL") {
-          return o.status === statusFilter;
-        }
-
+        if (statusFilter === "ACTIVE") return o.status !== "Closed";
+        if (statusFilter !== "ALL") return o.status === statusFilter;
 
         return true;
-
       });
 
-
       renderOrders(filtered);
-
     }
 
-
     function renderOrders(orders) {
-
-      const container =
-        document.getElementById('orders-container');
-
+      const container = document.getElementById('orders-container');
 
       if (orders.length === 0) {
-
-        container.innerHTML = `
-          <div class="text-center py-16 bg-gray-900 rounded-3xl border border-gray-800 text-gray-400 text-sm">
-            No orders found matching this filter.
-          </div>
-        `;
-
+        container.innerHTML = `<div class="text-center py-16 bg-gray-900 rounded-3xl border border-gray-800 text-gray-400 text-sm">No orders found matching this filter.</div>`;
         return;
-
       }
-
 
       container.innerHTML = orders.map((o) => {
 
         let mapLink = "";
-
         let cleanAddress = o.address || "";
 
-
-        const mapMatch =
-          cleanAddress.match(/https:\/\/maps\.google\.com\/\?q=[^\s|]+/);
-
+        const mapMatch = cleanAddress.match(/https:\/\/maps\.google\.com\/\?q=[^\s|]+/);
 
         if (mapMatch) {
-
           mapLink = mapMatch[0];
-
-          cleanAddress =
-            cleanAddress.replace(
-              /\|\s*Map:\s*https:\/\/maps\.google\.com\/\?q=[^\s|]+/,
-              ''
-            ).trim();
-
+          cleanAddress = cleanAddress.replace(/\|\s*Map:\s*https:\/\/maps\.google\.com\/\?q=[^\s|]+/, '').trim();
         }
 
+        const cleanPhone = String(o.phone).replace(/[^0-9]/g, '');
+        const status = o.status || "New";
 
-        const cleanPhone =
-          String(o.phone).replace(/[^0-9]/g, '');
-
-        const status =
-          o.status || "New";
-
-
-        let statusBadgeColor =
-          "bg-rose-500/20 text-rose-300 border-rose-500/30";
-
+        let statusBadgeColor = "bg-rose-500/20 text-rose-300 border-rose-500/30";
 
         if (status === "Out for Delivery") {
-
-          statusBadgeColor =
-            "bg-amber-500/20 text-amber-300 border-amber-500/30";
-
+          statusBadgeColor = "bg-amber-500/20 text-amber-300 border-amber-500/30";
         }
-
 
         if (status === "Closed") {
-
-          statusBadgeColor =
-            "bg-gray-800 text-gray-400 border-gray-700";
-
+          statusBadgeColor = "bg-gray-800 text-gray-400 border-gray-700";
         }
 
-
         return `
-
-          <div class="bg-gray-900 border ${
-            status === 'Closed'
-              ? 'border-gray-800 opacity-75'
-              : 'border-gray-800'
-          } rounded-3xl p-5 sm:p-6 transition shadow-sm space-y-4">
-
+          <div class="bg-gray-900 border ${status === 'Closed' ? 'border-gray-800 opacity-75' : 'border-gray-800'} rounded-3xl p-5 sm:p-6 transition shadow-sm space-y-4">
 
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-800 pb-3">
 
@@ -689,558 +442,345 @@
                   📦
                 </div>
 
-
                 <div>
-
-                  <h3 class="font-bold text-white text-base leading-tight">
-                    ${o.name}
-                  </h3>
-
+                  <h3 class="font-bold text-white text-base leading-tight">${o.name}</h3>
 
                   <div class="text-[11px] text-gray-400 mt-0.5 flex items-center gap-2">
-
-                    <span>
-                      🕒 ${o.timestamp}
-                    </span>
-
+                    <span>🕒 ${o.timestamp}</span>
                     <span>•</span>
-
-                    <span class="text-amber-400 font-semibold">
-                      ⏰ ${o.slot}
-                    </span>
-
+                    <span class="text-amber-400 font-semibold">⏰ ${o.slot}</span>
                   </div>
-
                 </div>
 
               </div>
 
-
               <div class="flex items-center gap-3 self-end sm:self-center">
-
-                <span class="text-xl sm:text-2xl font-black text-emerald-400 font-serif">
-                  ${o.total}
-                </span>
+                <span class="text-xl sm:text-2xl font-black text-emerald-400 font-serif">${o.total}</span>
 
                 <span class="text-[10px] uppercase font-bold px-2.5 py-1 rounded-full border ${statusBadgeColor}">
                   ${status}
                 </span>
-
               </div>
 
             </div>
 
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
 
               <div class="bg-gray-950 p-3.5 rounded-2xl border border-gray-800">
-
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">
-                  📦 Items
-                </span>
-
-                <div class="text-gray-200 font-medium leading-relaxed">
-                  ${o.items}
-                </div>
-
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">📦 Items</span>
+                <div class="text-gray-200 font-medium leading-relaxed">${o.items}</div>
               </div>
-
 
               <div class="bg-gray-950 p-3.5 rounded-2xl border border-gray-800 flex flex-col justify-between">
 
                 <div>
-
-                  <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">
-                    📍 Address
-                  </span>
-
-                  <p class="text-gray-200 leading-snug">
-                    ${cleanAddress}
-                  </p>
-
+                  <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">📍 Address</span>
+                  <p class="text-gray-200 leading-snug">${cleanAddress}</p>
                 </div>
 
-
                 ${mapLink ? `
-
-                  <a
-                    href="${mapLink}"
-                    target="_blank"
-                    class="mt-3 inline-flex items-center gap-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold px-3 py-1.5 rounded-xl w-fit transition">
-
-                    <span>
-                      📍 Open in Google Maps
-                    </span>
-
-                    ↗
-
+                  <a href="${mapLink}" target="_blank" class="mt-3 inline-flex items-center gap-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold px-3 py-1.5 rounded-xl w-fit transition">
+                    <span>📍 Open in Google Maps</span> ↗
                   </a>
-
                 ` : ''}
 
               </div>
 
             </div>
 
-
-            <!-- Action Bar -->
-
             <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-2 border-t border-gray-800 text-xs gap-3">
 
               <div class="flex items-center gap-2">
+                <span class="text-gray-400">Status:</span>
 
-                <span class="text-gray-400">
-                  Status:
-                </span>
-
-
-                <button
-                  onclick="updateOrderStatus(${o.rowIndex}, 'New')"
-                  class="px-2.5 py-1 rounded-lg font-bold transition ${
-                    status === 'New'
-                      ? 'bg-rose-600 text-white'
-                      : 'bg-gray-800 text-gray-400 hover:text-white'
-                  }">
+                <button onclick="updateOrderStatus(${o.rowIndex}, 'New')" class="px-2.5 py-1 rounded-lg font-bold transition ${status === 'New' ? 'bg-rose-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}">
                   New
                 </button>
 
-
-                <button
-                  onclick="updateOrderStatus(${o.rowIndex}, 'Out for Delivery')"
-                  class="px-2.5 py-1 rounded-lg font-bold transition ${
-                    status === 'Out for Delivery'
-                      ? 'bg-amber-600 text-white'
-                      : 'bg-gray-800 text-gray-400 hover:text-white'
-                  }">
+                <button onclick="updateOrderStatus(${o.rowIndex}, 'Out for Delivery')" class="px-2.5 py-1 rounded-lg font-bold transition ${status === 'Out for Delivery' ? 'bg-amber-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}">
                   Delivering
                 </button>
 
-
-                <button
-                  onclick="updateOrderStatus(${o.rowIndex}, 'Closed')"
-                  class="px-2.5 py-1 rounded-lg font-bold transition ${
-                    status === 'Closed'
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-gray-800 text-gray-400 hover:text-white'
-                  }">
+                <button onclick="updateOrderStatus(${o.rowIndex}, 'Closed')" class="px-2.5 py-1 rounded-lg font-bold transition ${status === 'Closed' ? 'bg-emerald-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}">
                   Close Order
                 </button>
-
               </div>
 
-
-              <a
-                href="https://wa.me/${
-                  cleanPhone.startsWith('91')
-                    ? cleanPhone
-                    : '91' + cleanPhone
-                }"
-                target="_blank"
-                class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-1.5 rounded-xl transition flex items-center justify-center gap-1">
-
-                <span>
-                  💬 WhatsApp Customer
-                </span>
-
+              <a href="https://wa.me/${cleanPhone.startsWith('91') ? cleanPhone : '91' + cleanPhone}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-1.5 rounded-xl transition flex items-center justify-center gap-1">
+                <span>💬 WhatsApp Customer</span>
               </a>
 
             </div>
 
           </div>
-
         `;
 
       }).join('');
-
     }
 
-
     async function updateOrderStatus(rowIndex, newStatus) {
-
       try {
-
         await fetch(GOOGLE_SCRIPT_URL, {
-
           method: "POST",
-
           mode: "no-cors",
-
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-          },
-
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
             action: "update_order_status",
             rowIndex: rowIndex,
             newStatus: newStatus
           })
-
         });
-
 
         fetchAllData();
 
-      }
-
-      catch (e) {
-
+      } catch (e) {
         alert("Failed to update status");
-
       }
-
     }
 
-
-    // --- SUBSCRIBERS LOGIC ---
-
     function renderSubscribers() {
-
-      const container =
-        document.getElementById('subs-container');
-
+      const container = document.getElementById('subs-container');
 
       if (rawSubs.length === 0) {
-
-        container.innerHTML = `
-          <div class="text-center py-16 bg-gray-900 rounded-3xl border border-gray-800 text-gray-400 text-sm">
-            No subscriptions logged yet.
-          </div>
-        `;
-
+        container.innerHTML = `<div class="text-center py-16 bg-gray-900 rounded-3xl border border-gray-800 text-gray-400 text-sm">No subscriptions logged yet.</div>`;
         return;
-
       }
-
 
       container.innerHTML = rawSubs.map(s => {
 
-        const isActive =
-          s.status === "Active";
-
-        const cleanPhone =
-          String(s.phone).replace(/[^0-9]/g, '');
-
+        const isActive = s.status === "Active";
+        const cleanPhone = String(s.phone).replace(/[^0-9]/g, '');
 
         return `
-
-          <div class="bg-gray-900 border ${
-            isActive
-              ? 'border-amber-500/30'
-              : 'border-gray-800 opacity-60'
-          } rounded-3xl p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-
+          <div class="bg-gray-900 border ${isActive ? 'border-amber-500/30' : 'border-gray-800 opacity-60'} rounded-3xl p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
 
             <div>
 
               <div class="flex items-center gap-2">
+                <h3 class="font-bold text-white text-base">${s.name}</h3>
 
-                <h3 class="font-bold text-white text-base">
-                  ${s.name}
-                </h3>
-
-                <span class="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full ${
-                  isActive
-                    ? 'bg-amber-500/20 text-amber-300'
-                    : 'bg-gray-800 text-gray-400'
-                }">
+                <span class="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full ${isActive ? 'bg-amber-500/20 text-amber-300' : 'bg-gray-800 text-gray-400'}">
                   ${s.status}
                 </span>
-
               </div>
 
-
-              <p class="text-xs text-amber-400 font-semibold mt-1">
-                ⭐️ Plan: ${s.planType}
-              </p>
-
-
-              <p class="text-xs text-gray-300 mt-0.5">
-                📦 Contents: ${s.eggs}
-              </p>
-
-
-              <p class="text-[11px] text-gray-400 mt-1">
-                📍 ${s.address}
-              </p>
+              <p class="text-xs text-amber-400 font-semibold mt-1">⭐️ Plan: ${s.planType}</p>
+              <p class="text-xs text-gray-300 mt-0.5">📦 Contents: ${s.eggs}</p>
+              <p class="text-[11px] text-gray-400 mt-1">📍 ${s.address}</p>
 
             </div>
 
-
             <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
 
-              <button
-                onclick="updateSubStatus(${s.rowIndex}, '${isActive ? 'Paused' : 'Active'}')"
-                class="px-4 py-2 rounded-xl text-xs font-bold transition ${
-                  isActive
-                    ? 'bg-amber-600/20 text-amber-300 border border-amber-500/30 hover:bg-amber-600/30'
-                    : 'bg-emerald-600 text-white'
-                }">
-
-                ${
-                  isActive
-                    ? '⏸️ Vacation Pause'
-                    : '▶️ Resume Routine'
-                }
-
+              <button onclick="updateSubStatus(${s.rowIndex}, '${isActive ? 'Paused' : 'Active'}')" class="px-4 py-2 rounded-xl text-xs font-bold transition ${isActive ? 'bg-amber-600/20 text-amber-300 border border-amber-500/30 hover:bg-amber-600/30' : 'bg-emerald-600 text-white'}">
+                ${isActive ? '⏸️ Vacation Pause' : '▶️ Resume Routine'}
               </button>
 
-
-              <a
-                href="https://wa.me/${
-                  cleanPhone.startsWith('91')
-                    ? cleanPhone
-                    : '91' + cleanPhone
-                }"
-                target="_blank"
-                class="bg-gray-800 hover:bg-gray-700 text-white font-bold p-2.5 rounded-xl transition">
-
+              <a href="https://wa.me/${cleanPhone.startsWith('91') ? cleanPhone : '91' + cleanPhone}" target="_blank" class="bg-gray-800 hover:bg-gray-700 text-white font-bold p-2.5 rounded-xl transition">
                 💬
-
               </a>
 
             </div>
 
           </div>
-
         `;
 
       }).join('');
-
     }
 
-
     async function updateSubStatus(rowIndex, newStatus) {
-
       try {
-
         await fetch(GOOGLE_SCRIPT_URL, {
-
           method: "POST",
-
           mode: "no-cors",
-
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-          },
-
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
             action: "update_sub_status",
             rowIndex: rowIndex,
             newStatus: newStatus
           })
-
         });
-
 
         fetchAllData();
 
-      }
-
-      catch (e) {
-
+      } catch (e) {
         alert("Failed to update subscriber");
-
       }
-
     }
 
-
-    // --- INVENTORY & STORE BUILDER LOGIC ---
-
     function renderInventory() {
-
-      const container =
-        document.getElementById('inventory-container');
-
+      const container = document.getElementById('inventory-container');
 
       if (rawProducts.length === 0) {
-
-        container.innerHTML = `
-          <div class="text-sm text-gray-500">
-            No products found.
-          </div>
-        `;
-
+        container.innerHTML = `<div class="text-sm text-gray-500">No products found.</div>`;
         return;
-
       }
 
-
       container.innerHTML = rawProducts.map(p => `
-
         <div class="bg-gray-950 p-4 rounded-2xl border border-gray-800 flex items-center justify-between">
 
           <div>
-
-            <h4 class="font-bold text-sm text-white">
-              ${p.name}
-            </h4>
-
-            <span class="text-xs text-emerald-400 font-serif">
-              ₹${p.price}
-            </span>
-
+            <h4 class="font-bold text-sm text-white">${p.name}</h4>
+            <span class="text-xs text-emerald-400 font-serif">₹${p.price}</span>
             •
-
-            <span class="text-[11px] text-gray-400">
-              ${p.planType}
-            </span>
-
+            <span class="text-[11px] text-gray-400">${p.planType}</span>
           </div>
 
-
-          <button
-            onclick="toggleStock(${p.rowIndex}, ${!p.inStock})"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition ${
-              p.inStock
-                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-            }">
-
-            ${
-              p.inStock
-                ? '🟢 In Stock'
-                : '🔴 Out of Stock'
-            }
-
+          <button onclick="toggleStock(${p.rowIndex}, ${!p.inStock})" class="px-4 py-2 rounded-xl text-xs font-bold transition ${p.inStock ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'}">
+            ${p.inStock ? '🟢 In Stock' : '🔴 Out of Stock'}
           </button>
 
         </div>
-
       `).join('');
-
     }
 
-
     async function toggleStock(rowIndex, inStockStatus) {
-
       try {
-
         await fetch(GOOGLE_SCRIPT_URL, {
-
           method: "POST",
-
           mode: "no-cors",
-
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-          },
-
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
             action: "toggle_product_stock",
             rowIndex: rowIndex,
             inStock: inStockStatus
           })
-
         });
-
 
         fetchAllData();
 
-      }
-
-      catch (e) {
-
+      } catch (e) {
         alert("Stock update failed");
-
       }
-
     }
 
-
     async function addNewProduct() {
-
-      const name =
-        document.getElementById('prod-name').value.trim();
-
-      const price =
-        document.getElementById('prod-price').value.trim();
-
-      const desc =
-        document.getElementById('prod-desc').value.trim();
-
-      const plan =
-        document.getElementById('prod-plan').value;
-
-      const icon =
-        document.getElementById('prod-icon').value.trim() || "🥚";
-
+      const name = document.getElementById('prod-name').value.trim();
+      const price = document.getElementById('prod-price').value.trim();
+      const desc = document.getElementById('prod-desc').value.trim();
+      const plan = document.getElementById('prod-plan').value;
+      const icon = document.getElementById('prod-icon').value.trim() || "🥚";
 
       if (!name || !price || !desc) {
-
-        return alert(
-          "Fill in Name, Price, and Description."
-        );
-
+        return alert("Fill in Name, Price, and Description.");
       }
 
-
-      const btn =
-        document.getElementById('btn-add-prod');
-
-      btn.innerText =
-        "⏳ Publishing...";
-
+      const btn = document.getElementById('btn-add-prod');
+      btn.innerText = "⏳ Publishing...";
 
       try {
-
         await fetch(GOOGLE_SCRIPT_URL, {
-
           method: "POST",
-
           mode: "no-cors",
-
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-          },
-
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
-
             action: "add_product",
-
             name: name,
-
             price: Number(price),
-
             description: desc,
-
             planType: plan,
-
             icon: icon
-
           })
-
         });
 
-
-        btn.innerText =
-          "✅ Published!";
-
+        btn.innerText = "✅ Published!";
 
         document.getElementById('prod-name').value = "";
         document.getElementById('prod-price').value = "";
         document.getElementById('prod-desc').value = "";
 
-
         fetchAllData();
 
+      } catch (err) {
+        btn.innerText = "❌ Error";
       }
 
-      catch (err) {
-
-        btn.innerText =
-          "❌ Error";
-
-      }
-
-
-      setTimeout(
-        () => btn.innerText = "🚀 Publish Product to Store",
-        2500
-      );
-
+      setTimeout(() => btn.innerText = "🚀 Publish Product to Store", 2500);
     }
 
+    function prefillContentForm() {
+      const set = (id, val) => {
+        const el = document.getElementById(id);
+        if (el && val) el.value = val;
+      };
+
+      set('why-heading-input', rawSettings.WhyHeading);
+
+      for (let i = 1; i <= 4; i++) {
+        set(`why-icon-input-${i}`, rawSettings[`WhyPoint${i}Icon`]);
+        set(`why-title-input-${i}`, rawSettings[`WhyPoint${i}Title`]);
+        set(`why-text-input-${i}`, rawSettings[`WhyPoint${i}Text`]);
+      }
+
+      set('social-instagram-input', rawSettings.SocialInstagram);
+      set('social-facebook-input', rawSettings.SocialFacebook);
+      set('social-youtube-input', rawSettings.SocialYoutube);
+      set('social-whatsapp-input', rawSettings.SocialWhatsapp);
+    }
+
+    async function saveSettings(settingsObj, btnEl, defaultLabel) {
+      btnEl.innerText = "⏳ Saving...";
+
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "update_settings",
+            settings: settingsObj
+          })
+        });
+
+        btnEl.innerText = "✅ Saved!";
+        fetchAllData();
+
+      } catch (e) {
+        btnEl.innerText = "❌ Error";
+      }
+
+      setTimeout(() => btnEl.innerText = defaultLabel, 2200);
+    }
+
+    function saveWhySection() {
+      const btn = document.getElementById('btn-save-why');
+      const settingsObj = {};
+
+      const heading = document.getElementById('why-heading-input').value.trim();
+
+      if (heading) settingsObj.WhyHeading = heading;
+
+      for (let i = 1; i <= 4; i++) {
+
+        const icon = document.getElementById(`why-icon-input-${i}`).value.trim();
+        const title = document.getElementById(`why-title-input-${i}`).value.trim();
+        const text = document.getElementById(`why-text-input-${i}`).value.trim();
+
+        if (icon) settingsObj[`WhyPoint${i}Icon`] = icon;
+        if (title) settingsObj[`WhyPoint${i}Title`] = title;
+        if (text) settingsObj[`WhyPoint${i}Text`] = text;
+
+      }
+
+      if (Object.keys(settingsObj).length === 0) {
+        return alert("Fill in at least one field to save.");
+      }
+
+      saveSettings(settingsObj, btn, "💾 Save \"Why മുട്ട?\" Section");
+    }
+
+    function saveSocialLinks() {
+      const btn = document.getElementById('btn-save-social');
+
+      const settingsObj = {
+        SocialInstagram: document.getElementById('social-instagram-input').value.trim(),
+        SocialFacebook: document.getElementById('social-facebook-input').value.trim(),
+        SocialYoutube: document.getElementById('social-youtube-input').value.trim(),
+        SocialWhatsapp: document.getElementById('social-whatsapp-input').value.trim()
+      };
+
+      saveSettings(settingsObj, btn, "💾 Save Social Media Links");
+    }
   </script>
 
 </body>
