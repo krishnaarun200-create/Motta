@@ -4,28 +4,60 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>മുട്ട (MOTTA) | Pure Free-Range Eggs • Daily & Weekly Routine</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
-  
+
   <!-- Leaflet Map CSS & JS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: { sans: ['"Outfit"', 'sans-serif'], malayalam: ['"Noto Sans Malayalam"', 'sans-serif'], serif: ['"Playfair Display"', 'serif'], },
-          colors: { motta: { 50: '#FAF8F5', 100: '#F3EFE6', 200: '#E5DDCB', 700: '#8C6D3B', 800: '#3D311D', 900: '#1F190E' }, leaf: { 500: '#2E7D32', 600: '#1E5128', 700: '#14381C', }, yolk: { 400: '#FDBA74', 500: '#F4A261', 600: '#E76F51', } }
+          fontFamily: {
+            sans: ['"Outfit"', 'sans-serif'],
+            malayalam: ['"Noto Sans Malayalam"', 'sans-serif'],
+            serif: ['"Playfair Display"', 'serif']
+          },
+
+          colors: {
+            motta: {
+              50: '#FAF8F5',
+              100: '#F3EFE6',
+              200: '#E5DDCB',
+              700: '#8C6D3B',
+              800: '#3D311D',
+              900: '#1F190E'
+            },
+
+            leaf: {
+              500: '#2E7D32',
+              600: '#1E5128',
+              700: '#14381C'
+            },
+
+            yolk: {
+              400: '#FDBA74',
+              500: '#F4A261',
+              600: '#E76F51'
+            }
+          }
         }
       }
-    }
+    };
   </script>
 </head>
 
-<body class="bg-motta-50 text-motta-900 font-sans antialiased flex flex-col min-h-screen selection:bg-yolk-500 selection:text-white" onload="loadStoreData()">
+<body
+  class="bg-motta-50 text-motta-900 font-sans antialiased flex flex-col min-h-screen selection:bg-yolk-500 selection:text-white"
+  onload="loadStoreData()"
+>
 
   <!-- Top Announcement Bar -->
   <div class="bg-leaf-600 text-motta-50 text-xs font-semibold py-2 px-4 text-center tracking-wide flex items-center justify-center gap-2">
@@ -35,423 +67,530 @@
   <!-- Header -->
   <header class="sticky top-0 bg-white/95 backdrop-blur-md border-b border-motta-200 z-30">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+
       <a href="#" class="flex items-center space-x-3">
+
         <svg viewBox="0 0 120 150" class="w-10 h-12 flex-shrink-0" fill="none">
-          <path d="M60 6 C32 6 12 48 12 92 C12 126 33 144 60 144 C87 144 108 126 108 92 C108 48 88 6 60 6 Z" fill="#1E5128" stroke="#F4A261" stroke-width="4"/>
-          <circle cx="60" cy="94" r="30" fill="#F4A261" fill-opacity="0.25" />
-          <text x="60" y="88" font-family="'Noto Sans Malayalam', sans-serif" font-size="34" font-weight="900" fill="#FAF8F5" text-anchor="middle" dominant-baseline="central">മുട്ട</text>
-          <text x="60" y="118" font-family="'Outfit', sans-serif" font-size="10" font-weight="800" fill="#F4A261" text-anchor="middle" letter-spacing="2">MOTTA</text>
+          <path
+            d="M60 6 C32 6 12 48 12 92 C12 126 33 144 60 144 C87 144 108 126 108 92 C108 48 88 6 60 6 Z"
+            fill="#1E5128"
+            stroke="#F4A261"
+            stroke-width="4"
+          />
+
+          <circle
+            cx="60"
+            cy="94"
+            r="30"
+            fill="#F4A261"
+            fill-opacity="0.25"
+          />
+
+          <text
+            x="60"
+            y="88"
+            font-family="'Noto Sans Malayalam', sans-serif"
+            font-size="34"
+            font-weight="900"
+            fill="#FAF8F5"
+            text-anchor="middle"
+            dominant-baseline="central"
+          >മുട്ട</text>
+
+          <text
+            x="60"
+            y="118"
+            font-family="'Outfit', sans-serif"
+            font-size="10"
+            font-weight="800"
+            fill="#F4A261"
+            text-anchor="middle"
+            letter-spacing="2"
+          >MOTTA</text>
         </svg>
+
         <div>
           <div class="flex items-baseline gap-1.5">
-            <span class="font-malayalam text-2xl font-black tracking-tight text-motta-900 leading-none cms-brand">മുട്ട</span>
-            <span class="text-xs font-extrabold tracking-widest text-leaf-600 uppercase font-sans">MOTTA</span>
+            <span class="font-malayalam text-2xl font-black tracking-tight text-motta-900 leading-none cms-brand">
+              മുട്ട
+            </span>
+
+            <span class="text-xs font-extrabold tracking-widest text-leaf-600 uppercase font-sans">
+              MOTTA
+            </span>
           </div>
-          <span class="block text-[10px] uppercase tracking-wider text-motta-700 font-semibold mt-0.5">100% Free-Range Desi</span>
+
+          <span class="block text-[10px] uppercase tracking-wider text-motta-700 font-semibold mt-0.5">
+            100% Free-Range Desi
+          </span>
         </div>
+
       </a>
+
       <nav class="hidden md:flex space-x-8 font-semibold text-motta-800 text-sm">
-        <a href="#routine" class="hover:text-leaf-600 transition flex items-center gap-1">The Motta Routine ⭐️</a>
-        <a href="#single-packs" class="hover:text-leaf-600 transition">Single Packs</a>
-        <a href="#purity" class="hover:text-leaf-600 transition">Why മുട്ട?</a>
+        <a href="#routine" class="hover:text-leaf-600 transition flex items-center gap-1">
+          The Motta Routine ⭐️
+        </a>
+
+        <a href="#single-packs" class="hover:text-leaf-600 transition">
+          Single Packs
+        </a>
+
+        <a href="#purity" class="hover:text-leaf-600 transition">
+          Why മുട്ട?
+        </a>
       </nav>
-      <button onclick="toggleCart()" class="relative bg-motta-100 hover:bg-motta-200 text-motta-900 px-4 py-2 rounded-full font-bold flex items-center gap-2 transition duration-200 text-sm border border-motta-200">
+
+      <button
+        onclick="toggleCart()"
+        class="relative bg-motta-100 hover:bg-motta-200 text-motta-900 px-4 py-2 rounded-full font-bold flex items-center gap-2 transition duration-200 text-sm border border-motta-200"
+      >
         <span>Basket</span>
-        <span id="cart-count" class="bg-leaf-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+        <span
+          id="cart-count"
+          class="bg-leaf-600 text-white text-xs px-2 py-0.5 rounded-full font-bold"
+        >0</span>
       </button>
+
     </div>
   </header>
 
   <!-- Hero Section -->
   <section class="py-16 md:py-24 bg-gradient-to-b from-motta-100/70 to-motta-50 relative overflow-hidden">
+
     <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
-      <span id="cms-tagline" class="inline-block bg-white border border-motta-200 text-leaf-600 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm mb-6">
+
+      <span
+        id="cms-tagline"
+        class="inline-block bg-white border border-motta-200 text-leaf-600 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm mb-6"
+      >
         🌱 Pure Free-Range Eggs. Just മുട്ട.
       </span>
+
       <h1 class="font-serif text-4xl sm:text-6xl font-black tracking-tight text-motta-900 leading-[1.15] mb-6">
+
         Real Eggs. Deep Golden Yolks.<br class="hidden sm:block">
+
         <span class="relative inline-block mt-1">
-          <span class="font-malayalam font-black text-leaf-600 cms-brand">മുട്ട</span>
-          <span class="text-yolk-500 font-sans"> Routine.</span>
+
+          <span class="font-malayalam font-black text-leaf-600 cms-brand">
+            മുട്ട
+          </span>
+
+          <span class="text-yolk-500 font-sans">
+            Routine.
+          </span>
+
         </span>
+
       </h1>
-      <p id="cms-about" class="text-base sm:text-lg text-motta-700 max-w-xl mx-auto mb-10 leading-relaxed font-normal">
-        Pasture-raised from native country hens. Zero hormones, zero cages. Never run out of real morning protein with our weekly doorstep drops.
+
+      <p
+        id="cms-about"
+        class="text-base sm:text-lg text-motta-700 max-w-xl mx-auto mb-10 leading-relaxed font-normal"
+      >
+        Pasture-raised from native country hens. Zero hormones, zero cages.
+        Never run out of real morning protein with our weekly doorstep drops.
       </p>
+
       <div class="flex flex-wrap justify-center gap-4">
-        <a href="#routine" class="bg-leaf-600 hover:bg-leaf-700 text-white px-8 py-4 rounded-xl font-bold text-base shadow-lg shadow-leaf-600/20 transition transform hover:-translate-y-0.5">
+
+        <a
+          href="#routine"
+          class="bg-leaf-600 hover:bg-leaf-700 text-white px-8 py-4 rounded-xl font-bold text-base shadow-lg shadow-leaf-600/20 transition transform hover:-translate-y-0.5"
+        >
           Join The Motta Routine
         </a>
-        <a href="#single-packs" class="bg-white hover:bg-motta-100 text-motta-900 border border-motta-200 px-8 py-4 rounded-xl font-bold text-base transition">
+
+        <a
+          href="#single-packs"
+          class="bg-white hover:bg-motta-100 text-motta-900 border border-motta-200 px-8 py-4 rounded-xl font-bold text-base transition"
+        >
           Order Trial Pack
         </a>
+
       </div>
+
     </div>
   </section>
 
-  <!-- THE MOTTA ROUTINE (CMS INJECTED) -->
-  <section id="routine" class="py-16 max-w-6xl mx-auto px-4 sm:px-6">
+  <!-- THE MOTTA ROUTINE -->
+  <section
+    id="routine"
+    class="py-16 max-w-6xl mx-auto px-4 sm:px-6"
+  >
+
     <div class="text-center mb-12">
-      <span class="text-leaf-600 font-bold uppercase tracking-widest text-xs">Set & Forget Breakfast</span>
-      <h2 class="font-serif text-3xl sm:text-4xl font-black text-motta-900 mt-1">The മുട്ട Routine</h2>
-      <p class="text-motta-700 text-sm mt-1 max-w-md mx-auto">Subscribe once. Enjoy scheduled morning farm drops with zero effort.</p>
+
+      <span class="text-leaf-600 font-bold uppercase tracking-widest text-xs">
+        Set & Forget Breakfast
+      </span>
+
+      <h2 class="font-serif text-3xl sm:text-4xl font-black text-motta-900 mt-1">
+        The മുട്ട Routine
+      </h2>
+
+      <p class="text-motta-700 text-sm mt-1 max-w-md mx-auto">
+        Subscribe once. Enjoy scheduled morning farm drops with zero effort.
+      </p>
+
     </div>
-    <div id="routine-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <div class="col-span-3 text-center text-leaf-600 font-bold animate-pulse py-10">Fetching subscriptions from farm...</div>
+
+    <div
+      id="routine-grid"
+      class="grid grid-cols-1 md:grid-cols-3 gap-8"
+    >
+      <div class="col-span-3 text-center text-leaf-600 font-bold animate-pulse py-10">
+        Fetching subscriptions from farm...
+      </div>
     </div>
+
   </section>
 
-  <!-- SINGLE PACKS (CMS INJECTED) -->
-  <section id="single-packs" class="py-16 bg-motta-100/60 border-t border-motta-200">
+  <!-- SINGLE PACKS -->
+  <section
+    id="single-packs"
+    class="py-16 bg-motta-100/60 border-t border-motta-200"
+  >
+
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
+
       <div class="text-center mb-10">
-        <h2 class="font-serif text-3xl font-bold text-motta-900">Single Packs & Trials</h2>
-        <p class="text-motta-700 text-sm mt-1">Want to taste the difference first? Order a single batch.</p>
+
+        <h2 class="font-serif text-3xl font-bold text-motta-900">
+          Single Packs & Trials
+        </h2>
+
+        <p class="text-motta-700 text-sm mt-1">
+          Want to taste the difference first? Order a single batch.
+        </p>
+
       </div>
-      <div id="single-packs-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="col-span-3 text-center text-motta-700 font-bold py-10">Fetching trial packs...</div>
+
+      <div
+        id="single-packs-grid"
+        class="grid grid-cols-1 md:grid-cols-3 gap-6"
+      >
+        <div class="col-span-3 text-center text-motta-700 font-bold py-10">
+          Fetching trial packs...
+        </div>
       </div>
+
     </div>
   </section>
 
-  <!-- Slide-out Shopping Basket Drawer -->
-  <div id="cart-drawer" class="fixed inset-0 z-40 overflow-hidden pointer-events-none transition-opacity duration-300 opacity-0">
-    <div class="absolute inset-0 bg-motta-900/50 backdrop-blur-sm transition-opacity" onclick="toggleCart()"></div>
+  <!-- Shopping Basket Drawer -->
+  <div
+    id="cart-drawer"
+    class="fixed inset-0 z-40 overflow-hidden pointer-events-none transition-opacity duration-300 opacity-0"
+  >
+
+    <div
+      class="absolute inset-0 bg-motta-900/50 backdrop-blur-sm transition-opacity"
+      onclick="toggleCart()"
+    ></div>
+
     <div class="fixed inset-y-0 right-0 max-w-full flex pl-6 sm:pl-10">
-      <div class="w-screen max-w-md bg-white p-6 shadow-2xl flex flex-col pointer-events-auto transform translate-x-full transition-transform duration-300" id="cart-panel">
+
+      <div
+        class="w-screen max-w-md bg-white p-6 shadow-2xl flex flex-col pointer-events-auto transform translate-x-full transition-transform duration-300"
+        id="cart-panel"
+      >
+
         <div class="flex items-center justify-between pb-4 border-b border-motta-200">
+
           <div class="flex items-center gap-2">
-            <span class="font-malayalam font-black text-xl text-leaf-600 cms-brand">മുട്ട</span>
-            <h3 class="font-serif text-xl font-bold text-motta-900">Basket</h3>
+
+            <span class="font-malayalam font-black text-xl text-leaf-600 cms-brand">
+              മുട്ട
+            </span>
+
+            <h3 class="font-serif text-xl font-bold text-motta-900">
+              Basket
+            </h3>
+
           </div>
-          <button onclick="toggleCart()" class="text-motta-700 hover:text-motta-900 p-1 text-2xl font-bold">&times;</button>
+
+          <button
+            onclick="toggleCart()"
+            class="text-motta-700 hover:text-motta-900 p-1 text-2xl font-bold"
+          >
+            &times;
+          </button>
+
         </div>
-        
-        <div id="cart-items" class="flex-grow overflow-y-auto py-4 space-y-3"></div>
-        
+
+        <div
+          id="cart-items"
+          class="flex-grow overflow-y-auto py-4 space-y-3"
+        ></div>
+
         <div class="pt-4 border-t border-motta-200 space-y-2.5 bg-motta-50/70 -mx-6 px-6 pb-2">
+
           <div class="flex justify-between font-bold text-lg text-motta-900 mb-2">
+
             <span>Total Payable:</span>
-            <span id="cart-total" class="text-leaf-600 font-serif">₹0</span>
+
+            <span
+              id="cart-total"
+              class="text-leaf-600 font-serif"
+            >
+              ₹0
+            </span>
+
           </div>
-          
-          <input type="text" id="cust-name" placeholder="Your Full Name *" class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600">
-          <input type="tel" id="cust-phone" maxlength="10" placeholder="10-Digit WhatsApp / Mobile Number *" class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600">
-          
-          <!-- MAP UI INJECTED HERE -->
+
+          <input
+            type="text"
+            id="cust-name"
+            placeholder="Your Full Name *"
+            class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600"
+          >
+
+          <input
+            type="tel"
+            id="cust-phone"
+            maxlength="10"
+            placeholder="10-Digit WhatsApp / Mobile Number *"
+            class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600"
+          >
+
+          <!-- MAP -->
           <div>
-            <button type="button" onclick="openMap()" class="w-full bg-leaf-50 hover:bg-leaf-100 text-leaf-700 text-xs font-bold py-2.5 rounded-xl mb-2 border border-leaf-600 border-dashed transition flex justify-center items-center gap-2">
+
+            <button
+              type="button"
+              onclick="openMap()"
+              class="w-full bg-leaf-50 hover:bg-leaf-100 text-leaf-700 text-xs font-bold py-2.5 rounded-xl mb-2 border border-leaf-600 border-dashed transition flex justify-center items-center gap-2"
+            >
               <span>📍 Pin Exact Location on Map</span>
             </button>
-            <div id="map-wrapper" class="hidden mb-2 rounded-xl overflow-hidden border border-motta-200 shadow-inner flex-col" style="height: 250px;">
+
+            <div
+              id="map-wrapper"
+              class="hidden mb-2 rounded-xl overflow-hidden border border-motta-200 shadow-inner flex-col"
+              style="height: 250px;"
+            >
+
               <div class="bg-motta-100 flex justify-between items-center px-3 py-2 border-b border-motta-200">
-                <span class="text-[10px] font-bold text-motta-800 uppercase tracking-wide">Drag pin to adjust</span>
-                <button type="button" onclick="locateUser()" class="bg-leaf-600 hover:bg-leaf-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1 transition">
+
+                <span class="text-[10px] font-bold text-motta-800 uppercase tracking-wide">
+                  Drag pin to adjust
+                </span>
+
+                <button
+                  type="button"
+                  onclick="locateUser()"
+                  class="bg-leaf-600 hover:bg-leaf-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1 transition"
+                >
                   🎯 Auto-Locate Me
                 </button>
+
               </div>
-              <div id="map" style="height: 190px; width: 100%; z-index: 10;"></div>
+
+              <div
+                id="map"
+                style="height: 190px; width: 100%; z-index: 10;"
+              ></div>
+
             </div>
-            <textarea id="cust-address" rows="2" placeholder="House / Flat No, Street, Landmark *" class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600"></textarea>
+
+            <textarea
+              id="cust-address"
+              rows="2"
+              placeholder="House / Flat No, Street, Landmark *"
+              class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600"
+            ></textarea>
+
           </div>
 
           <div>
-            <input type="text" id="cust-pincode" maxlength="6" placeholder="6-Digit Delivery Pincode *" oninput="checkPincodeRealtime()" class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600">
-            <div id="pincode-feedback" class="hidden mt-1.5 p-2 rounded-lg text-[11px] font-medium leading-tight"></div>
+
+            <input
+              type="text"
+              id="cust-pincode"
+              maxlength="6"
+              placeholder="6-Digit Delivery Pincode *"
+              oninput="checkPincodeRealtime()"
+              class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600"
+            >
+
+            <div
+              id="pincode-feedback"
+              class="hidden mt-1.5 p-2 rounded-lg text-[11px] font-medium leading-tight"
+            ></div>
+
           </div>
-          
-          <select id="cust-slot" class="w-full p-2.5 border border-motta-200 rounded-xl text-xs text-motta-800 bg-white">
-            <option value="Early Morning (6:30 AM - 8:30 AM)">Morning Slot: 6:30 AM - 8:30 AM</option>
-            <option value="Mid-Morning (8:30 AM - 11:00 AM)">Morning Slot: 8:30 AM - 11:00 AM</option>
+
+          <select
+            id="cust-slot"
+            class="w-full p-2.5 border border-motta-200 rounded-xl text-xs text-motta-800 bg-white"
+          >
+            <option value="Early Morning (6:30 AM - 8:30 AM)">
+              Morning Slot: 6:30 AM - 8:30 AM
+            </option>
+
+            <option value="Mid-Morning (8:30 AM - 11:00 AM)">
+              Morning Slot: 8:30 AM - 11:00 AM
+            </option>
           </select>
-          
-          <button onclick="openUPIPaymentModal()" class="w-full bg-leaf-600 hover:bg-leaf-700 text-white py-3.5 rounded-xl font-bold text-sm shadow-md flex items-center justify-center gap-2 transition">
+
+          <button
+            onclick="openUPIPaymentModal()"
+            class="w-full bg-leaf-600 hover:bg-leaf-700 text-white py-3.5 rounded-xl font-bold text-sm shadow-md flex items-center justify-center gap-2 transition"
+          >
             <span>⚡️ Proceed to UPI Payment</span>
           </button>
+
         </div>
       </div>
     </div>
   </div>
 
-  <!-- DYNAMIC UPI QR MODAL -->
-  <div id="payment-modal" class="fixed inset-0 z-50 bg-motta-900/70 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl relative border border-motta-200">
-      <button onclick="closePaymentModal()" class="absolute top-4 right-4 text-motta-700 hover:text-black text-2xl font-bold">&times;</button>
-      <span class="inline-block bg-leaf-50 text-leaf-600 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider mb-2">Instant QR Payment</span>
-      <h3 class="font-serif text-xl font-bold text-motta-900">Scan & Pay via UPI</h3>
+  <!-- UPI PAYMENT MODAL -->
+  <div
+    id="payment-modal"
+    class="fixed inset-0 z-50 bg-motta-900/70 backdrop-blur-sm hidden items-center justify-center p-4"
+  >
+
+    <div
+      class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl relative border border-motta-200"
+    >
+
+      <button
+        onclick="closePaymentModal()"
+        class="absolute top-4 right-4 text-motta-700 hover:text-black text-2xl font-bold"
+      >
+        &times;
+      </button>
+
+      <span class="inline-block bg-leaf-50 text-leaf-600 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider mb-2">
+        Instant QR Payment
+      </span>
+
+      <h3 class="font-serif text-xl font-bold text-motta-900">
+        Scan & Pay via UPI
+      </h3>
+
       <div class="my-4 p-3 bg-motta-50 border border-motta-200 rounded-2xl flex flex-col items-center justify-center">
-        <img id="upi-qr-image" src="" alt="UPI QR Code" class="w-48 h-48 rounded-xl shadow-sm bg-white p-1 border">
+
+        <img
+          id="upi-qr-image"
+          src=""
+          alt="UPI QR Code"
+          class="w-48 h-48 rounded-xl shadow-sm bg-white p-1 border"
+        >
+
       </div>
-      <div class="text-2xl font-black text-leaf-600 mb-4 font-serif" id="modal-total-amount">₹0</div>
-      <a id="upi-direct-link" href="#" class="block sm:hidden w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-sm mb-3 shadow transition">📲 Tap to Open UPI App</a>
-      <button onclick="sendOrderToWhatsAppAfterPayment()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl text-sm shadow flex items-center justify-center gap-2 transition">
+
+      <div
+        class="text-2xl font-black text-leaf-600 mb-4 font-serif"
+        id="modal-total-amount"
+      >
+        ₹0
+      </div>
+
+      <a
+        id="upi-direct-link"
+        href="#"
+        class="block sm:hidden w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-sm mb-3 shadow transition"
+      >
+        📲 Tap to Open UPI App
+      </a>
+
+      <button
+        onclick="sendOrderToWhatsAppAfterPayment()"
+        class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl text-sm shadow flex items-center justify-center gap-2 transition"
+      >
         <span>✅ Confirm Order on WhatsApp</span>
       </button>
+
     </div>
   </div>
 
-  <!-- THE FIXED SCRIPTS -->
+  <!-- JAVASCRIPT -->
   <script>
-    // =========================================================================
-    // ⚙️ CONFIGURE YOUR DETAILS:
-    // =========================================================================
-    const MY_UPI_ID = "krishnaarun200-5@okhdfcbank"; 
+
+    // ============================================================
+    // CONFIGURATION
+    // ============================================================
+
+    const MY_UPI_ID = "krishnaarun200-5@okhdfcbank";
+
     const MY_BUSINESS_NAME = "Motta Organics";
-    const MY_WHATSAPP_NUMBER = "919809193616"; // Your WhatsApp
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKmMQVosM6bVhpJKvm5uueebh0N1BuiIUb9Iu1srJZqnrMTJ0QrRNvurK8eABoD0W2IA/exec";
-    const SERVICED_PINCODES = ["695"]; 
-    // =========================================================================
+
+    const MY_WHATSAPP_NUMBER = "919809193616";
+
+    const GOOGLE_SCRIPT_URL =
+      "https://script.google.com/macros/s/AKfycbwKmMQVosM6bVhpJKvm5uueebh0N1BuiIUb9Iu1srJZqnrMTJ0QrRNvurK8eABoD0W2IA/exec";
+
+    const SERVICED_PINCODES = ["695"];
+
+
+    // ============================================================
+    // GLOBAL VARIABLES
+    // ============================================================
 
     let cart = [];
-    let customerGps = ""; 
 
-    // CMS FETCH LOGIC
+    let customerGps = "";
+
+    let map;
+
+    let marker;
+
+
+    // ============================================================
+    // LOAD STORE DATA
+    // ============================================================
+
     async function loadStoreData() {
+
       try {
-        const response = await fetch(GOOGLE_SCRIPT_URL + "?action=get_store_data");
+
+        const response =
+          await fetch(GOOGLE_SCRIPT_URL + "?action=get_store_data");
+
         const data = await response.json();
-        
-        if(data.settings.BrandName) {
-          document.querySelectorAll('.cms-brand').forEach(el => el.innerText = data.settings.BrandName);
-        }
-        if(data.settings.Tagline) document.getElementById('cms-tagline').innerText = `🌱 ${data.settings.Tagline}`;
-        if(data.settings.AboutText) document.getElementById('cms-about').innerText = data.settings.AboutText;
 
-        const routines = data.products.filter(p => p.planType !== "One-Time" && p.planType !== "One-Time Order");
-        const singles = data.products.filter(p => p.planType === "One-Time" || p.planType === "One-Time Order");
 
-        const routineGrid = document.getElementById('routine-grid');
-        if(routines.length > 0) {
-          routineGrid.innerHTML = routines.map(p => `
-            <div class="bg-white rounded-3xl border border-motta-200 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition">
-              <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                  <div class="text-4xl bg-motta-50 h-14 w-14 rounded-2xl flex items-center justify-center border border-motta-100">${p.icon || '🥚'}</div>
-                  <span class="text-[10px] font-extrabold uppercase tracking-wider text-leaf-700 bg-leaf-50 border border-leaf-200 px-3 py-1 rounded-full">${p.planType}</span>
-                </div>
-                <div>
-                  <h3 class="font-serif text-xl font-bold text-motta-900 leading-snug">${p.name}</h3>
-                  <p class="text-xs text-motta-700 mt-1.5 leading-relaxed">${p.description}</p>
-                </div>
-                <div class="text-2xl font-black text-motta-900 font-serif">₹${p.price}</div>
-              </div>
-              <button onclick="addToCart('${p.name}', ${p.price}, '${p.planType}')" class="mt-6 w-full bg-motta-900 hover:bg-motta-800 text-white font-bold py-3.5 rounded-xl transition text-sm shadow">
-                Subscribe Routine
-              </button>
-            </div>
-          `).join('');
-        } else {
-          routineGrid.innerHTML = `<p class="text-center col-span-3 text-motta-700 py-6">No routines added in Control Panel yet.</p>`;
+        if (data.settings.BrandName) {
+
+          document
+            .querySelectorAll(".cms-brand")
+            .forEach(el => {
+              el.innerText = data.settings.BrandName;
+            });
+
         }
 
-        const singleGrid = document.getElementById('single-packs-grid');
-        if(singles.length > 0) {
-          singleGrid.innerHTML = singles.map(p => `
-            <div class="bg-white rounded-2xl border border-motta-200 p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition">
-              <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                  <div class="h-14 w-14 bg-motta-50 rounded-2xl flex items-center justify-center text-3xl border border-motta-100">${p.icon || '📦'}</div>
-                  <span class="text-[10px] font-extrabold uppercase tracking-wider text-leaf-700 bg-leaf-50 border border-leaf-200 px-3 py-1 rounded-full">${p.planType}</span>
-                </div>
-                <div>
-                  <h3 class="font-serif text-lg font-bold text-motta-900 leading-snug">${p.name}</h3>
-                  <p class="text-xs text-motta-700 mt-1 leading-relaxed">${p.description}</p>
-                </div>
-                <div class="text-xl font-black text-motta-900 font-serif">₹${p.price}</div>
-              </div>
-              <div class="mt-4 pt-3 border-t border-motta-100">
-                <button onclick="addToCart('${p.name}', ${p.price}, '${p.planType}')" class="w-full bg-motta-900 hover:bg-motta-800 text-white text-xs font-bold py-2.5 rounded-xl transition">
-                  Add to Basket
-                </button>
-              </div>
-            </div>
-          `).join('');
-        } else {
-          singleGrid.innerHTML = `<p class="text-center col-span-3 text-motta-700 py-6">No single packs added in Control Panel yet.</p>`;
+
+        if (data.settings.Tagline) {
+
+          document.getElementById("cms-tagline").innerText =
+            `🌱 ${data.settings.Tagline}`;
+
         }
 
-      } catch(err) {
-        document.getElementById('routine-grid').innerHTML = `<p class="text-red-500 col-span-3 text-center">Connection to farm failed.</p>`;
-      }
-    }
 
-    // MAP LOGIC
-    let map, marker;
-    function openMap() {
-      const mapWrapper = document.getElementById('map-wrapper');
-      if (!mapWrapper.classList.contains('hidden')) { mapWrapper.classList.add('hidden'); return; }
-      mapWrapper.classList.remove('hidden'); mapWrapper.classList.add('flex');
+        if (data.settings.AboutText) {
 
-      if (!map) {
-        map = L.map('map').setView([8.5241, 76.9366], 13); 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
-        marker = L.marker([8.5241, 76.9366], {draggable: true}).addTo(map);
-        
-        marker.on('dragend', async function(e) {
-          const pos = marker.getLatLng();
-          customerGps = `${pos.lat},${pos.lng}`; 
-          document.getElementById('cust-address').value = "📍 Fetching address from satellite...";
-          try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.lat}&lon=${pos.lng}`);
-            const data = await res.json();
-            document.getElementById('cust-address').value = data.display_name;
-            if(data.address && data.address.postcode) {
-              document.getElementById('cust-pincode').value = data.address.postcode;
-              checkPincodeRealtime();
-            }
-          } catch(err) { document.getElementById('cust-address').value = "Error fetching address. Please type it manually."; }
-        });
-      }
-      setTimeout(() => map.invalidateSize(), 200);
-    }
+          document.getElementById("cms-about").innerText =
+            data.settings.AboutText;
 
-    function locateUser() {
-      if (!navigator.geolocation) return alert("GPS is not supported by your browser.");
-      document.getElementById('cust-address').value = "🎯 Locating you via GPS... Please allow location access.";
-      
-      navigator.geolocation.getCurrentPosition(async function(position) {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        customerGps = `${lat},${lng}`; 
-        
-        map.setView([lat, lng], 17);
-        marker.setLatLng([lat, lng]);
-        
-        try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
-          const data = await res.json();
-          document.getElementById('cust-address').value = data.display_name;
-          if(data.address && data.address.postcode) {
-            document.getElementById('cust-pincode').value = data.address.postcode;
-            checkPincodeRealtime();
-          }
-        } catch(err) { document.getElementById('cust-address').value = "Error fetching address."; }
-      }, function(error) {
-        alert("Unable to retrieve location. Check if GPS is turned on.");
-        document.getElementById('cust-address').value = "";
-      }, { enableHighAccuracy: true });
-    }
-
-    // CHECKOUT LOGIC
-    function isDeliverablePincode(pin) { const clean = pin.trim(); if (clean.length !== 6) return false; return SERVICED_PINCODES.some(prefix => clean.startsWith(prefix)); }
-    function checkPincodeRealtime() {
-      const pin = document.getElementById('cust-pincode').value.trim();
-      const feedback = document.getElementById('pincode-feedback');
-      if (pin.length === 0) { feedback.classList.add('hidden'); return; }
-      if (pin.length === 6) {
-        if (isDeliverablePincode(pin)) {
-          feedback.className = "mt-1.5 p-2 rounded-lg text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
-          feedback.innerHTML = "✅ Great! Fresh morning delivery is available."; feedback.classList.remove('hidden');
-        } else {
-          feedback.className = "mt-1.5 p-2 rounded-lg text-[11px] bg-amber-50 text-amber-900 border border-amber-200";
-          feedback.innerHTML = "🌿 Coming Soon! We deliver only within active zones."; feedback.classList.remove('hidden');
         }
-      } else { feedback.classList.add('hidden'); }
-    }
 
-    function toggleCart() {
-      const drawer = document.getElementById('cart-drawer'); const panel = document.getElementById('cart-panel');
-      if (drawer.classList.contains('pointer-events-none')) { drawer.classList.remove('pointer-events-none', 'opacity-0'); panel.classList.remove('translate-x-full'); } 
-      else { panel.classList.add('translate-x-full'); drawer.classList.add('opacity-0'); setTimeout(() => drawer.classList.add('pointer-events-none'), 300); }
-    }
 
-    function addToCart(title, price, planType) {
-      const itemKey = `${title}_${planType}`; const existing = cart.find(item => item.key === itemKey);
-      if (existing) existing.qty += 1; else cart.push({ key: itemKey, title, price, planType, qty: 1 });
-      updateCartUI(); toggleCart();
-    }
+        // --------------------------------------------------------
+        // ROUTINES
+        // --------------------------------------------------------
 
-    function changeQty(index, delta) { cart[index].qty += delta; if (cart[index].qty <= 0) cart.splice(index, 1); updateCartUI(); }
+        const routines =
+          data.products.filter(
+            p =>
+              p.planType !== "One-Time" &&
+              p.planType !== "One-Time Order"
+          );
 
-    function updateCartUI() {
-      const itemsContainer = document.getElementById('cart-items');
-      document.getElementById('cart-count').textContent = cart.reduce((sum, item) => sum + item.qty, 0);
-      const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-      document.getElementById('cart-total').textContent = `₹${totalPrice.toLocaleString('en-IN')}`;
-      if (cart.length === 0) { itemsContainer.innerHTML = '<p class="text-motta-700 text-center py-10 text-sm">Your basket is currently empty.</p>'; return; }
-      itemsContainer.innerHTML = cart.map((item, i) => `
-        <div class="flex items-center justify-between border-b border-motta-100 pb-2.5">
-          <div><h4 class="font-bold text-motta-900 text-xs sm:text-sm">${item.title}</h4><div class="text-xs text-motta-700 mt-0.5">₹${item.price.toLocaleString('en-IN')} each</div></div>
-          <div class="flex items-center gap-2">
-            <div class="flex items-center border border-motta-200 rounded-lg">
-              <button onclick="changeQty(${i}, -1)" class="px-2 py-0.5 text-motta-700 hover:bg-motta-100 rounded-l-lg text-xs">-</button>
-              <span class="px-2 text-xs font-bold">${item.qty}</span>
-              <button onclick="changeQty(${i}, 1)" class="px-2 py-0.5 text-motta-700 hover:bg-motta-100 rounded-r-lg text-xs">+</button>
-            </div>
-            <span class="font-bold text-xs sm:text-sm text-motta-900 w-12 text-right">₹${(item.price * item.qty).toLocaleString('en-IN')}</span>
-          </div>
-        </div>
-      `).join('');
-    }
 
-    function openUPIPaymentModal() {
-      if (cart.length === 0) return alert("Your basket is empty.");
-      const name = document.getElementById('cust-name').value.trim(); const phone = document.getElementById('cust-phone').value.trim();
-      const address = document.getElementById('cust-address').value.trim(); const pincode = document.getElementById('cust-pincode').value.trim();
-      if (!name || !phone || !address || !pincode) return alert("Please fill in your Name, WhatsApp Number, Address, and Pincode.");
-      if (!isDeliverablePincode(pincode)) return alert("⚠️ We currently deliver only within active zones (695xxx).");
-      
-      const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-      const upiUri = `upi://pay?pa=${MY_UPI_ID}&pn=${encodeURIComponent(MY_BUSINESS_NAME)}&am=${total}&cu=INR&tn=Motta%20Order`;
-      document.getElementById('upi-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUri)}`;
-      document.getElementById('modal-total-amount').textContent = `Total: ₹${total.toLocaleString('en-IN')}`;
-      document.getElementById('upi-direct-link').href = upiUri;
-      toggleCart(); document.getElementById('payment-modal').classList.remove('hidden'); document.getElementById('payment-modal').classList.add('flex');
-    }
-
-    function closePaymentModal() { document.getElementById('payment-modal').classList.add('hidden'); document.getElementById('payment-modal').classList.remove('flex'); }
-
-    async function sendOrderToWhatsAppAfterPayment() {
-      const name = document.getElementById('cust-name').value.trim(); 
-      const phone = document.getElementById('cust-phone').value.trim();
-      const addressInput = document.getElementById('cust-address').value.trim(); 
-      const pincode = document.getElementById('cust-pincode').value.trim();
-      const slot = document.getElementById('cust-slot').value; 
-      const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-      const itemsText = cart.map(i => `${i.title} (${i.planType}) x ${i.qty}`).join(", ");
-      const primaryPlan = cart[0]?.planType || "One-Time Order";
-
-      let finalAddress = `${addressInput} (${pincode})`;
-      let whatsappMapLink = "";
-      if (customerGps) {
-        const mapsUrl = `https://maps.google.com/?q=${customerGps}`;
-        finalAddress += ` | Map: ${mapsUrl}`; 
-        whatsappMapLink = `\n📍 *Map Location:* ${mapsUrl}`; 
-      }
-
-      // 1. Tell the user we are saving 
-      const btn = event.currentTarget;
-      if(btn) btn.innerHTML = `<span>⏳ Securing your slot...</span>`;
-
-      // 2. Send to Google Sheets (using text/plain for strict mobile browsers)
-      try {
-        fetch(GOOGLE_SCRIPT_URL, { 
-          method: "POST", 
-          mode: "no-cors", 
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ 
-            action: "new_order", 
-            name: name, 
-            phone: phone, 
-            address: finalAddress, 
-            slot: slot, 
-            items: itemsText, 
-            total: `₹${total}`, 
-            planType: primaryPlan 
-          })
-        });
-      } catch (e) { console.error(e); }
-
-      // 3. Prepare WhatsApp Message
-      let msg = `🥚 *NEW മുട്ട (MOTTA) ORDER* 🌾\n\n👤 *Details:*\n• ${name}\n• ${phone}\n• ${addressInput} (${pincode})${whatsappMapLink}\n• ${slot}\n\n📦 *Items:*\n${cart.map(i => `• ${i.title} x${i.qty}`).join('\n')}\n\n💰 *Paid via UPI:* ₹${total}\n\n✅ I made the payment. Please confirm!`;
-      
-      // 4. THE FIX: Wait exactly 1.5 seconds BEFORE opening WhatsApp
-      setTimeout(() => {
-        window.location.href = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-        closePaymentModal();
-        if(btn) btn.innerHTML = `<span>✅ Confirm Order on WhatsApp</span>`;
-      }, 1500);
-    }
-  </script>
-</body>
-</html>
+       
