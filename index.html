@@ -593,4 +593,1042 @@
           );
 
 
-       
+        // --------------------------------------------------------
+        // SINGLE PRODUCTS
+        // --------------------------------------------------------
+
+        const singles =
+          data.products.filter(
+            p =>
+              p.planType === "One-Time" ||
+              p.planType === "One-Time Order"
+          );
+
+
+        const routineGrid =
+          document.getElementById("routine-grid");
+
+
+        if (routines.length > 0) {
+
+          routineGrid.innerHTML =
+            routines.map(p => `
+
+              <div
+                class="bg-white rounded-3xl border-2 border-motta-200 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition"
+              >
+
+                <div>
+
+                  <div class="flex items-center gap-3 mb-4">
+
+                    <div
+                      class="text-4xl bg-motta-50 h-16 w-16 rounded-2xl flex items-center justify-center shadow-sm border border-motta-100"
+                    >
+                      ${p.icon || "🥚"}
+                    </div>
+
+                    <span
+                      class="text-[11px] font-bold uppercase tracking-wider text-motta-800 bg-motta-100 px-3 py-1 rounded-full h-fit"
+                    >
+                      ${p.planType}
+                    </span>
+
+                  </div>
+
+                  <h3 class="font-serif text-xl font-bold text-motta-900">
+                    ${p.name}
+                  </h3>
+
+                  <p class="text-xs text-motta-700 mt-2 leading-relaxed">
+                    ${p.description}
+                  </p>
+
+                  <div class="mt-4 flex items-baseline gap-2">
+
+                    <span
+                      class="font-serif text-3xl font-black text-motta-900"
+                    >
+                      ₹${p.price}
+                    </span>
+
+                  </div>
+
+                </div>
+
+                <button
+                  onclick='addToCart(${JSON.stringify(p.name)}, ${p.price}, ${JSON.stringify(p.planType)})'
+                  class="mt-6 w-full bg-motta-900 hover:bg-motta-800 text-white font-bold py-3.5 rounded-xl transition text-sm"
+                >
+                  Subscribe Routine
+                </button>
+
+              </div>
+
+            `).join("");
+
+        } else {
+
+          routineGrid.innerHTML =
+            `<p class="text-center col-span-3 text-motta-700 py-6">
+              No routines added in Control Panel yet.
+            </p>`;
+
+        }
+
+
+        // --------------------------------------------------------
+        // SINGLE PACKS
+        // --------------------------------------------------------
+
+        const singleGrid =
+          document.getElementById("single-packs-grid");
+
+
+        if (singles.length > 0) {
+
+          singleGrid.innerHTML =
+            singles.map(p => `
+
+              <div
+                class="bg-white rounded-2xl border border-motta-200 p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition"
+              >
+
+                <div>
+
+                  <div
+                    class="h-32 bg-motta-50 rounded-xl flex items-center justify-center text-5xl mb-4 border border-motta-100"
+                  >
+                    ${p.icon || "📦"}
+                  </div>
+
+                  <h3 class="font-serif text-lg font-bold text-motta-900">
+                    ${p.name}
+                  </h3>
+
+                  <p class="text-xs text-motta-700 mt-1">
+                    ${p.description}
+                  </p>
+
+                </div>
+
+                <div
+                  class="mt-4 pt-3 border-t border-motta-100 flex items-center justify-between"
+                >
+
+                  <span class="font-bold text-xl text-motta-900">
+                    ₹${p.price}
+                  </span>
+
+                  <button
+                    onclick='addToCart(${JSON.stringify(p.name)}, ${p.price}, ${JSON.stringify(p.planType)})'
+                    class="bg-motta-900 hover:bg-motta-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition"
+                  >
+                    Add to Basket
+                  </button>
+
+                </div>
+
+              </div>
+
+            `).join("");
+
+        } else {
+
+          singleGrid.innerHTML =
+            `<p class="text-center col-span-3 text-motta-700 py-6">
+              No single packs added in Control Panel yet.
+            </p>`;
+
+        }
+
+
+      } catch (err) {
+
+        document.getElementById("routine-grid").innerHTML =
+          `<p class="text-red-500 col-span-3 text-center">
+            Connection to farm failed.
+          </p>`;
+
+      }
+
+    }
+
+
+    // ============================================================
+    // MAP
+    // ============================================================
+
+    function openMap() {
+
+      const mapWrapper =
+        document.getElementById("map-wrapper");
+
+
+      if (!mapWrapper.classList.contains("hidden")) {
+
+        mapWrapper.classList.add("hidden");
+
+        return;
+
+      }
+
+
+      mapWrapper.classList.remove("hidden");
+
+      mapWrapper.classList.add("flex");
+
+
+      if (!map) {
+
+        map =
+          L.map("map").setView(
+            [8.5241, 76.9366],
+            13
+          );
+
+
+        L.tileLayer(
+          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+          {
+            maxZoom: 19
+          }
+        ).addTo(map);
+
+
+        marker =
+          L.marker(
+            [8.5241, 76.9366],
+            {
+              draggable: true
+            }
+          ).addTo(map);
+
+
+        marker.on(
+          "dragend",
+          async function () {
+
+            const pos =
+              marker.getLatLng();
+
+
+            customerGps =
+              `${pos.lat},${pos.lng}`;
+
+
+            document.getElementById(
+              "cust-address"
+            ).value =
+              "📍 Fetching address from satellite...";
+
+
+            try {
+
+              const res =
+                await fetch(
+                  `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.lat}&lon=${pos.lng}`
+                );
+
+
+              const data =
+                await res.json();
+
+
+              document.getElementById(
+                "cust-address"
+              ).value =
+                data.display_name;
+
+
+              if (
+                data.address &&
+                data.address.postcode
+              ) {
+
+                document.getElementById(
+                  "cust-pincode"
+                ).value =
+                  data.address.postcode;
+
+                checkPincodeRealtime();
+
+              }
+
+
+            } catch (err) {
+
+              document.getElementById(
+                "cust-address"
+              ).value =
+                "Error fetching address. Please type it manually.";
+
+            }
+
+          }
+        );
+
+      }
+
+
+      setTimeout(
+        () => map.invalidateSize(),
+        200
+      );
+
+    }
+
+
+    // ============================================================
+    // AUTO LOCATE USER
+    // ============================================================
+
+    function locateUser() {
+
+      if (!navigator.geolocation) {
+
+        return alert(
+          "GPS is not supported by your browser."
+        );
+
+      }
+
+
+      document.getElementById(
+        "cust-address"
+      ).value =
+        "🎯 Locating you via GPS... Please allow location access.";
+
+
+      navigator.geolocation.getCurrentPosition(
+
+        async function (position) {
+
+          const lat =
+            position.coords.latitude;
+
+          const lng =
+            position.coords.longitude;
+
+
+          customerGps =
+            `${lat},${lng}`;
+
+
+          map.setView(
+            [lat, lng],
+            17
+          );
+
+
+          marker.setLatLng(
+            [lat, lng]
+          );
+
+
+          try {
+
+            const res =
+              await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+              );
+
+
+            const data =
+              await res.json();
+
+
+            document.getElementById(
+              "cust-address"
+            ).value =
+              data.display_name;
+
+
+            if (
+              data.address &&
+              data.address.postcode
+            ) {
+
+              document.getElementById(
+                "cust-pincode"
+              ).value =
+                data.address.postcode;
+
+              checkPincodeRealtime();
+
+            }
+
+
+          } catch (err) {
+
+            document.getElementById(
+              "cust-address"
+            ).value =
+              "Error fetching address.";
+
+          }
+
+        },
+
+        function () {
+
+          alert(
+            "Unable to retrieve location. Check if GPS is turned on."
+          );
+
+          document.getElementById(
+            "cust-address"
+          ).value = "";
+
+        },
+
+        {
+          enableHighAccuracy: true
+        }
+
+      );
+
+    }
+
+
+    // ============================================================
+    // PINCODE CHECK
+    // ============================================================
+
+    function isDeliverablePincode(pin) {
+
+      const clean =
+        pin.trim();
+
+
+      if (clean.length !== 6)
+        return false;
+
+
+      return SERVICED_PINCODES.some(
+        prefix =>
+          clean.startsWith(prefix)
+      );
+
+    }
+
+
+    function checkPincodeRealtime() {
+
+      const pin =
+        document.getElementById(
+          "cust-pincode"
+        ).value.trim();
+
+
+      const feedback =
+        document.getElementById(
+          "pincode-feedback"
+        );
+
+
+      if (pin.length === 0) {
+
+        feedback.classList.add("hidden");
+
+        return;
+
+      }
+
+
+      if (pin.length === 6) {
+
+        if (
+          isDeliverablePincode(pin)
+        ) {
+
+          feedback.className =
+            "mt-1.5 p-2 rounded-lg text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
+
+          feedback.innerHTML =
+            "✅ Great! Fresh morning delivery is available.";
+
+          feedback.classList.remove(
+            "hidden"
+          );
+
+        } else {
+
+          feedback.className =
+            "mt-1.5 p-2 rounded-lg text-[11px] bg-amber-50 text-amber-900 border border-amber-200";
+
+          feedback.innerHTML =
+            "🌿 Coming Soon! We deliver only within active zones.";
+
+          feedback.classList.remove(
+            "hidden"
+          );
+
+        }
+
+      } else {
+
+        feedback.classList.add(
+          "hidden"
+        );
+
+      }
+
+    }
+
+
+    // ============================================================
+    // CART
+    // ============================================================
+
+    function toggleCart() {
+
+      const drawer =
+        document.getElementById(
+          "cart-drawer"
+        );
+
+      const panel =
+        document.getElementById(
+          "cart-panel"
+        );
+
+
+      if (
+        drawer.classList.contains(
+          "pointer-events-none"
+        )
+      ) {
+
+        drawer.classList.remove(
+          "pointer-events-none",
+          "opacity-0"
+        );
+
+        panel.classList.remove(
+          "translate-x-full"
+        );
+
+      } else {
+
+        panel.classList.add(
+          "translate-x-full"
+        );
+
+        drawer.classList.add(
+          "opacity-0"
+        );
+
+        setTimeout(
+          () =>
+            drawer.classList.add(
+              "pointer-events-none"
+            ),
+          300
+        );
+
+      }
+
+    }
+
+
+    function addToCart(
+      title,
+      price,
+      planType
+    ) {
+
+      const itemKey =
+        `${title}_${planType}`;
+
+
+      const existing =
+        cart.find(
+          item =>
+            item.key === itemKey
+        );
+
+
+      if (existing) {
+
+        existing.qty += 1;
+
+      } else {
+
+        cart.push({
+          key: itemKey,
+          title,
+          price,
+          planType,
+          qty: 1
+        });
+
+      }
+
+
+      updateCartUI();
+
+      toggleCart();
+
+    }
+
+
+    function changeQty(
+      index,
+      delta
+    ) {
+
+      cart[index].qty += delta;
+
+
+      if (
+        cart[index].qty <= 0
+      ) {
+
+        cart.splice(
+          index,
+          1
+        );
+
+      }
+
+
+      updateCartUI();
+
+    }
+
+
+    function updateCartUI() {
+
+      const itemsContainer =
+        document.getElementById(
+          "cart-items"
+        );
+
+
+      document.getElementById(
+        "cart-count"
+      ).textContent =
+        cart.reduce(
+          (sum, item) =>
+            sum + item.qty,
+          0
+        );
+
+
+      const totalPrice =
+        cart.reduce(
+          (sum, item) =>
+            sum +
+            item.price *
+            item.qty,
+          0
+        );
+
+
+      document.getElementById(
+        "cart-total"
+      ).textContent =
+        `₹${totalPrice.toLocaleString("en-IN")}`;
+
+
+      if (cart.length === 0) {
+
+        itemsContainer.innerHTML =
+          '<p class="text-motta-700 text-center py-10 text-sm">Your basket is currently empty.</p>';
+
+        return;
+
+      }
+
+
+      itemsContainer.innerHTML =
+        cart.map(
+          (item, i) => `
+
+          <div
+            class="flex items-center justify-between border-b border-motta-100 pb-2.5"
+          >
+
+            <div>
+
+              <h4
+                class="font-bold text-motta-900 text-xs sm:text-sm"
+              >
+                ${item.title}
+              </h4>
+
+              <div
+                class="text-xs text-motta-700 mt-0.5"
+              >
+                ₹${item.price.toLocaleString("en-IN")} each
+              </div>
+
+            </div>
+
+            <div class="flex items-center gap-2">
+
+              <div
+                class="flex items-center border border-motta-200 rounded-lg"
+              >
+
+                <button
+                  onclick="changeQty(${i}, -1)"
+                  class="px-2 py-0.5 text-motta-700 hover:bg-motta-100 rounded-l-lg text-xs"
+                >
+                  -
+                </button>
+
+                <span class="px-2 text-xs font-bold">
+                  ${item.qty}
+                </span>
+
+                <button
+                  onclick="changeQty(${i}, 1)"
+                  class="px-2 py-0.5 text-motta-700 hover:bg-motta-100 rounded-r-lg text-xs"
+                >
+                  +
+                </button>
+
+              </div>
+
+              <span
+                class="font-bold text-xs sm:text-sm text-motta-900 w-12 text-right"
+              >
+                ₹${(
+                  item.price *
+                  item.qty
+                ).toLocaleString("en-IN")}
+              </span>
+
+            </div>
+
+          </div>
+
+        `
+        ).join("");
+
+    }
+
+
+    // ============================================================
+    // UPI PAYMENT
+    // ============================================================
+
+    function openUPIPaymentModal() {
+
+      if (cart.length === 0) {
+
+        return alert(
+          "Your basket is empty."
+        );
+
+      }
+
+
+      const name =
+        document.getElementById(
+          "cust-name"
+        ).value.trim();
+
+
+      const phone =
+        document.getElementById(
+          "cust-phone"
+        ).value.trim();
+
+
+      const address =
+        document.getElementById(
+          "cust-address"
+        ).value.trim();
+
+
+      const pincode =
+        document.getElementById(
+          "cust-pincode"
+        ).value.trim();
+
+
+      if (
+        !name ||
+        !phone ||
+        !address ||
+        !pincode
+      ) {
+
+        return alert(
+          "Please fill in your Name, WhatsApp Number, Address, and Pincode."
+        );
+
+      }
+
+
+      if (
+        !isDeliverablePincode(
+          pincode
+        )
+      ) {
+
+        return alert(
+          "⚠️ We currently deliver only within active zones (695xxx)."
+        );
+
+      }
+
+
+      const total =
+        cart.reduce(
+          (sum, item) =>
+            sum +
+            item.price *
+            item.qty,
+          0
+        );
+
+
+      const upiUri =
+        `upi://pay?pa=${MY_UPI_ID}` +
+        `&pn=${encodeURIComponent(
+          MY_BUSINESS_NAME
+        )}` +
+        `&am=${total}` +
+        `&cu=INR` +
+        `&tn=Motta%20Order`;
+
+
+      document.getElementById(
+        "upi-qr-image"
+      ).src =
+        `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(
+          upiUri
+        )}`;
+
+
+      document.getElementById(
+        "modal-total-amount"
+      ).textContent =
+        `Total: ₹${total.toLocaleString(
+          "en-IN"
+        )}`;
+
+
+      document.getElementById(
+        "upi-direct-link"
+      ).href =
+        upiUri;
+
+
+      toggleCart();
+
+
+      document.getElementById(
+        "payment-modal"
+      ).classList.remove(
+        "hidden"
+      );
+
+
+      document.getElementById(
+        "payment-modal"
+      ).classList.add(
+        "flex"
+      );
+
+    }
+
+
+    function closePaymentModal() {
+
+      document.getElementById(
+        "payment-modal"
+      ).classList.add(
+        "hidden"
+      );
+
+      document.getElementById(
+        "payment-modal"
+      ).classList.remove(
+        "flex"
+      );
+
+    }
+
+
+    // ============================================================
+    // WHATSAPP ORDER
+    // ============================================================
+
+    async function sendOrderToWhatsAppAfterPayment() {
+
+      const name =
+        document.getElementById(
+          "cust-name"
+        ).value.trim();
+
+
+      const phone =
+        document.getElementById(
+          "cust-phone"
+        ).value.trim();
+
+
+      const addressInput =
+        document.getElementById(
+          "cust-address"
+        ).value.trim();
+
+
+      const pincode =
+        document.getElementById(
+          "cust-pincode"
+        ).value.trim();
+
+
+      const slot =
+        document.getElementById(
+          "cust-slot"
+        ).value;
+
+
+      const total =
+        cart.reduce(
+          (sum, item) =>
+            sum +
+            item.price *
+            item.qty,
+          0
+        );
+
+
+      const itemsText =
+        cart
+          .map(
+            i =>
+              `${i.title} (${i.planType}) x ${i.qty}`
+          )
+          .join(", ");
+
+
+      const primaryPlan =
+        cart[0]?.planType ||
+        "One-Time Order";
+
+
+      let finalAddress =
+        `${addressInput} (${pincode})`;
+
+
+      let whatsappMapLink = "";
+
+
+      if (customerGps) {
+
+        const mapsUrl =
+          `https://maps.google.com/?q=${customerGps}`;
+
+
+        finalAddress +=
+          ` | Map: ${mapsUrl}`;
+
+
+        whatsappMapLink =
+          `\n📍 *Map Location:* ${mapsUrl}`;
+
+      }
+
+
+      // Save order to Google Sheets
+
+      try {
+
+        await fetch(
+          GOOGLE_SCRIPT_URL,
+          {
+            method: "POST",
+            mode: "no-cors",
+
+            headers: {
+              "Content-Type":
+                "text/plain;charset=utf-8"
+            },
+
+            body: JSON.stringify({
+
+              action: "new_order",
+
+              name: name,
+
+              phone: phone,
+
+              address: finalAddress,
+
+              slot: slot,
+
+              items: itemsText,
+
+              total: `₹${total}`,
+
+              planType: primaryPlan
+
+            })
+
+          }
+        );
+
+      } catch (e) {
+
+        console.error(e);
+
+      }
+
+
+      // WhatsApp message
+
+      const msg =
+        `🥚 *NEW മുട്ട (MOTTA) ORDER* 🌾\n\n` +
+
+        `👤 *Details:*\n` +
+
+        `• ${name}\n` +
+
+        `• ${phone}\n` +
+
+        `• ${addressInput} (${pincode})` +
+
+        `${whatsappMapLink}\n` +
+
+        `• ${slot}\n\n` +
+
+        `📦 *Items:*\n` +
+
+        `${cart
+          .map(
+            i =>
+              `• ${i.title} x${i.qty}`
+          )
+          .join("\n")}\n\n` +
+
+        `💰 *Paid via UPI:* ₹${total}\n\n` +
+
+        `✅ I made the payment. Please confirm!`;
+
+
+      setTimeout(() => {
+
+        window.location.href =
+          `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(
+            msg
+          )}`;
+
+
+        closePaymentModal();
+
+      }, 1500);
+
+    }
+
+  </script>
+
+</body>
+</html>
