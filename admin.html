@@ -15,7 +15,6 @@
     .font-malayalam { font-family: 'Noto Sans Malayalam', sans-serif; }
   </style>
 </head>
-
 <body class="bg-gray-950 text-gray-100 min-h-screen antialiased flex flex-col selection:bg-emerald-500 selection:text-white" onload="initDashboard()">
 
   <!-- Header -->
@@ -53,7 +52,9 @@
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-grow w-full">
 
+    <!-- =================================================================== -->
     <!-- TAB 1: ORDERS & LOGISTICS -->
+    <!-- =================================================================== -->
     <div id="tab-orders" class="space-y-6">
 
       <!-- Metrics -->
@@ -111,7 +112,9 @@
 
     </div>
 
+    <!-- =================================================================== -->
     <!-- TAB 2: SUBSCRIBERS HUB -->
+    <!-- =================================================================== -->
     <div id="tab-subs" class="hidden space-y-6">
       <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl flex justify-between items-center">
         <div>
@@ -120,12 +123,30 @@
         </div>
       </div>
 
+      <!-- Weekly Capacity Panel -->
+      <div class="bg-gray-900 border border-gray-800 rounded-3xl p-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+          <div>
+            <h3 class="font-bold text-sm text-white">🥚 Weekly Egg Capacity</h3>
+            <p class="text-[11px] text-gray-400 mt-0.5">How many eggs are committed to each day vs. what your hens can produce.</p>
+          </div>
+          <div id="capacity-summary" class="text-xs font-semibold text-gray-300"></div>
+        </div>
+        <div id="capacity-grid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+          <div class="text-xs text-gray-500 col-span-full">Loading capacity...</div>
+        </div>
+        <p id="capacity-warning" class="hidden mt-3 text-[11px] text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-2"></p>
+        <p class="text-[10px] text-gray-500 mt-3">💡 Set your daily egg capacity in the "✍️ Site Content" tab. Assign each subscriber's delivery day below to keep this panel accurate.</p>
+      </div>
+
       <div id="subs-container" class="space-y-4">
         <div class="text-center py-16 text-gray-500 font-medium">Fetching subscriptions...</div>
       </div>
     </div>
 
+    <!-- =================================================================== -->
     <!-- TAB 3: STORE & INVENTORY -->
+    <!-- =================================================================== -->
     <div id="tab-store" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-8">
 
       <!-- Inventory & Stock Toggles -->
@@ -174,6 +195,11 @@
         </div>
 
         <div>
+          <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Eggs per Delivery <span class="text-gray-500 normal-case font-medium">(only matters for Routine plans — used for Weekly Capacity tracking)</span></label>
+          <input type="number" id="prod-eggcount" placeholder="e.g. 12" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <div>
           <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Description</label>
           <input type="text" id="prod-desc" placeholder="e.g. Pasture-foraged country hen eggs" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
         </div>
@@ -185,8 +211,25 @@
 
     </div>
 
-    <!-- TAB 4: SITE CONTENT -->
+    <!-- =================================================================== -->
+    <!-- TAB 4: SITE CONTENT (Why മുട്ട + Social Links) -->
+    <!-- =================================================================== -->
     <div id="tab-content" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+      <!-- Production Capacity Editor -->
+      <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-sm space-y-4 lg:col-span-2">
+        <div class="border-b border-gray-800 pb-3">
+          <h2 class="font-bold text-lg text-white">🥚 Daily Production Capacity</h2>
+          <p class="text-xs text-gray-400 mt-0.5">How many eggs your hens produce per day. Used by the Weekly Capacity panel to warn you when routines are overbooked.</p>
+        </div>
+        <div class="max-w-xs">
+          <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Eggs per Day</label>
+          <input type="number" id="daily-capacity-input" placeholder="e.g. 200" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <button onclick="saveCapacity()" id="btn-save-capacity" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-xl text-xs transition">
+          💾 Save Capacity
+        </button>
+      </div>
 
       <!-- Why Motta Section Editor -->
       <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-sm space-y-4 lg:col-span-2">
@@ -207,21 +250,18 @@
             <input type="text" id="why-title-input-1" placeholder="Title" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
             <input type="text" id="why-text-input-1" placeholder="Description" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
           </div>
-
           <div class="bg-gray-950 p-4 rounded-2xl border border-gray-800 space-y-2">
             <span class="text-xs font-bold text-amber-400">Card 2</span>
             <input type="text" id="why-icon-input-2" placeholder="Icon e.g. 🌿" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
             <input type="text" id="why-title-input-2" placeholder="Title" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
             <input type="text" id="why-text-input-2" placeholder="Description" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
           </div>
-
           <div class="bg-gray-950 p-4 rounded-2xl border border-gray-800 space-y-2">
             <span class="text-xs font-bold text-amber-400">Card 3</span>
             <input type="text" id="why-icon-input-3" placeholder="Icon e.g. 🌅" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
             <input type="text" id="why-title-input-3" placeholder="Title" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
             <input type="text" id="why-text-input-3" placeholder="Description" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
           </div>
-
           <div class="bg-gray-950 p-4 rounded-2xl border border-gray-800 space-y-2">
             <span class="text-xs font-bold text-amber-400">Card 4</span>
             <input type="text" id="why-icon-input-4" placeholder="Icon e.g. 🚪" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
@@ -247,17 +287,14 @@
             <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">📸 Instagram URL</label>
             <input type="url" id="social-instagram-input" placeholder="https://instagram.com/yourpage" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
           </div>
-
           <div>
             <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">📘 Facebook URL</label>
             <input type="url" id="social-facebook-input" placeholder="https://facebook.com/yourpage" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
           </div>
-
           <div>
             <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">▶️ YouTube URL</label>
             <input type="url" id="social-youtube-input" placeholder="https://youtube.com/@yourchannel" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
           </div>
-
           <div>
             <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">💬 WhatsApp Channel/Link</label>
             <input type="url" id="social-whatsapp-input" placeholder="https://wa.me/919809193616" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
@@ -275,12 +312,15 @@
 
   <!-- DASHBOARD CONTROLLER SCRIPT -->
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztMHRFn32tpLkQSAv4mvz6Mo0Q1SWiFUXtCRCgRP5bhwwO7YYsRzTlR9d5aQf7p6XV/exec";
+    // IMPORTANT: This URL MUST be identical to the one in index.html.
+    // After you redeploy the Apps Script, paste the new /exec URL here AND in index.html.
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKmMQVosM6bVhpJKvm5uueebh0N1BuiIUb9Iu1srJZqnrMTJ0QrRNvurK8eABoD0W2IA/exec";
 
     let rawOrders = [];
     let rawSubs = [];
     let rawProducts = [];
     let rawSettings = {};
+    let rawCapacity = null;
 
     async function initDashboard() {
       fetchAllData();
@@ -290,6 +330,7 @@
       document.getElementById('tab-orders').classList.add('hidden');
       document.getElementById('tab-subs').classList.add('hidden');
       document.getElementById('tab-store').classList.add('hidden');
+
       document.getElementById('tab-content').classList.add('hidden');
 
       document.getElementById('tab-btn-orders').className = "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition text-gray-400 hover:text-white";
@@ -324,11 +365,13 @@
         rawSubs = data.subscribers || [];
         rawProducts = data.products || [];
         rawSettings = data.settings || {};
+        rawCapacity = data.capacity || null;
 
         updateMetrics();
         filterOrders();
         renderSubscribers();
         renderInventory();
+        renderCapacityPanel();
         prefillContentForm();
       } catch (err) {
         console.error("Dashboard error:", err);
@@ -352,17 +395,18 @@
       document.getElementById('stat-subscriptions').textContent = activeSubs;
     }
 
+    // --- ORDERS LOGIC ---
     function filterOrders() {
       const q = document.getElementById('order-search').value.toLowerCase().trim();
       const statusFilter = document.getElementById('order-filter-status').value;
 
       const filtered = rawOrders.filter(o => {
-        const matchesQuery =
+        const matchesQuery = (
           (o.name && o.name.toLowerCase().includes(q)) ||
           (o.phone && String(o.phone).includes(q)) ||
           (o.items && o.items.toLowerCase().includes(q)) ||
-          (o.address && o.address.toLowerCase().includes(q));
-
+          (o.address && o.address.toLowerCase().includes(q))
+        );
         if (!matchesQuery) return false;
 
         if (statusFilter === "ACTIVE") return o.status !== "Closed";
@@ -376,7 +420,6 @@
 
     function renderOrders(orders) {
       const container = document.getElementById('orders-container');
-
       if (orders.length === 0) {
         container.innerHTML = `<div class="text-center py-16 bg-gray-900 rounded-3xl border border-gray-800 text-gray-400 text-sm">No orders found matching this filter.</div>`;
         return;
@@ -385,9 +428,7 @@
       container.innerHTML = orders.map((o) => {
         let mapLink = "";
         let cleanAddress = o.address || "";
-
         const mapMatch = cleanAddress.match(/https:\/\/maps\.google\.com\/\?q=[^\s|]+/);
-
         if (mapMatch) {
           mapLink = mapMatch[0];
           cleanAddress = cleanAddress.replace(/\|\s*Map:\s*https:\/\/maps\.google\.com\/\?q=[^\s|]+/, '').trim();
@@ -437,7 +478,6 @@
                   <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">📍 Address</span>
                   <p class="text-gray-200 leading-snug">${cleanAddress}</p>
                 </div>
-
                 ${mapLink ? `
                   <a href="${mapLink}" target="_blank" class="mt-3 inline-flex items-center gap-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold px-3 py-1.5 rounded-xl w-fit transition">
                     <span>📍 Open in Google Maps</span> ↗
@@ -446,21 +486,13 @@
               </div>
             </div>
 
+            <!-- Action Bar -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-2 border-t border-gray-800 text-xs gap-3">
               <div class="flex items-center gap-2">
                 <span class="text-gray-400">Status:</span>
-
-                <button onclick="updateOrderStatus(${o.rowIndex}, 'New')" class="px-2.5 py-1 rounded-lg font-bold transition ${status === 'New' ? 'bg-rose-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}">
-                  New
-                </button>
-
-                <button onclick="updateOrderStatus(${o.rowIndex}, 'Out for Delivery')" class="px-2.5 py-1 rounded-lg font-bold transition ${status === 'Out for Delivery' ? 'bg-amber-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}">
-                  Delivering
-                </button>
-
-                <button onclick="updateOrderStatus(${o.rowIndex}, 'Closed')" class="px-2.5 py-1 rounded-lg font-bold transition ${status === 'Closed' ? 'bg-emerald-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}">
-                  Close Order
-                </button>
+                <button onclick="updateOrderStatus(${o.rowIndex}, 'New')" class="px-2.5 py-1 rounded-lg font-bold transition ${status === 'New' ? 'bg-rose-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}">New</button>
+                <button onclick="updateOrderStatus(${o.rowIndex}, 'Out for Delivery')" class="px-2.5 py-1 rounded-lg font-bold transition ${status === 'Out for Delivery' ? 'bg-amber-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}">Delivering</button>
+                <button onclick="updateOrderStatus(${o.rowIndex}, 'Closed')" class="px-2.5 py-1 rounded-lg font-bold transition ${status === 'Closed' ? 'bg-emerald-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}">Close Order</button>
               </div>
 
               <a href="https://wa.me/${cleanPhone.startsWith('91') ? cleanPhone : '91' + cleanPhone}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-1.5 rounded-xl transition flex items-center justify-center gap-1">
@@ -476,85 +508,140 @@
     async function updateOrderStatus(rowIndex, newStatus) {
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            action: "update_order_status",
-            rowIndex: rowIndex,
-            newStatus: newStatus
-          })
+          method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "update_order_status", rowIndex: rowIndex, newStatus: newStatus })
         });
-
         fetchAllData();
-      } catch (e) {
-        alert("Failed to update status");
-      }
+      } catch (e) { alert("Failed to update status"); }
     }
 
+    // --- SUBSCRIBERS LOGIC ---
     function renderSubscribers() {
       const container = document.getElementById('subs-container');
-
       if (rawSubs.length === 0) {
         container.innerHTML = `<div class="text-center py-16 bg-gray-900 rounded-3xl border border-gray-800 text-gray-400 text-sm">No subscriptions logged yet.</div>`;
         return;
       }
 
+      const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
       container.innerHTML = rawSubs.map(s => {
         const isActive = s.status === "Active";
         const cleanPhone = String(s.phone).replace(/[^0-9]/g, '');
+        const dayOptions = ['<option value="">Unassigned</option>'].concat(
+          DAYS.map(d => `<option value="${d}" ${s.deliveryDay === d ? 'selected' : ''}>${d}</option>`)
+        ).join('');
 
         return `
-          <div class="bg-gray-900 border ${isActive ? 'border-amber-500/30' : 'border-gray-800 opacity-60'} rounded-3xl p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-
-            <div>
-              <div class="flex items-center gap-2">
-                <h3 class="font-bold text-white text-base">${s.name}</h3>
-                <span class="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full ${isActive ? 'bg-amber-500/20 text-amber-300' : 'bg-gray-800 text-gray-400'}">${s.status}</span>
+          <div class="bg-gray-900 border ${isActive ? 'border-amber-500/30' : 'border-gray-800 opacity-60'} rounded-3xl p-5 flex flex-col gap-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <div class="flex items-center gap-2">
+                  <h3 class="font-bold text-white text-base">${s.name}</h3>
+                  <span class="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full ${isActive ? 'bg-amber-500/20 text-amber-300' : 'bg-gray-800 text-gray-400'}">${s.status}</span>
+                </div>
+                <p class="text-xs text-amber-400 font-semibold mt-1">⭐️ Plan: ${s.planType}</p>
+                <p class="text-xs text-gray-300 mt-0.5">📦 Contents: ${s.eggs}</p>
+                <p class="text-[11px] text-gray-400 mt-1">📍 ${s.address}</p>
+                ${s.eggsPerDelivery ? `<p class="text-[11px] text-emerald-400 mt-1 font-semibold">🥚 ${s.eggsPerDelivery} eggs / delivery</p>` : ''}
               </div>
 
-              <p class="text-xs text-amber-400 font-semibold mt-1">⭐️ Plan: ${s.planType}</p>
-              <p class="text-xs text-gray-300 mt-0.5">📦 Contents: ${s.eggs}</p>
-              <p class="text-[11px] text-gray-400 mt-1">📍 ${s.address}</p>
+              <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+                <button onclick="updateSubStatus(${s.rowIndex}, '${isActive ? 'Paused' : 'Active'}')" class="px-4 py-2 rounded-xl text-xs font-bold transition ${isActive ? 'bg-amber-600/20 text-amber-300 border border-amber-500/30 hover:bg-amber-600/30' : 'bg-emerald-600 text-white'}">
+                  ${isActive ? '⏸️ Vacation Pause' : '▶️ Resume Routine'}
+                </button>
+                <a href="https://wa.me/${cleanPhone.startsWith('91') ? cleanPhone : '91' + cleanPhone}" target="_blank" class="bg-gray-800 hover:bg-gray-700 text-white font-bold p-2.5 rounded-xl transition">
+                  💬
+                </a>
+              </div>
             </div>
 
-            <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
-              <button onclick="updateSubStatus(${s.rowIndex}, '${isActive ? 'Paused' : 'Active'}')" class="px-4 py-2 rounded-xl text-xs font-bold transition ${isActive ? 'bg-amber-600/20 text-amber-300 border border-amber-500/30 hover:bg-amber-600/30' : 'bg-emerald-600 text-white'}">
-                ${isActive ? '⏸️ Vacation Pause' : '▶️ Resume Routine'}
-              </button>
-
-              <a href="https://wa.me/${cleanPhone.startsWith('91') ? cleanPhone : '91' + cleanPhone}" target="_blank" class="bg-gray-800 hover:bg-gray-700 text-white font-bold p-2.5 rounded-xl transition">
-                💬
-              </a>
+            <div class="flex items-center gap-2 pt-3 border-t border-gray-800">
+              <span class="text-[11px] text-gray-400 font-bold uppercase tracking-wider">🚚 Delivery Day:</span>
+              <select onchange="assignDeliveryDay(${s.rowIndex}, this.value)" class="bg-gray-950 border border-gray-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                ${dayOptions}
+              </select>
             </div>
-
           </div>
         `;
       }).join('');
     }
 
-    async function updateSubStatus(rowIndex, newStatus) {
+    async function assignDeliveryDay(rowIndex, day) {
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            action: "update_sub_status",
-            rowIndex: rowIndex,
-            newStatus: newStatus
-          })
+          method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "assign_delivery_day", rowIndex: rowIndex, deliveryDay: day })
         });
-
         fetchAllData();
-      } catch (e) {
-        alert("Failed to update subscriber");
+      } catch (e) { alert("Failed to assign delivery day"); }
+    }
+
+    // --- WEEKLY CAPACITY PANEL ---
+    function renderCapacityPanel() {
+      const grid = document.getElementById('capacity-grid');
+      const summary = document.getElementById('capacity-summary');
+      const warning = document.getElementById('capacity-warning');
+
+      if (!rawCapacity || !rawCapacity.dailyCapacity) {
+        grid.innerHTML = `<div class="text-xs text-gray-500 col-span-full">Set your Daily Egg Capacity in the "✍️ Site Content" tab to activate this panel.</div>`;
+        summary.textContent = '';
+        warning.classList.add('hidden');
+        return;
+      }
+
+      const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+      const cap = rawCapacity.dailyCapacity;
+
+      grid.innerHTML = DAYS.map(d => {
+        const committed = rawCapacity.byDay[d] || 0;
+        const pct = Math.min(100, Math.round((committed / cap) * 100));
+        let barColor = "bg-emerald-500";
+        if (pct >= 100) barColor = "bg-rose-500"; else if (pct >= 80) barColor = "bg-amber-500";
+        return `
+          <div class="bg-gray-950 border border-gray-800 rounded-xl p-3">
+            <div class="text-[10px] font-bold text-gray-300 uppercase tracking-wide mb-1">${d.slice(0,3)}</div>
+            <div class="text-sm font-black text-white">${committed}<span class="text-gray-500 font-medium text-[10px]"> / ${cap}</span></div>
+            <div class="w-full h-1.5 bg-gray-800 rounded-full mt-2 overflow-hidden">
+              <div class="h-full ${barColor}" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      summary.textContent = `Weekly: ${rawCapacity.committedTotal} / ${rawCapacity.weeklyCapacity} eggs committed`;
+
+      if (rawCapacity.unassigned > 0) {
+        warning.classList.remove('hidden');
+        warning.textContent = `⚠️ ${rawCapacity.unassigned} eggs/delivery belong to subscribers with no delivery day assigned yet — assign them below for an accurate breakdown.`;
+      } else if (rawCapacity.isFull) {
+        warning.classList.remove('hidden');
+        warning.textContent = `🚫 Weekly capacity is full — the website has automatically hidden the "Subscribe Routine" buttons.`;
+      } else {
+        warning.classList.add('hidden');
       }
     }
 
+    async function saveCapacity() {
+      const btn = document.getElementById('btn-save-capacity');
+      const val = document.getElementById('daily-capacity-input').value.trim();
+      if (!val) return alert("Enter a number first.");
+      saveSettings({ DailyEggCapacity: val }, btn, "💾 Save Capacity");
+    }
+
+    async function updateSubStatus(rowIndex, newStatus) {
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "update_sub_status", rowIndex: rowIndex, newStatus: newStatus })
+        });
+        fetchAllData();
+      } catch (e) { alert("Failed to update subscriber"); }
+    }
+
+    // --- INVENTORY & STORE BUILDER LOGIC ---
     function renderInventory() {
       const container = document.getElementById('inventory-container');
-
       if (rawProducts.length === 0) {
         container.innerHTML = `<div class="text-sm text-gray-500">No products found.</div>`;
         return;
@@ -564,11 +651,8 @@
         <div class="bg-gray-950 p-4 rounded-2xl border border-gray-800 flex items-center justify-between">
           <div>
             <h4 class="font-bold text-sm text-white">${p.name}</h4>
-            <span class="text-xs text-emerald-400 font-serif">₹${p.price}</span>
-            •
-            <span class="text-[11px] text-gray-400">${p.planType}</span>
+            <span class="text-xs text-emerald-400 font-serif">₹${p.price}</span> • <span class="text-[11px] text-gray-400">${p.planType}</span>
           </div>
-
           <button onclick="toggleStock(${p.rowIndex}, ${!p.inStock})" class="px-4 py-2 rounded-xl text-xs font-bold transition ${p.inStock ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'}">
             ${p.inStock ? '🟢 In Stock' : '🔴 Out of Stock'}
           </button>
@@ -579,20 +663,11 @@
     async function toggleStock(rowIndex, inStockStatus) {
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            action: "toggle_product_stock",
-            rowIndex: rowIndex,
-            inStock: inStockStatus
-          })
+          method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "toggle_product_stock", rowIndex: rowIndex, inStock: inStockStatus })
         });
-
         fetchAllData();
-      } catch (e) {
-        alert("Stock update failed");
-      }
+      } catch (e) { alert("Stock update failed"); }
     }
 
     async function addNewProduct() {
@@ -601,53 +676,34 @@
       const desc = document.getElementById('prod-desc').value.trim();
       const plan = document.getElementById('prod-plan').value;
       const icon = document.getElementById('prod-icon').value.trim() || "🥚";
+      const eggCount = document.getElementById('prod-eggcount').value.trim();
 
-      if (!name || !price || !desc) {
-        return alert("Fill in Name, Price, and Description.");
-      }
+      if (!name || !price || !desc) return alert("Fill in Name, Price, and Description.");
 
       const btn = document.getElementById('btn-add-prod');
       btn.innerText = "⏳ Publishing...";
 
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            action: "add_product",
-            name: name,
-            price: Number(price),
-            description: desc,
-            planType: plan,
-            icon: icon
-          })
+          method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "add_product", name: name, price: Number(price), description: desc, planType: plan, icon: icon, eggCount: Number(eggCount) || 0 })
         });
-
         btn.innerText = "✅ Published!";
         document.getElementById('prod-name').value = "";
         document.getElementById('prod-price').value = "";
         document.getElementById('prod-desc').value = "";
-
+        document.getElementById('prod-eggcount').value = "";
         fetchAllData();
-
-      } catch (err) {
-        btn.innerText = "❌ Error";
-      }
-
-      setTimeout(() => {
-        btn.innerText = "🚀 Publish Product to Store";
-      }, 2500);
+      } catch (err) { btn.innerText = "❌ Error"; }
+      setTimeout(() => btn.innerText = "🚀 Publish Product to Store", 2500);
     }
 
+    // --- SITE CONTENT LOGIC (Why മുട്ട section + Social Links) ---
     function prefillContentForm() {
-      const set = (id, val) => {
-        const el = document.getElementById(id);
-        if (el && val) el.value = val;
-      };
+      const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
 
+      set('daily-capacity-input', rawSettings.DailyEggCapacity);
       set('why-heading-input', rawSettings.WhyHeading);
-
       for (let i = 1; i <= 4; i++) {
         set(`why-icon-input-${i}`, rawSettings[`WhyPoint${i}Icon`]);
         set(`why-title-input-${i}`, rawSettings[`WhyPoint${i}Title`]);
@@ -662,78 +718,49 @@
 
     async function saveSettings(settingsObj, btnEl, defaultLabel) {
       btnEl.innerText = "⏳ Saving...";
-
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            action: "update_settings",
-            settings: settingsObj
-          })
+          method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "update_settings", settings: settingsObj })
         });
-
         btnEl.innerText = "✅ Saved!";
         fetchAllData();
-
       } catch (e) {
         btnEl.innerText = "❌ Error";
       }
-
-      setTimeout(() => {
-        btnEl.innerText = defaultLabel;
-      }, 2200);
+      setTimeout(() => btnEl.innerText = defaultLabel, 2200);
     }
 
     function saveWhySection() {
       const btn = document.getElementById('btn-save-why');
       const settingsObj = {};
-
       const heading = document.getElementById('why-heading-input').value.trim();
-
-      if (heading) {
-        settingsObj.WhyHeading = heading;
-      }
+      if (heading) settingsObj.WhyHeading = heading;
 
       for (let i = 1; i <= 4; i++) {
         const icon = document.getElementById(`why-icon-input-${i}`).value.trim();
         const title = document.getElementById(`why-title-input-${i}`).value.trim();
         const text = document.getElementById(`why-text-input-${i}`).value.trim();
-
         if (icon) settingsObj[`WhyPoint${i}Icon`] = icon;
         if (title) settingsObj[`WhyPoint${i}Title`] = title;
         if (text) settingsObj[`WhyPoint${i}Text`] = text;
       }
 
-      if (Object.keys(settingsObj).length === 0) {
-        return alert("Fill in at least one field to save.");
-      }
-
-      saveSettings(
-        settingsObj,
-        btn,
-        '💾 Save "Why മുട്ട?" Section'
-      );
+      if (Object.keys(settingsObj).length === 0) return alert("Fill in at least one field to save.");
+      saveSettings(settingsObj, btn, "💾 Save \"Why മുട്ട?\" Section");
     }
 
     function saveSocialLinks() {
       const btn = document.getElementById('btn-save-social');
-
       const settingsObj = {
         SocialInstagram: document.getElementById('social-instagram-input').value.trim(),
         SocialFacebook: document.getElementById('social-facebook-input').value.trim(),
         SocialYoutube: document.getElementById('social-youtube-input').value.trim(),
         SocialWhatsapp: document.getElementById('social-whatsapp-input').value.trim()
       };
-
-      saveSettings(
-        settingsObj,
-        btn,
-        "💾 Save Social Media Links"
-      );
+      // Always send all 4 (even blank) so clearing a field removes the icon from the site
+      saveSettings(settingsObj, btn, "💾 Save Social Media Links");
     }
   </script>
-
 </body>
 </html>
