@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
 
+  <!-- Leaflet Map CSS & JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -118,7 +119,6 @@
 
       <h1 class="font-serif text-4xl sm:text-6xl font-black tracking-tight text-motta-900 leading-[1.15] mb-6">
         Real Eggs. Deep Golden Yolks.<br class="hidden sm:block">
-
         <span class="relative inline-block mt-1">
           <span class="font-malayalam font-black text-leaf-600 cms-brand">മുട്ട</span>
           <span class="text-yolk-500 font-sans"> Routine.</span>
@@ -127,8 +127,7 @@
 
       <p id="cms-about"
          class="text-base sm:text-lg text-motta-700 max-w-xl mx-auto mb-10 leading-relaxed font-normal">
-        Pasture-raised from native country hens. Zero hormones, zero cages.
-        Never run out of real morning protein with our weekly doorstep drops.
+        Pasture-raised from native country hens. Zero hormones, zero cages. Never run out of real morning protein with our weekly doorstep drops.
       </p>
 
       <div class="flex flex-wrap justify-center gap-4">
@@ -151,11 +150,9 @@
       <span class="text-leaf-600 font-bold uppercase tracking-widest text-xs">
         Set & Forget Breakfast
       </span>
-
       <h2 class="font-serif text-3xl sm:text-4xl font-black text-motta-900 mt-1">
         The മുട്ട Routine
       </h2>
-
       <p class="text-motta-700 text-sm mt-1 max-w-md mx-auto">
         Subscribe once. Enjoy scheduled morning farm drops with zero effort.
       </p>
@@ -171,12 +168,10 @@
   <!-- SINGLE PACKS -->
   <section id="single-packs" class="py-16 bg-motta-100/60 border-t border-motta-200">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
-
       <div class="text-center mb-10">
         <h2 class="font-serif text-3xl font-bold text-motta-900">
           Single Packs & Trials
         </h2>
-
         <p class="text-motta-700 text-sm mt-1">
           Want to taste the difference first? Order a single batch.
         </p>
@@ -198,7 +193,6 @@
         <span class="text-leaf-600 font-bold uppercase tracking-widest text-xs">
           The Motta Promise
         </span>
-
         <h2 id="why-heading"
             class="font-serif text-3xl sm:text-4xl font-black text-motta-900 mt-1">
           Why മുട്ട?
@@ -210,48 +204,40 @@
 
         <div class="bg-white rounded-2xl border border-motta-200 p-6 text-center shadow-sm">
           <div id="why-icon-1" class="text-4xl mb-3">🐔</div>
-          <h3 id="why-title-1"
-              class="font-serif font-bold text-motta-900 mb-1">
+          <h3 id="why-title-1" class="font-serif font-bold text-motta-900 mb-1">
             Free-Range & Native
           </h3>
-          <p id="why-text-1"
-             class="text-xs text-motta-700 leading-relaxed">
+          <p id="why-text-1" class="text-xs text-motta-700 leading-relaxed">
             Raised outdoors by native desi hens, never in cages.
           </p>
         </div>
 
         <div class="bg-white rounded-2xl border border-motta-200 p-6 text-center shadow-sm">
           <div id="why-icon-2" class="text-4xl mb-3">🌿</div>
-          <h3 id="why-title-2"
-              class="font-serif font-bold text-motta-900 mb-1">
+          <h3 id="why-title-2" class="font-serif font-bold text-motta-900 mb-1">
             Zero Hormones
           </h3>
-          <p id="why-text-2"
-             class="text-xs text-motta-700 leading-relaxed">
+          <p id="why-text-2" class="text-xs text-motta-700 leading-relaxed">
             No hormones, no antibiotics — just natural farm feed.
           </p>
         </div>
 
         <div class="bg-white rounded-2xl border border-motta-200 p-6 text-center shadow-sm">
           <div id="why-icon-3" class="text-4xl mb-3">🌅</div>
-          <h3 id="why-title-3"
-              class="font-serif font-bold text-motta-900 mb-1">
+          <h3 id="why-title-3" class="font-serif font-bold text-motta-900 mb-1">
             Laid at Sunrise
           </h3>
-          <p id="why-text-3"
-             class="text-xs text-motta-700 leading-relaxed">
+          <p id="why-text-3" class="text-xs text-motta-700 leading-relaxed">
             Collected fresh every morning for deep, golden yolks.
           </p>
         </div>
 
         <div class="bg-white rounded-2xl border border-motta-200 p-6 text-center shadow-sm">
           <div id="why-icon-4" class="text-4xl mb-3">🚪</div>
-          <h3 id="why-title-4"
-              class="font-serif font-bold text-motta-900 mb-1">
+          <h3 id="why-title-4" class="font-serif font-bold text-motta-900 mb-1">
             Doorstep Delivery
           </h3>
-          <p id="why-text-4"
-             class="text-xs text-motta-700 leading-relaxed">
+          <p id="why-text-4" class="text-xs text-motta-700 leading-relaxed">
             Delivered straight to you before breakfast, every time.
           </p>
         </div>
@@ -260,7 +246,7 @@
     </div>
   </section>
 
-  <!-- SHOPPING BASKET -->
+  <!-- Shopping Basket Drawer -->
   <div id="cart-drawer"
        class="fixed inset-0 z-40 overflow-hidden pointer-events-none transition-opacity duration-300 opacity-0">
 
@@ -303,6 +289,7 @@
                  placeholder="10-Digit WhatsApp / Mobile Number *"
                  class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600">
 
+          <!-- MAP -->
           <div>
             <button type="button"
                     onclick="openMap()"
@@ -344,8 +331,7 @@
                    class="w-full p-2.5 bg-white border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600">
 
             <div id="pincode-feedback"
-                 class="hidden mt-1.5 p-2 rounded-lg text-[11px] font-medium leading-tight">
-            </div>
+                 class="hidden mt-1.5 p-2 rounded-lg text-[11px] font-medium leading-tight"></div>
           </div>
 
           <select id="cust-slot"
@@ -362,12 +348,13 @@
                   class="w-full bg-leaf-600 hover:bg-leaf-700 text-white py-3.5 rounded-xl font-bold text-sm shadow-md flex items-center justify-center gap-2 transition">
             <span>⚡️ Proceed to UPI Payment</span>
           </button>
+
         </div>
       </div>
     </div>
   </div>
 
-  <!-- UPI PAYMENT MODAL -->
+  <!-- UPI QR MODAL -->
   <div id="payment-modal"
        class="fixed inset-0 z-50 bg-motta-900/70 backdrop-blur-sm hidden items-center justify-center p-4">
 
@@ -408,17 +395,15 @@
               class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl text-sm shadow flex items-center justify-center gap-2 transition">
         <span>✅ Confirm Order on WhatsApp</span>
       </button>
+
     </div>
   </div>
 
-  <!-- FOOTER -->
+  <!-- Footer -->
   <footer class="bg-motta-900 text-motta-50 py-10 mt-auto">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center gap-4 text-center">
-
       <span class="font-malayalam text-2xl font-black cms-brand">മുട്ട</span>
-
       <div id="social-links" class="flex items-center gap-3"></div>
-
       <p class="text-xs text-motta-200">
         © 2026 Motta Organics. All rights reserved.
       </p>
@@ -428,74 +413,96 @@
   <!-- FIXED SCRIPTS -->
   <script>
 
+    // =========================================================================
+    // CONFIGURATION
+    // =========================================================================
+
     const MY_UPI_ID = "krishnaarun200-5@okhdfcbank";
     const MY_BUSINESS_NAME = "Motta Organics";
     const MY_WHATSAPP_NUMBER = "919809193616";
 
     const GOOGLE_SCRIPT_URL =
-      "https://script.google.com/macros/s/AKfycbwTglD4Zst3CyO2F_qKuR0qCFQDqSpjlZabrRT1NCDub_dpUzBmrUBtXL1CtgljHXqB5Q/exec";
+      "https://script.google.com/macros/s/AKfycbztMHRFn32tpLkQSAv4mvz6Mo0Q1SWiFUXtCRCgRP5bhwwO7YYsRzTlR9d5aQf7p6XV/exec";
 
     const SERVICED_PINCODES = ["695"];
+
+    // =========================================================================
+    // CART
+    // =========================================================================
 
     let cart = [];
     let customerGps = "";
 
+    // =========================================================================
+    // CMS FETCH LOGIC
+    // =========================================================================
+
     async function loadStoreData() {
       try {
 
-        const response =
-          await fetch(GOOGLE_SCRIPT_URL + "?action=get_store_data");
+        const response = await fetch(
+          GOOGLE_SCRIPT_URL + "?action=get_store_data"
+        );
 
         const data = await response.json();
 
         if (data.settings.BrandName) {
-          document.querySelectorAll('.cms-brand')
-            .forEach(el => el.innerText = data.settings.BrandName);
+          document.querySelectorAll(".cms-brand").forEach(el => {
+            el.innerText = data.settings.BrandName;
+          });
         }
 
-        if (data.settings.Tagline)
-          document.getElementById('cms-tagline').innerText =
+        if (data.settings.Tagline) {
+          document.getElementById("cms-tagline").innerText =
             `🌱 ${data.settings.Tagline}`;
+        }
 
-        if (data.settings.AboutText)
-          document.getElementById('cms-about').innerText =
+        if (data.settings.AboutText) {
+          document.getElementById("cms-about").innerText =
             data.settings.AboutText;
+        }
 
-        if (data.settings.WhyHeading)
-          document.getElementById('why-heading').innerText =
+        // WHY MOTTA SECTION
+
+        if (data.settings.WhyHeading) {
+          document.getElementById("why-heading").innerText =
             data.settings.WhyHeading;
+        }
 
         for (let i = 1; i <= 4; i++) {
 
-          if (data.settings[`WhyPoint${i}Icon`])
+          if (data.settings[`WhyPoint${i}Icon`]) {
             document.getElementById(`why-icon-${i}`).innerText =
               data.settings[`WhyPoint${i}Icon`];
+          }
 
-          if (data.settings[`WhyPoint${i}Title`])
+          if (data.settings[`WhyPoint${i}Title`]) {
             document.getElementById(`why-title-${i}`).innerText =
               data.settings[`WhyPoint${i}Title`];
+          }
 
-          if (data.settings[`WhyPoint${i}Text`])
+          if (data.settings[`WhyPoint${i}Text`]) {
             document.getElementById(`why-text-${i}`).innerText =
               data.settings[`WhyPoint${i}Text`];
+          }
         }
 
         renderSocialLinks(data.settings);
 
-        const routines =
-          data.products.filter(
-            p => p.planType !== "One-Time" &&
-                 p.planType !== "One-Time Order"
-          );
+        // PRODUCTS
 
-        const singles =
-          data.products.filter(
-            p => p.planType === "One-Time" ||
-                 p.planType === "One-Time Order"
-          );
+        const routines = data.products.filter(
+          p => p.planType !== "One-Time" &&
+               p.planType !== "One-Time Order"
+        );
+
+        const singles = data.products.filter(
+          p => p.planType === "One-Time" ||
+               p.planType === "One-Time Order"
+        );
 
         const routineGrid =
-          document.getElementById('routine-grid');
+          document.getElementById("routine-grid");
 
         if (routines.length > 0) {
 
@@ -508,7 +515,7 @@
                 <div class="flex items-center gap-3 mb-4">
 
                   <div class="text-4xl bg-motta-50 h-16 w-16 rounded-2xl flex items-center justify-center shadow-sm border border-motta-100">
-                    ${p.icon || '🥚'}
+                    ${p.icon || "🥚"}
                   </div>
 
                   <span class="text-[11px] font-bold uppercase tracking-wider text-motta-800 bg-motta-100 px-3 py-1 rounded-full h-fit">
@@ -533,25 +540,27 @@
 
               </div>
 
-              <button onclick='addToCart(${JSON.stringify(p.name)}, ${p.price}, ${JSON.stringify(p.planType)})'
-                      class="mt-6 w-full bg-motta-900 hover:bg-motta-800 text-white font-bold py-3.5 rounded-xl transition text-sm">
+              <button
+                onclick='addToCart(${JSON.stringify(p.name)}, ${p.price}, ${JSON.stringify(p.planType)})'
+                class="mt-6 w-full bg-motta-900 hover:bg-motta-800 text-white font-bold py-3.5 rounded-xl transition text-sm">
                 Subscribe Routine
               </button>
 
             </div>
 
-          `).join('');
+          `).join("");
 
         } else {
 
-          routineGrid.innerHTML =
-            `<p class="text-center col-span-3 text-motta-700 py-6">
+          routineGrid.innerHTML = `
+            <p class="text-center col-span-3 text-motta-700 py-6">
               No routines added in Control Panel yet.
-            </p>`;
+            </p>
+          `;
         }
 
         const singleGrid =
-          document.getElementById('single-packs-grid');
+          document.getElementById("single-packs-grid");
 
         if (singles.length > 0) {
 
@@ -562,7 +571,7 @@
               <div>
 
                 <div class="h-32 bg-motta-50 rounded-xl flex items-center justify-center text-5xl mb-4 border border-motta-100">
-                  ${p.icon || '📦'}
+                  ${p.icon || "📦"}
                 </div>
 
                 <h3 class="font-serif text-lg font-bold text-motta-900">
@@ -581,8 +590,9 @@
                   ₹${p.price}
                 </span>
 
-                <button onclick='addToCart(${JSON.stringify(p.name)}, ${p.price}, ${JSON.stringify(p.planType)})'
-                        class="bg-motta-900 hover:bg-motta-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition">
+                <button
+                  onclick='addToCart(${JSON.stringify(p.name)}, ${p.price}, ${JSON.stringify(p.planType)})'
+                  class="bg-motta-900 hover:bg-motta-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition">
                   Add to Basket
                 </button>
 
@@ -590,42 +600,64 @@
 
             </div>
 
-          `).join('');
+          `).join("");
 
         } else {
 
-          singleGrid.innerHTML =
-            `<p class="text-center col-span-3 text-motta-700 py-6">
+          singleGrid.innerHTML = `
+            <p class="text-center col-span-3 text-motta-700 py-6">
               No single packs added in Control Panel yet.
-            </p>`;
+            </p>
+          `;
         }
 
       } catch (err) {
 
-        document.getElementById('routine-grid').innerHTML =
-          `<p class="text-red-500 col-span-3 text-center">
+        document.getElementById("routine-grid").innerHTML = `
+          <p class="text-red-500 col-span-3 text-center">
             Connection to farm failed.
-          </p>`;
+          </p>
+        `;
       }
     }
+
+    // =========================================================================
+    // SOCIAL LINKS
+    // =========================================================================
 
     function renderSocialLinks(settings) {
 
       const platforms = [
-        { key: 'SocialInstagram', label: 'Instagram', icon: '📸' },
-        { key: 'SocialFacebook', label: 'Facebook', icon: '📘' },
-        { key: 'SocialYoutube', label: 'YouTube', icon: '▶️' },
-        { key: 'SocialWhatsapp', label: 'WhatsApp', icon: '💬' }
+        {
+          key: "SocialInstagram",
+          label: "Instagram",
+          icon: "📸"
+        },
+        {
+          key: "SocialFacebook",
+          label: "Facebook",
+          icon: "📘"
+        },
+        {
+          key: "SocialYoutube",
+          label: "YouTube",
+          icon: "▶️"
+        },
+        {
+          key: "SocialWhatsapp",
+          label: "WhatsApp",
+          icon: "💬"
+        }
       ];
 
       const container =
-        document.getElementById('social-links');
+        document.getElementById("social-links");
 
       const active =
         platforms.filter(p => settings[p.key]);
 
       if (active.length === 0) {
-        container.innerHTML = '';
+        container.innerHTML = "";
         return;
       }
 
@@ -636,68 +668,90 @@
            rel="noopener"
            title="${p.label}"
            class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-lg transition">
+
           ${p.icon}
+
         </a>
 
-      `).join('');
+      `).join("");
     }
+
+    // =========================================================================
+    // MAP LOGIC
+    // =========================================================================
 
     let map, marker;
 
     function openMap() {
 
       const mapWrapper =
-        document.getElementById('map-wrapper');
+        document.getElementById("map-wrapper");
 
-      if (!mapWrapper.classList.contains('hidden')) {
+      if (!mapWrapper.classList.contains("hidden")) {
 
-        mapWrapper.classList.add('hidden');
+        mapWrapper.classList.add("hidden");
+
         return;
       }
 
-      mapWrapper.classList.remove('hidden');
-      mapWrapper.classList.add('flex');
+      mapWrapper.classList.remove("hidden");
+      mapWrapper.classList.add("flex");
 
       if (!map) {
 
-        map =
-          L.map('map').setView([8.5241, 76.9366], 13);
+        map = L.map("map").setView(
+          [8.5241, 76.9366],
+          13
+        );
 
         L.tileLayer(
-          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-          { maxZoom: 19 }
+          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+          {
+            maxZoom: 19
+          }
         ).addTo(map);
 
-        marker =
-          L.marker([8.5241, 76.9366], {
+        marker = L.marker(
+          [8.5241, 76.9366],
+          {
             draggable: true
-          }).addTo(map);
+          }
+        ).addTo(map);
 
-        marker.on('dragend', async function() {
+        marker.on("dragend", async function(e) {
 
-          const pos = marker.getLatLng();
+          const pos =
+            marker.getLatLng();
 
           customerGps =
             `${pos.lat},${pos.lng}`;
 
-          document.getElementById('cust-address').value =
+          document.getElementById(
+            "cust-address"
+          ).value =
             "📍 Fetching address from satellite...";
 
           try {
 
-            const res =
-              await fetch(
-                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.lat}&lon=${pos.lng}`
-              );
+            const res = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.lat}&lon=${pos.lng}`
+            );
 
             const data = await res.json();
 
-            document.getElementById('cust-address').value =
+            document.getElementById(
+              "cust-address"
+            ).value =
               data.display_name;
 
-            if (data.address && data.address.postcode) {
+            if (
+              data.address &&
+              data.address.postcode
+            ) {
 
-              document.getElementById('cust-pincode').value =
+              document.getElementById(
+                "cust-pincode"
+              ).value =
                 data.address.postcode;
 
               checkPincodeRealtime();
@@ -705,51 +759,77 @@
 
           } catch (err) {
 
-            document.getElementById('cust-address').value =
+            document.getElementById(
+              "cust-address"
+            ).value =
               "Error fetching address. Please type it manually.";
           }
 
         });
       }
 
-      setTimeout(() => map.invalidateSize(), 200);
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 200);
     }
 
     function locateUser() {
 
-      if (!navigator.geolocation)
-        return alert("GPS is not supported by your browser.");
+      if (!navigator.geolocation) {
 
-      document.getElementById('cust-address').value =
+        return alert(
+          "GPS is not supported by your browser."
+        );
+      }
+
+      document.getElementById(
+        "cust-address"
+      ).value =
         "🎯 Locating you via GPS... Please allow location access.";
 
       navigator.geolocation.getCurrentPosition(
 
         async function(position) {
 
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
+          const lat =
+            position.coords.latitude;
 
-          customerGps = `${lat},${lng}`;
+          const lng =
+            position.coords.longitude;
 
-          map.setView([lat, lng], 17);
-          marker.setLatLng([lat, lng]);
+          customerGps =
+            `${lat},${lng}`;
+
+          map.setView(
+            [lat, lng],
+            17
+          );
+
+          marker.setLatLng(
+            [lat, lng]
+          );
 
           try {
 
-            const res =
-              await fetch(
-                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-              );
+            const res = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+            );
 
             const data = await res.json();
 
-            document.getElementById('cust-address').value =
+            document.getElementById(
+              "cust-address"
+            ).value =
               data.display_name;
 
-            if (data.address && data.address.postcode) {
+            if (
+              data.address &&
+              data.address.postcode
+            ) {
 
-              document.getElementById('cust-pincode').value =
+              document.getElementById(
+                "cust-pincode"
+              ).value =
                 data.address.postcode;
 
               checkPincodeRealtime();
@@ -757,31 +837,42 @@
 
           } catch (err) {
 
-            document.getElementById('cust-address').value =
+            document.getElementById(
+              "cust-address"
+            ).value =
               "Error fetching address.";
           }
 
         },
 
-        function() {
+        function(error) {
 
           alert(
             "Unable to retrieve location. Check if GPS is turned on."
           );
 
-          document.getElementById('cust-address').value = "";
+          document.getElementById(
+            "cust-address"
+          ).value = "";
         },
 
-        { enableHighAccuracy: true }
+        {
+          enableHighAccuracy: true
+        }
       );
     }
+
+    // =========================================================================
+    // CHECKOUT LOGIC
+    // =========================================================================
 
     function isDeliverablePincode(pin) {
 
       const clean = pin.trim();
 
-      if (clean.length !== 6)
+      if (clean.length !== 6) {
         return false;
+      }
 
       return SERVICED_PINCODES.some(
         prefix => clean.startsWith(prefix)
@@ -791,14 +882,19 @@
     function checkPincodeRealtime() {
 
       const pin =
-        document.getElementById('cust-pincode').value.trim();
+        document.getElementById(
+          "cust-pincode"
+        ).value.trim();
 
       const feedback =
-        document.getElementById('pincode-feedback');
+        document.getElementById(
+          "pincode-feedback"
+        );
 
       if (pin.length === 0) {
 
-        feedback.classList.add('hidden');
+        feedback.classList.add("hidden");
+
         return;
       }
 
@@ -812,7 +908,7 @@
           feedback.innerHTML =
             "✅ Great! Fresh morning delivery is available.";
 
-          feedback.classList.remove('hidden');
+          feedback.classList.remove("hidden");
 
         } else {
 
@@ -822,56 +918,82 @@
           feedback.innerHTML =
             "🌿 Coming Soon! We deliver only within active zones.";
 
-          feedback.classList.remove('hidden');
+          feedback.classList.remove("hidden");
         }
 
       } else {
 
-        feedback.classList.add('hidden');
+        feedback.classList.add("hidden");
       }
     }
+
+    // =========================================================================
+    // CART FUNCTIONS
+    // =========================================================================
 
     function toggleCart() {
 
       const drawer =
-        document.getElementById('cart-drawer');
+        document.getElementById("cart-drawer");
 
       const panel =
-        document.getElementById('cart-panel');
+        document.getElementById("cart-panel");
 
-      if (drawer.classList.contains('pointer-events-none')) {
+      if (
+        drawer.classList.contains(
+          "pointer-events-none"
+        )
+      ) {
 
         drawer.classList.remove(
-          'pointer-events-none',
-          'opacity-0'
+          "pointer-events-none",
+          "opacity-0"
         );
 
-        panel.classList.remove('translate-x-full');
+        panel.classList.remove(
+          "translate-x-full"
+        );
 
       } else {
 
-        panel.classList.add('translate-x-full');
+        panel.classList.add(
+          "translate-x-full"
+        );
 
-        drawer.classList.add('opacity-0');
+        drawer.classList.add(
+          "opacity-0"
+        );
 
         setTimeout(
-          () => drawer.classList.add('pointer-events-none'),
+          () =>
+            drawer.classList.add(
+              "pointer-events-none"
+            ),
           300
         );
       }
     }
 
-    function addToCart(title, price, planType) {
+    function addToCart(
+      title,
+      price,
+      planType
+    ) {
 
       const itemKey =
         `${title}_${planType}`;
 
       const existing =
-        cart.find(item => item.key === itemKey);
+        cart.find(
+          item => item.key === itemKey
+        );
 
-      if (existing)
+      if (existing) {
+
         existing.qty += 1;
-      else
+
+      } else {
+
         cart.push({
           key: itemKey,
           title,
@@ -879,17 +1001,22 @@
           planType,
           qty: 1
         });
+      }
 
       updateCartUI();
       toggleCart();
     }
 
-    function changeQty(index, delta) {
+    function changeQty(
+      index,
+      delta
+    ) {
 
       cart[index].qty += delta;
 
-      if (cart[index].qty <= 0)
+      if (cart[index].qty <= 0) {
         cart.splice(index, 1);
+      }
 
       updateCartUI();
     }
@@ -897,23 +1024,32 @@
     function updateCartUI() {
 
       const itemsContainer =
-        document.getElementById('cart-items');
+        document.getElementById(
+          "cart-items"
+        );
 
-      document.getElementById('cart-count').textContent =
+      document.getElementById(
+        "cart-count"
+      ).textContent =
         cart.reduce(
-          (sum, item) => sum + item.qty,
+          (sum, item) =>
+            sum + item.qty,
           0
         );
 
       const totalPrice =
         cart.reduce(
           (sum, item) =>
-            sum + (item.price * item.qty),
+            sum +
+            item.price *
+            item.qty,
           0
         );
 
-      document.getElementById('cart-total').textContent =
-        `₹${totalPrice.toLocaleString('en-IN')}`;
+      document.getElementById(
+        "cart-total"
+      ).textContent =
+        `₹${totalPrice.toLocaleString("en-IN")}`;
 
       if (cart.length === 0) {
 
@@ -934,7 +1070,7 @@
               </h4>
 
               <div class="text-xs text-motta-700 mt-0.5">
-                ₹${item.price.toLocaleString('en-IN')} each
+                ₹${item.price.toLocaleString("en-IN")} each
               </div>
             </div>
 
@@ -942,8 +1078,9 @@
 
               <div class="flex items-center border border-motta-200 rounded-lg">
 
-                <button onclick="changeQty(${i}, -1)"
-                        class="px-2 py-0.5 text-motta-700 hover:bg-motta-100 rounded-l-lg text-xs">
+                <button
+                  onclick="changeQty(${i}, -1)"
+                  class="px-2 py-0.5 text-motta-700 hover:bg-motta-100 rounded-l-lg text-xs">
                   -
                 </button>
 
@@ -951,119 +1088,177 @@
                   ${item.qty}
                 </span>
 
-                <button onclick="changeQty(${i}, 1)"
-                        class="px-2 py-0.5 text-motta-700 hover:bg-motta-100 rounded-r-lg text-xs">
+                <button
+                  onclick="changeQty(${i}, 1)"
+                  class="px-2 py-0.5 text-motta-700 hover:bg-motta-100 rounded-r-lg text-xs">
                   +
                 </button>
 
               </div>
 
               <span class="font-bold text-xs sm:text-sm text-motta-900 w-12 text-right">
-                ₹${(item.price * item.qty).toLocaleString('en-IN')}
+                ₹${(
+                  item.price *
+                  item.qty
+                ).toLocaleString("en-IN")}
               </span>
 
             </div>
 
           </div>
 
-        `).join('');
+        `).join("");
     }
+
+    // =========================================================================
+    // UPI PAYMENT
+    // =========================================================================
 
     function openUPIPaymentModal() {
 
-      if (cart.length === 0)
-        return alert("Your basket is empty.");
+      if (cart.length === 0) {
+        return alert(
+          "Your basket is empty."
+        );
+      }
 
       const name =
-        document.getElementById('cust-name').value.trim();
+        document.getElementById(
+          "cust-name"
+        ).value.trim();
 
       const phone =
-        document.getElementById('cust-phone').value.trim();
+        document.getElementById(
+          "cust-phone"
+        ).value.trim();
 
       const address =
-        document.getElementById('cust-address').value.trim();
+        document.getElementById(
+          "cust-address"
+        ).value.trim();
 
       const pincode =
-        document.getElementById('cust-pincode').value.trim();
+        document.getElementById(
+          "cust-pincode"
+        ).value.trim();
 
-      if (!name || !phone || !address || !pincode)
+      if (
+        !name ||
+        !phone ||
+        !address ||
+        !pincode
+      ) {
+
         return alert(
           "Please fill in your Name, WhatsApp Number, Address, and Pincode."
         );
+      }
 
-      if (!isDeliverablePincode(pincode))
+      if (!isDeliverablePincode(pincode)) {
+
         return alert(
           "⚠️ We currently deliver only within active zones (695xxx)."
         );
+      }
 
       const total =
         cart.reduce(
           (sum, item) =>
-            sum + (item.price * item.qty),
+            sum +
+            item.price *
+            item.qty,
           0
         );
 
       const upiUri =
         `upi://pay?pa=${MY_UPI_ID}&pn=${encodeURIComponent(MY_BUSINESS_NAME)}&am=${total}&cu=INR&tn=Motta%20Order`;
 
-      document.getElementById('upi-qr-image').src =
+      document.getElementById(
+        "upi-qr-image"
+      ).src =
         `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUri)}`;
 
-      document.getElementById('modal-total-amount').textContent =
-        `Total: ₹${total.toLocaleString('en-IN')}`;
+      document.getElementById(
+        "modal-total-amount"
+      ).textContent =
+        `Total: ₹${total.toLocaleString("en-IN")}`;
 
-      document.getElementById('upi-direct-link').href =
+      document.getElementById(
+        "upi-direct-link"
+      ).href =
         upiUri;
 
       toggleCart();
 
-      document.getElementById('payment-modal')
-        .classList.remove('hidden');
+      document.getElementById(
+        "payment-modal"
+      ).classList.remove("hidden");
 
-      document.getElementById('payment-modal')
-        .classList.add('flex');
+      document.getElementById(
+        "payment-modal"
+      ).classList.add("flex");
     }
 
     function closePaymentModal() {
 
-      document.getElementById('payment-modal')
-        .classList.add('hidden');
+      document.getElementById(
+        "payment-modal"
+      ).classList.add("hidden");
 
-      document.getElementById('payment-modal')
-        .classList.remove('flex');
+      document.getElementById(
+        "payment-modal"
+      ).classList.remove("flex");
     }
+
+    // =========================================================================
+    // SEND ORDER TO WHATSAPP
+    // =========================================================================
 
     async function sendOrderToWhatsAppAfterPayment() {
 
       const name =
-        document.getElementById('cust-name').value.trim();
+        document.getElementById(
+          "cust-name"
+        ).value.trim();
 
       const phone =
-        document.getElementById('cust-phone').value.trim();
+        document.getElementById(
+          "cust-phone"
+        ).value.trim();
 
       const addressInput =
-        document.getElementById('cust-address').value.trim();
+        document.getElementById(
+          "cust-address"
+        ).value.trim();
 
       const pincode =
-        document.getElementById('cust-pincode').value.trim();
+        document.getElementById(
+          "cust-pincode"
+        ).value.trim();
 
       const slot =
-        document.getElementById('cust-slot').value;
+        document.getElementById(
+          "cust-slot"
+        ).value;
 
       const total =
         cart.reduce(
           (sum, item) =>
-            sum + (item.price * item.qty),
+            sum +
+            item.price *
+            item.qty,
           0
         );
 
       const itemsText =
         cart.map(
-          i => `${i.title} (${i.planType}) x ${i.qty}`
+          i =>
+            `${i.title} (${i.planType}) x ${i.qty}`
         ).join(", ");
 
       const primaryPlan =
-        cart[0]?.planType || "One-Time Order";
+        cart[0]?.planType ||
+        "One-Time Order";
 
       let finalAddress =
         `${addressInput} (${pincode})`;
@@ -1082,11 +1277,16 @@
           `\n📍 *Map Location:* ${mapsUrl}`;
       }
 
-      const btn = event.currentTarget;
+      const btn =
+        event.currentTarget;
 
-      if (btn)
+      if (btn) {
+
         btn.innerHTML =
           `<span>⏳ Securing your slot...</span>`;
+      }
+
+      // SAVE ORDER TO GOOGLE SHEETS
 
       try {
 
@@ -1119,6 +1319,8 @@
         console.error(e);
       }
 
+      // WHATSAPP MESSAGE
+
       let msg =
         `🥚 *NEW മുട്ട (MOTTA) ORDER* 🌾\n\n` +
         `👤 *Details:*\n` +
@@ -1128,9 +1330,16 @@
         `${whatsappMapLink}\n` +
         `• ${slot}\n\n` +
         `📦 *Items:*\n` +
-        `${cart.map(i => `• ${i.title} x${i.qty}`).join('\n')}\n\n` +
+        `${cart
+          .map(
+            i =>
+              `• ${i.title} x${i.qty}`
+          )
+          .join("\n")}\n\n` +
         `💰 *Paid via UPI:* ₹${total}\n\n` +
         `✅ I made the payment. Please confirm!`;
+
+      // WAIT BEFORE OPENING WHATSAPP
 
       setTimeout(() => {
 
@@ -1139,9 +1348,10 @@
 
         closePaymentModal();
 
-        if (btn)
+        if (btn) {
           btn.innerHTML =
             `<span>✅ Confirm Order on WhatsApp</span>`;
+        }
 
       }, 1500);
     }
