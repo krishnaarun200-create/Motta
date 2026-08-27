@@ -15,7 +15,24 @@
     .font-malayalam { font-family: 'Noto Sans Malayalam', sans-serif; }
   </style>
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen antialiased flex flex-col selection:bg-emerald-500 selection:text-white" onload="initDashboard()">
+<body class="bg-gray-950 text-gray-100 min-h-screen antialiased flex flex-col selection:bg-emerald-500 selection:text-white" onload="checkLogin()">
+
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="fixed inset-0 bg-gray-950 z-50 flex items-center justify-center px-4">
+    <div class="w-full max-w-sm bg-gray-900 border border-gray-800 rounded-3xl p-8 text-center">
+      <span class="font-malayalam text-3xl font-black text-amber-500">മുട്ട</span>
+      <h1 class="font-bold text-white text-lg mt-2 mb-1">Command Center</h1>
+      <p class="text-xs text-gray-400 mb-6">Enter password to continue</p>
+      <input type="password" id="login-password" placeholder="Password" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 text-center" onkeydown="if(event.key==='Enter') attemptLogin()">
+      <p id="login-error" class="hidden text-xs text-rose-400 mt-3">❌ Wrong password. Try again.</p>
+      <button onclick="attemptLogin()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-sm transition mt-4">
+        🔓 Unlock
+      </button>
+    </div>
+  </div>
+
+  <!-- APP CONTENT (hidden until login) -->
+  <div id="app-content" class="hidden flex flex-col min-h-screen">
 
   <!-- Header -->
   <header class="bg-gray-900/90 backdrop-blur-md border-b border-gray-800 sticky top-0 z-30">
@@ -310,11 +327,77 @@
 
   </main>
 
+  </div><!-- /app-content -->
+
   <!-- DASHBOARD CONTROLLER SCRIPT -->
   <script>
     // IMPORTANT: This URL MUST be identical to the one in index.html.
     // After you redeploy the Apps Script, paste the new /exec URL here AND in index.html.
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztMHRFn32tpLkQSAv4mvz6Mo0Q1SWiFUXtCRCgRP5bhwwO7YYsRzTlR9d5aQf7p6XV/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKmMQVosM6bVhpJKvm5uueebh0N1BuiIUb9Iu1srJZqnrMTJ0QrRNvurK8eABoD0W2IA/exec";
+
+    // --- LOGIN GATE (real server-side check) ---
+    // The password typed here is sent to your Apps Script as a token on
+    // every request. Code.gs checks it against ADMIN_TOKEN before doing
+    // ANYTHING — reading or writing. Wrong/missing token = server refuses.
+    // Set the actual secret in Code.gs, not here.
+    let ADMIN_TOKEN = "";
+
+    function checkLogin() {
+      const saved = sessionStorage.getItem('motta_admin_token');
+      if (saved) {
+        ADMIN_TOKEN = saved;
+        tryUnlock(true);
+      } else {
+        document.getElementById('login-password').focus();
+      }
+    }
+
+    function attemptLogin() {
+      const input = document.getElementById('login-password').value;
+      if (!input) return;
+      ADMIN_TOKEN = input;
+      tryUnlock(false);
+    }
+
+    // Verifies ADMIN_TOKEN against the server by actually requesting admin
+    // data. Only shows the app if the server accepts it.
+    async function tryUnlock(silentRetry) {
+      const errorMsg = document.getElementById('login-error');
+      const btn = document.querySelector('#login-screen button');
+      if (btn && !silentRetry) btn.innerText = "⏳ Checking...";
+
+      try {
+        const res = await fetch(GOOGLE_SCRIPT_URL + "?action=get_admin_data&token=" + encodeURIComponent(ADMIN_TOKEN));
+        const data = await res.json();
+
+        if (data.status === "unauthorized") {
+          sessionStorage.removeItem('motta_admin_token');
+          if (!silentRetry) {
+            errorMsg.classList.remove('hidden');
+            document.getElementById('login-password').value = "";
+            document.getElementById('login-password').focus();
+          } else {
+            document.getElementById('login-password').focus();
+          }
+          if (btn) btn.innerText = "🔓 Unlock";
+          return;
+        }
+
+        // Success — cache data we already fetched, remember the token, show app
+        sessionStorage.setItem('motta_admin_token', ADMIN_TOKEN);
+        applyAdminData(data);
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('app-content').classList.remove('hidden');
+        renderAllPanels();
+      } catch (err) {
+        console.error("Login check failed:", err);
+        if (!silentRetry) {
+          errorMsg.classList.remove('hidden');
+          errorMsg.textContent = "⚠️ Couldn't reach the server. Check your connection.";
+        }
+        if (btn) btn.innerText = "🔓 Unlock";
+      }
+    }
 
     let rawOrders = [];
     let rawSubs = [];
@@ -358,26 +441,43 @@
       if (showSpinner && icon) icon.classList.add('animate-spin');
 
       try {
-        const res = await fetch(GOOGLE_SCRIPT_URL + "?action=get_admin_data");
+        const res = await fetch(GOOGLE_SCRIPT_URL + "?action=get_admin_data&token=" + encodeURIComponent(ADMIN_TOKEN));
         const data = await res.json();
 
-        rawOrders = data.orders || [];
-        rawSubs = data.subscribers || [];
-        rawProducts = data.products || [];
-        rawSettings = data.settings || {};
-        rawCapacity = data.capacity || null;
+        if (data.status === "unauthorized") {
+          // Token stopped working (changed on server, expired session, etc.)
+          sessionStorage.removeItem('motta_admin_token');
+          document.getElementById('app-content').classList.add('hidden');
+          document.getElementById('login-screen').classList.remove('hidden');
+          document.getElementById('login-error').classList.remove('hidden');
+          document.getElementById('login-error').textContent = "⚠️ Session expired. Please log in again.";
+          return;
+        }
 
-        updateMetrics();
-        filterOrders();
-        renderSubscribers();
-        renderInventory();
-        renderCapacityPanel();
-        prefillContentForm();
+        applyAdminData(data);
+        renderAllPanels();
       } catch (err) {
         console.error("Dashboard error:", err);
       } finally {
         if (icon) icon.classList.remove('animate-spin');
       }
+    }
+
+    function applyAdminData(data) {
+      rawOrders = data.orders || [];
+      rawSubs = data.subscribers || [];
+      rawProducts = data.products || [];
+      rawSettings = data.settings || {};
+      rawCapacity = data.capacity || null;
+    }
+
+    function renderAllPanels() {
+      updateMetrics();
+      filterOrders();
+      renderSubscribers();
+      renderInventory();
+      renderCapacityPanel();
+      prefillContentForm();
     }
 
     function updateMetrics() {
@@ -509,7 +609,7 @@
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "update_order_status", rowIndex: rowIndex, newStatus: newStatus })
+          body: JSON.stringify({ action: "update_order_status", token: ADMIN_TOKEN, rowIndex: rowIndex, newStatus: newStatus })
         });
         fetchAllData();
       } catch (e) { alert("Failed to update status"); }
@@ -571,7 +671,7 @@
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "assign_delivery_day", rowIndex: rowIndex, deliveryDay: day })
+          body: JSON.stringify({ action: "assign_delivery_day", token: ADMIN_TOKEN, rowIndex: rowIndex, deliveryDay: day })
         });
         fetchAllData();
       } catch (e) { alert("Failed to assign delivery day"); }
@@ -633,7 +733,7 @@
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "update_sub_status", rowIndex: rowIndex, newStatus: newStatus })
+          body: JSON.stringify({ action: "update_sub_status", token: ADMIN_TOKEN, rowIndex: rowIndex, newStatus: newStatus })
         });
         fetchAllData();
       } catch (e) { alert("Failed to update subscriber"); }
@@ -664,7 +764,7 @@
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "toggle_product_stock", rowIndex: rowIndex, inStock: inStockStatus })
+          body: JSON.stringify({ action: "toggle_product_stock", token: ADMIN_TOKEN, rowIndex: rowIndex, inStock: inStockStatus })
         });
         fetchAllData();
       } catch (e) { alert("Stock update failed"); }
@@ -686,7 +786,7 @@
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "add_product", name: name, price: Number(price), description: desc, planType: plan, icon: icon, eggCount: Number(eggCount) || 0 })
+          body: JSON.stringify({ action: "add_product", token: ADMIN_TOKEN, name: name, price: Number(price), description: desc, planType: plan, icon: icon, eggCount: Number(eggCount) || 0 })
         });
         btn.innerText = "✅ Published!";
         document.getElementById('prod-name').value = "";
@@ -721,7 +821,7 @@
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "update_settings", settings: settingsObj })
+          body: JSON.stringify({ action: "update_settings", token: ADMIN_TOKEN, settings: settingsObj })
         });
         btnEl.innerText = "✅ Saved!";
         fetchAllData();
