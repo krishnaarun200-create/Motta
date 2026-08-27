@@ -333,7 +333,7 @@
   <script>
     // IMPORTANT: This URL MUST be identical to the one in index.html.
     // After you redeploy the Apps Script, paste the new /exec URL here AND in index.html.
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztMHRFn32tpLkQSAv4mvz6Mo0Q1SWiFUXtCRCgRP5bhwwO7YYsRzTlR9d5aQf7p6XV/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKmMQVosM6bVhpJKvm5uueebh0N1BuiIUb9Iu1srJZqnrMTJ0QrRNvurK8eABoD0W2IA/exec";
 
     // --- LOGIN GATE (real server-side check) ---
     // The password typed here is sent to your Apps Script as a token on
@@ -628,8 +628,16 @@
       container.innerHTML = rawSubs.map(s => {
         const isActive = s.status === "Active";
         const cleanPhone = String(s.phone).replace(/[^0-9]/g, '');
+        const cap = (rawCapacity && rawCapacity.dailyCapacity) || 0;
+
+        // Build day options showing live committed totals so you can see,
+        // right in the dropdown, which days still have room before you assign one.
         const dayOptions = ['<option value="">Unassigned</option>'].concat(
-          DAYS.map(d => `<option value="${d}" ${s.deliveryDay === d ? 'selected' : ''}>${d}</option>`)
+          DAYS.map(d => {
+            const committed = (rawCapacity && rawCapacity.byDay[d]) || 0;
+            const label = cap > 0 ? `${d} (${committed}/${cap} eggs)` : d;
+            return `<option value="${d}" ${s.deliveryDay === d ? 'selected' : ''}>${label}</option>`;
+          })
         ).join('');
 
         return `
@@ -643,7 +651,6 @@
                 <p class="text-xs text-amber-400 font-semibold mt-1">⭐️ Plan: ${s.planType}</p>
                 <p class="text-xs text-gray-300 mt-0.5">📦 Contents: ${s.eggs}</p>
                 <p class="text-[11px] text-gray-400 mt-1">📍 ${s.address}</p>
-                ${s.eggsPerDelivery ? `<p class="text-[11px] text-emerald-400 mt-1 font-semibold">🥚 ${s.eggsPerDelivery} eggs / delivery</p>` : ''}
               </div>
 
               <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
@@ -656,15 +663,34 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 pt-3 border-t border-gray-800">
-              <span class="text-[11px] text-gray-400 font-bold uppercase tracking-wider">🚚 Delivery Day:</span>
-              <select onchange="assignDeliveryDay(${s.rowIndex}, this.value)" class="bg-gray-950 border border-gray-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
-                ${dayOptions}
-              </select>
+            <div class="flex flex-wrap items-center gap-4 pt-3 border-t border-gray-800">
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] text-gray-400 font-bold uppercase tracking-wider">🚚 Delivery Day:</span>
+                <select onchange="assignDeliveryDay(${s.rowIndex}, this.value)" class="bg-gray-950 border border-gray-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                  ${dayOptions}
+                </select>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] text-gray-400 font-bold uppercase tracking-wider">🥚 Eggs/Delivery:</span>
+                <input type="number" min="0" value="${s.eggsPerDelivery || ''}" placeholder="0"
+                  onchange="updateSubEggs(${s.rowIndex}, this.value)"
+                  class="w-20 bg-gray-950 border border-gray-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+              </div>
             </div>
           </div>
         `;
       }).join('');
+    }
+
+    async function updateSubEggs(rowIndex, value) {
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "update_sub_eggs", token: ADMIN_TOKEN, rowIndex: rowIndex, eggsPerDelivery: value })
+        });
+        fetchAllData();
+      } catch (e) { alert("Failed to update eggs/delivery"); }
     }
 
     async function assignDeliveryDay(rowIndex, day) {
