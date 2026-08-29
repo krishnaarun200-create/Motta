@@ -15,24 +15,7 @@
     .font-malayalam { font-family: 'Noto Sans Malayalam', sans-serif; }
   </style>
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen antialiased flex flex-col selection:bg-emerald-500 selection:text-white" onload="checkLogin()">
-
-  <!-- LOGIN SCREEN -->
-  <div id="login-screen" class="fixed inset-0 bg-gray-950 z-50 flex items-center justify-center px-4">
-    <div class="w-full max-w-sm bg-gray-900 border border-gray-800 rounded-3xl p-8 text-center">
-      <span class="font-malayalam text-3xl font-black text-amber-500">മുട്ട</span>
-      <h1 class="font-bold text-white text-lg mt-2 mb-1">Command Center</h1>
-      <p class="text-xs text-gray-400 mb-6">Enter password to continue</p>
-      <input type="password" id="login-password" placeholder="Password" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 text-center" onkeydown="if(event.key==='Enter') attemptLogin()">
-      <p id="login-error" class="hidden text-xs text-rose-400 mt-3">❌ Wrong password. Try again.</p>
-      <button onclick="attemptLogin()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-sm transition mt-4">
-        🔓 Unlock
-      </button>
-    </div>
-  </div>
-
-  <!-- APP CONTENT (hidden until login) -->
-  <div id="app-content" class="hidden flex flex-col min-h-screen">
+<body class="bg-gray-950 text-gray-100 min-h-screen antialiased flex flex-col selection:bg-emerald-500 selection:text-white" onload="initDashboard()">
 
   <!-- Header -->
   <header class="bg-gray-900/90 backdrop-blur-md border-b border-gray-800 sticky top-0 z-30">
@@ -133,11 +116,21 @@
     <!-- TAB 2: SUBSCRIBERS HUB -->
     <!-- =================================================================== -->
     <div id="tab-subs" class="hidden space-y-6">
-      <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl flex justify-between items-center">
+      <div class="bg-gray-900 border border-gray-800 p-5 rounded-3xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
           <h2 class="font-bold text-base text-white">Recurring "Motta Routine" Subscribers</h2>
           <p class="text-xs text-gray-400 mt-0.5">Manage recurring morning drop routines and vacation pauses.</p>
         </div>
+        <button onclick="showTodaysDeliveries()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex-shrink-0">
+          🚚 Show Today's Deliveries
+        </button>
+      </div>
+
+      <div id="failed-payments-banner" class="hidden bg-rose-500/10 border border-rose-500/40 rounded-2xl px-4 py-3 flex items-center justify-between gap-3">
+        <span id="failed-payments-label" class="text-xs font-bold text-rose-300"></span>
+        <button onclick="showFailedPayments()" class="text-[11px] font-bold text-white bg-rose-600 hover:bg-rose-500 px-3 py-1.5 rounded-lg transition flex-shrink-0">
+          View Them
+        </button>
       </div>
 
       <!-- Weekly Capacity Panel -->
@@ -145,15 +138,23 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
           <div>
             <h3 class="font-bold text-sm text-white">🥚 Weekly Egg Capacity</h3>
-            <p class="text-[11px] text-gray-400 mt-0.5">How many eggs are committed to each day vs. what your hens can produce.</p>
+            <p class="text-[11px] text-gray-400 mt-0.5">Tap a day to see exactly who's on that day's delivery route.</p>
           </div>
           <div id="capacity-summary" class="text-xs font-semibold text-gray-300"></div>
         </div>
-        <div id="capacity-grid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+        <div id="capacity-grid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
           <div class="text-xs text-gray-500 col-span-full">Loading capacity...</div>
         </div>
         <p id="capacity-warning" class="hidden mt-3 text-[11px] text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-2"></p>
         <p class="text-[10px] text-gray-500 mt-3">💡 Set your daily egg capacity in the "✍️ Site Content" tab. Assign each subscriber's delivery day below to keep this panel accurate.</p>
+      </div>
+
+      <!-- Day Filter Status Bar -->
+      <div id="subs-filter-bar" class="hidden bg-emerald-600/10 border border-emerald-500/30 rounded-2xl px-4 py-3 flex items-center justify-between gap-3">
+        <span id="subs-filter-label" class="text-xs font-bold text-emerald-300"></span>
+        <button onclick="clearDayFilter()" class="text-[11px] font-bold text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg transition">
+          ✕ Show All Subscribers
+        </button>
       </div>
 
       <div id="subs-container" class="space-y-4">
@@ -217,6 +218,11 @@
         </div>
 
         <div>
+          <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Razorpay Plan ID <span class="text-gray-500 normal-case font-medium">(only for Routine plans — create the Plan in your Razorpay Dashboard first, then paste its ID here to enable Autopay for it)</span></label>
+          <input type="text" id="prod-razorpay-plan" placeholder="e.g. plan_ABCxyz123" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <div>
           <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Description</label>
           <input type="text" id="prod-desc" placeholder="e.g. Pasture-foraged country hen eggs" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
         </div>
@@ -232,6 +238,41 @@
     <!-- TAB 4: SITE CONTENT (Why മുട്ട + Social Links) -->
     <!-- =================================================================== -->
     <div id="tab-content" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+      <!-- Razorpay Payment Settings -->
+      <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-sm space-y-4 lg:col-span-2">
+        <div class="border-b border-gray-800 pb-3">
+          <h2 class="font-bold text-lg text-white">💳 Razorpay Payment Settings</h2>
+          <p class="text-xs text-gray-400 mt-0.5">Powers checkout for both one-time orders and Autopay subscriptions.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Razorpay Key ID <span class="text-gray-500 normal-case font-medium">(publishable — safe to store here)</span></label>
+            <input type="text" id="razorpay-keyid-input" placeholder="rzp_live_xxxxxxxxxxxx" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Subscription Cycles <span class="text-gray-500 normal-case font-medium">(billing cycles per new subscription)</span></label>
+            <input type="number" id="razorpay-cycles-input" placeholder="e.g. 60" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+          </div>
+        </div>
+
+        <button onclick="saveRazorpaySettings()" id="btn-save-razorpay" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-xl text-xs transition">
+          💾 Save Razorpay Settings
+        </button>
+
+        <div class="bg-gray-950 border border-gray-800 rounded-2xl p-4 space-y-2 text-[11px] text-gray-400 leading-relaxed">
+          <p class="font-bold text-gray-300">⚠️ Two things must be set up OUTSIDE this admin panel, for security:</p>
+          <p>1. In the <strong class="text-gray-200">Apps Script editor</strong> (Project Settings → Script Properties), add:
+            <code class="text-emerald-400">RAZORPAY_KEY_ID</code>,
+            <code class="text-emerald-400">RAZORPAY_KEY_SECRET</code>, and
+            <code class="text-emerald-400">RAZORPAY_WEBHOOK_SECRET</code> (make up any string for the webhook secret).</p>
+          <p>2. In your <strong class="text-gray-200">Razorpay Dashboard</strong> → Settings → Webhooks, add this exact URL (replace YOUR_WEBHOOK_SECRET with what you set above), and enable events:
+            <em>payment.captured, subscription.activated, subscription.charged, subscription.halted, subscription.cancelled, subscription.completed</em>:</p>
+          <p class="text-emerald-400 break-all" id="webhook-url-display">YOUR_SCRIPT_URL?source=razorpay_webhook&wh=YOUR_WEBHOOK_SECRET</p>
+          <p>3. For each Routine product, create a matching <strong class="text-gray-200">Plan</strong> in Razorpay Dashboard → Subscriptions → Plans, then paste its Plan ID into that product below (Store & Inventory tab).</p>
+        </div>
+      </div>
 
       <!-- Production Capacity Editor -->
       <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-sm space-y-4 lg:col-span-2">
@@ -327,83 +368,18 @@
 
   </main>
 
-  </div><!-- /app-content -->
-
   <!-- DASHBOARD CONTROLLER SCRIPT -->
   <script>
     // IMPORTANT: This URL MUST be identical to the one in index.html.
     // After you redeploy the Apps Script, paste the new /exec URL here AND in index.html.
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztMHRFn32tpLkQSAv4mvz6Mo0Q1SWiFUXtCRCgRP5bhwwO7YYsRzTlR9d5aQf7p6XV/exec";
-
-    // --- LOGIN GATE (real server-side check) ---
-    // The password typed here is sent to your Apps Script as a token on
-    // every request. Code.gs checks it against ADMIN_TOKEN before doing
-    // ANYTHING — reading or writing. Wrong/missing token = server refuses.
-    // Set the actual secret in Code.gs, not here.
-    let ADMIN_TOKEN = "";
-
-    function checkLogin() {
-      const saved = sessionStorage.getItem('motta_admin_token');
-      if (saved) {
-        ADMIN_TOKEN = saved;
-        tryUnlock(true);
-      } else {
-        document.getElementById('login-password').focus();
-      }
-    }
-
-    function attemptLogin() {
-      const input = document.getElementById('login-password').value;
-      if (!input) return;
-      ADMIN_TOKEN = input;
-      tryUnlock(false);
-    }
-
-    // Verifies ADMIN_TOKEN against the server by actually requesting admin
-    // data. Only shows the app if the server accepts it.
-    async function tryUnlock(silentRetry) {
-      const errorMsg = document.getElementById('login-error');
-      const btn = document.querySelector('#login-screen button');
-      if (btn && !silentRetry) btn.innerText = "⏳ Checking...";
-
-      try {
-        const res = await fetch(GOOGLE_SCRIPT_URL + "?action=get_admin_data&token=" + encodeURIComponent(ADMIN_TOKEN));
-        const data = await res.json();
-
-        if (data.status === "unauthorized") {
-          sessionStorage.removeItem('motta_admin_token');
-          if (!silentRetry) {
-            errorMsg.classList.remove('hidden');
-            document.getElementById('login-password').value = "";
-            document.getElementById('login-password').focus();
-          } else {
-            document.getElementById('login-password').focus();
-          }
-          if (btn) btn.innerText = "🔓 Unlock";
-          return;
-        }
-
-        // Success — cache data we already fetched, remember the token, show app
-        sessionStorage.setItem('motta_admin_token', ADMIN_TOKEN);
-        applyAdminData(data);
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('app-content').classList.remove('hidden');
-        renderAllPanels();
-      } catch (err) {
-        console.error("Login check failed:", err);
-        if (!silentRetry) {
-          errorMsg.classList.remove('hidden');
-          errorMsg.textContent = "⚠️ Couldn't reach the server. Check your connection.";
-        }
-        if (btn) btn.innerText = "🔓 Unlock";
-      }
-    }
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKmMQVosM6bVhpJKvm5uueebh0N1BuiIUb9Iu1srJZqnrMTJ0QrRNvurK8eABoD0W2IA/exec";
 
     let rawOrders = [];
     let rawSubs = [];
     let rawProducts = [];
     let rawSettings = {};
     let rawCapacity = null;
+    let daySubsFilter = null; // null = show all, or "Monday"/"Tuesday"/... or "Unassigned"
 
     async function initDashboard() {
       fetchAllData();
@@ -441,43 +417,27 @@
       if (showSpinner && icon) icon.classList.add('animate-spin');
 
       try {
-        const res = await fetch(GOOGLE_SCRIPT_URL + "?action=get_admin_data&token=" + encodeURIComponent(ADMIN_TOKEN));
+        const res = await fetch(GOOGLE_SCRIPT_URL + "?action=get_admin_data");
         const data = await res.json();
 
-        if (data.status === "unauthorized") {
-          // Token stopped working (changed on server, expired session, etc.)
-          sessionStorage.removeItem('motta_admin_token');
-          document.getElementById('app-content').classList.add('hidden');
-          document.getElementById('login-screen').classList.remove('hidden');
-          document.getElementById('login-error').classList.remove('hidden');
-          document.getElementById('login-error').textContent = "⚠️ Session expired. Please log in again.";
-          return;
-        }
+        rawOrders = data.orders || [];
+        rawSubs = data.subscribers || [];
+        rawProducts = data.products || [];
+        rawSettings = data.settings || {};
+        rawCapacity = data.capacity || null;
 
-        applyAdminData(data);
-        renderAllPanels();
+        updateMetrics();
+        filterOrders();
+        renderSubscribers();
+        renderInventory();
+        renderCapacityPanel();
+        prefillContentForm();
+        checkFailedPaymentsBanner();
       } catch (err) {
         console.error("Dashboard error:", err);
       } finally {
         if (icon) icon.classList.remove('animate-spin');
       }
-    }
-
-    function applyAdminData(data) {
-      rawOrders = data.orders || [];
-      rawSubs = data.subscribers || [];
-      rawProducts = data.products || [];
-      rawSettings = data.settings || {};
-      rawCapacity = data.capacity || null;
-    }
-
-    function renderAllPanels() {
-      updateMetrics();
-      filterOrders();
-      renderSubscribers();
-      renderInventory();
-      renderCapacityPanel();
-      prefillContentForm();
     }
 
     function updateMetrics() {
@@ -505,7 +465,9 @@
           (o.name && o.name.toLowerCase().includes(q)) ||
           (o.phone && String(o.phone).includes(q)) ||
           (o.items && o.items.toLowerCase().includes(q)) ||
-          (o.address && o.address.toLowerCase().includes(q))
+          (o.address && o.address.toLowerCase().includes(q)) ||
+          (o.planType && o.planType.toLowerCase().includes(q)) ||
+          (o.slot && o.slot.toLowerCase().includes(q))
         );
         if (!matchesQuery) return false;
 
@@ -609,7 +571,7 @@
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "update_order_status", token: ADMIN_TOKEN, rowIndex: rowIndex, newStatus: newStatus })
+          body: JSON.stringify({ action: "update_order_status", rowIndex: rowIndex, newStatus: newStatus })
         });
         fetchAllData();
       } catch (e) { alert("Failed to update status"); }
@@ -618,39 +580,72 @@
     // --- SUBSCRIBERS LOGIC ---
     function renderSubscribers() {
       const container = document.getElementById('subs-container');
-      if (rawSubs.length === 0) {
-        container.innerHTML = `<div class="text-center py-16 bg-gray-900 rounded-3xl border border-gray-800 text-gray-400 text-sm">No subscriptions logged yet.</div>`;
+      const filterBar = document.getElementById('subs-filter-bar');
+      const filterLabel = document.getElementById('subs-filter-label');
+
+      let visibleSubs = rawSubs;
+      if (daySubsFilter === "Unassigned") {
+        visibleSubs = rawSubs.filter(s => !s.deliveryDay);
+      } else if (daySubsFilter === "PaymentFailed") {
+        visibleSubs = rawSubs.filter(s => s.status === "Payment Failed");
+      } else if (daySubsFilter) {
+        visibleSubs = rawSubs.filter(s => s.deliveryDay === daySubsFilter);
+      }
+
+      if (daySubsFilter) {
+        filterBar.classList.remove('hidden');
+        const eggTotal = visibleSubs.filter(s => s.status === "Active").reduce((sum, s) => sum + (s.eggsPerDelivery || 0), 0);
+        let label;
+        if (daySubsFilter === "Unassigned") label = `📅 Showing unassigned subscribers: ${visibleSubs.length} subscriber(s)`;
+        else if (daySubsFilter === "PaymentFailed") label = `⚠️ Showing subscribers with failed autopay: ${visibleSubs.length} subscriber(s)`;
+        else label = `📅 Showing ${daySubsFilter}'s deliveries: ${visibleSubs.length} subscriber(s), ${eggTotal} eggs`;
+        filterLabel.textContent = label;
+      } else {
+        filterBar.classList.add('hidden');
+      }
+
+      if (visibleSubs.length === 0) {
+        container.innerHTML = `<div class="text-center py-16 bg-gray-900 rounded-3xl border border-gray-800 text-gray-400 text-sm">${daySubsFilter ? 'No subscribers assigned to this day.' : 'No subscriptions logged yet.'}</div>`;
         return;
       }
 
       const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-      container.innerHTML = rawSubs.map(s => {
+      container.innerHTML = visibleSubs.map(s => {
         const isActive = s.status === "Active";
+        const isFailed = s.status === "Payment Failed";
         const cleanPhone = String(s.phone).replace(/[^0-9]/g, '');
-        const cap = (rawCapacity && rawCapacity.dailyCapacity) || 0;
-
-        // Build day options showing live committed totals so you can see,
-        // right in the dropdown, which days still have room before you assign one.
         const dayOptions = ['<option value="">Unassigned</option>'].concat(
-          DAYS.map(d => {
-            const committed = (rawCapacity && rawCapacity.byDay[d]) || 0;
-            const label = cap > 0 ? `${d} (${committed}/${cap} eggs)` : d;
-            return `<option value="${d}" ${s.deliveryDay === d ? 'selected' : ''}>${label}</option>`;
-          })
+          DAYS.map(d => `<option value="${d}" ${s.deliveryDay === d ? 'selected' : ''}>${d}</option>`)
         ).join('');
 
+        let cardBorder = 'border-gray-800 opacity-60';
+        if (isFailed) cardBorder = 'border-rose-500/50';
+        else if (isActive) cardBorder = 'border-amber-500/30';
+
+        let statusBadge = 'bg-gray-800 text-gray-400';
+        if (isFailed) statusBadge = 'bg-rose-500/20 text-rose-300';
+        else if (isActive) statusBadge = 'bg-amber-500/20 text-amber-300';
+
         return `
-          <div class="bg-gray-900 border ${isActive ? 'border-amber-500/30' : 'border-gray-800 opacity-60'} rounded-3xl p-5 flex flex-col gap-4">
+          <div class="bg-gray-900 border ${cardBorder} rounded-3xl p-5 flex flex-col gap-4">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
                 <div class="flex items-center gap-2">
                   <h3 class="font-bold text-white text-base">${s.name}</h3>
-                  <span class="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full ${isActive ? 'bg-amber-500/20 text-amber-300' : 'bg-gray-800 text-gray-400'}">${s.status}</span>
+                  <span class="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full ${statusBadge}">${s.status}</span>
+                  ${isFailed ? '<span class="text-[10px] font-bold text-rose-300">⚠️ Needs attention</span>' : ''}
                 </div>
                 <p class="text-xs text-amber-400 font-semibold mt-1">⭐️ Plan: ${s.planType}</p>
                 <p class="text-xs text-gray-300 mt-0.5">📦 Contents: ${s.eggs}</p>
                 <p class="text-[11px] text-gray-400 mt-1">📍 ${s.address}</p>
+                ${s.eggsPerDelivery ? `<p class="text-[11px] text-emerald-400 mt-1 font-semibold">🥚 ${s.eggsPerDelivery} eggs / delivery</p>` : ''}
+                ${s.razorpaySubscriptionId ? `<p class="text-[11px] text-gray-400 mt-1">🔁 Autopay: <span class="font-semibold text-gray-300">${s.razorpayStatus || 'pending'}</span></p>` : ''}
+                ${s.lastPaymentDate ? `
+                  <p class="text-[11px] text-emerald-400 mt-1 font-semibold">✅ Last autopay credited: ${s.lastPaymentDate}${s.lastPaymentAmount ? ` — ₹${s.lastPaymentAmount}` : ''}</p>
+                ` : s.razorpaySubscriptionId ? `
+                  <p class="text-[11px] text-amber-400 mt-1 font-semibold">⏳ No autopay charge received yet</p>
+                ` : ''}
               </div>
 
               <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
@@ -663,41 +658,22 @@
               </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-4 pt-3 border-t border-gray-800">
-              <div class="flex items-center gap-2">
-                <span class="text-[11px] text-gray-400 font-bold uppercase tracking-wider">🚚 Delivery Day:</span>
-                <select onchange="assignDeliveryDay(${s.rowIndex}, this.value)" class="bg-gray-950 border border-gray-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
-                  ${dayOptions}
-                </select>
-              </div>
-
-              <div class="flex items-center gap-2">
-                <span class="text-[11px] text-gray-400 font-bold uppercase tracking-wider">🥚 Eggs/Delivery:</span>
-                <input type="number" min="0" value="${s.eggsPerDelivery || ''}" placeholder="0"
-                  onchange="updateSubEggs(${s.rowIndex}, this.value)"
-                  class="w-20 bg-gray-950 border border-gray-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
-              </div>
+            <div class="flex items-center gap-2 pt-3 border-t border-gray-800">
+              <span class="text-[11px] text-gray-400 font-bold uppercase tracking-wider">🚚 Delivery Day:</span>
+              <select onchange="assignDeliveryDay(${s.rowIndex}, this.value)" class="bg-gray-950 border border-gray-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                ${dayOptions}
+              </select>
             </div>
           </div>
         `;
       }).join('');
     }
 
-    async function updateSubEggs(rowIndex, value) {
-      try {
-        await fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "update_sub_eggs", token: ADMIN_TOKEN, rowIndex: rowIndex, eggsPerDelivery: value })
-        });
-        fetchAllData();
-      } catch (e) { alert("Failed to update eggs/delivery"); }
-    }
-
     async function assignDeliveryDay(rowIndex, day) {
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "assign_delivery_day", token: ADMIN_TOKEN, rowIndex: rowIndex, deliveryDay: day })
+          body: JSON.stringify({ action: "assign_delivery_day", rowIndex: rowIndex, deliveryDay: day })
         });
         fetchAllData();
       } catch (e) { alert("Failed to assign delivery day"); }
@@ -709,43 +685,102 @@
       const summary = document.getElementById('capacity-summary');
       const warning = document.getElementById('capacity-warning');
 
-      if (!rawCapacity || !rawCapacity.dailyCapacity) {
-        grid.innerHTML = `<div class="text-xs text-gray-500 col-span-full">Set your Daily Egg Capacity in the "✍️ Site Content" tab to activate this panel.</div>`;
-        summary.textContent = '';
-        warning.classList.add('hidden');
+      const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+      if (!rawCapacity) {
+        grid.innerHTML = `<div class="text-xs text-gray-500 col-span-full">Loading...</div>`;
         return;
       }
 
-      const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
       const cap = rawCapacity.dailyCapacity;
+      const hasCapacity = cap > 0;
 
-      grid.innerHTML = DAYS.map(d => {
-        const committed = rawCapacity.byDay[d] || 0;
-        const pct = Math.min(100, Math.round((committed / cap) * 100));
+      const dayCards = DAYS.map(d => {
+        const committed = (rawCapacity.byDay && rawCapacity.byDay[d]) || 0;
+        const count = rawSubs.filter(s => s.status === "Active" && s.deliveryDay === d).length;
+        const pct = hasCapacity ? Math.min(100, Math.round((committed / cap) * 100)) : 0;
         let barColor = "bg-emerald-500";
-        if (pct >= 100) barColor = "bg-rose-500"; else if (pct >= 80) barColor = "bg-amber-500";
+        if (hasCapacity && pct >= 100) barColor = "bg-rose-500"; else if (hasCapacity && pct >= 80) barColor = "bg-amber-500";
+        const isSelected = daySubsFilter === d;
         return `
-          <div class="bg-gray-950 border border-gray-800 rounded-xl p-3">
+          <button onclick="filterSubsByDay('${d}')" class="text-left bg-gray-950 border ${isSelected ? 'border-emerald-500 ring-1 ring-emerald-500' : 'border-gray-800'} rounded-xl p-3 hover:border-emerald-600 transition">
             <div class="text-[10px] font-bold text-gray-300 uppercase tracking-wide mb-1">${d.slice(0,3)}</div>
-            <div class="text-sm font-black text-white">${committed}<span class="text-gray-500 font-medium text-[10px]"> / ${cap}</span></div>
-            <div class="w-full h-1.5 bg-gray-800 rounded-full mt-2 overflow-hidden">
-              <div class="h-full ${barColor}" style="width: ${pct}%"></div>
-            </div>
-          </div>
+            <div class="text-sm font-black text-white">${hasCapacity ? committed : count}${hasCapacity ? `<span class="text-gray-500 font-medium text-[10px]"> / ${cap}</span>` : ''}</div>
+            <div class="text-[9px] text-gray-500 mt-0.5">${count} subscriber${count === 1 ? '' : 's'}</div>
+            ${hasCapacity ? `
+              <div class="w-full h-1.5 bg-gray-800 rounded-full mt-2 overflow-hidden">
+                <div class="h-full ${barColor}" style="width: ${pct}%"></div>
+              </div>
+            ` : ''}
+          </button>
         `;
       }).join('');
 
-      summary.textContent = `Weekly: ${rawCapacity.committedTotal} / ${rawCapacity.weeklyCapacity} eggs committed`;
+      const unassignedCount = rawSubs.filter(s => s.status === "Active" && !s.deliveryDay).length;
+      const unassignedCard = `
+        <button onclick="filterSubsByDay('Unassigned')" class="text-left bg-gray-950 border ${daySubsFilter === 'Unassigned' ? 'border-amber-500 ring-1 ring-amber-500' : 'border-gray-800'} rounded-xl p-3 hover:border-amber-600 transition">
+          <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wide mb-1">Unassigned</div>
+          <div class="text-sm font-black text-white">${unassignedCount}</div>
+          <div class="text-[9px] text-gray-500 mt-0.5">subscriber${unassignedCount === 1 ? '' : 's'}</div>
+        </button>
+      `;
 
-      if (rawCapacity.unassigned > 0) {
+      grid.innerHTML = dayCards + unassignedCard;
+
+      summary.textContent = hasCapacity ? `Weekly: ${rawCapacity.committedTotal} / ${rawCapacity.weeklyCapacity} eggs committed` : '';
+
+      if (!hasCapacity) {
         warning.classList.remove('hidden');
-        warning.textContent = `⚠️ ${rawCapacity.unassigned} eggs/delivery belong to subscribers with no delivery day assigned yet — assign them below for an accurate breakdown.`;
+        warning.textContent = `💡 Set your Daily Egg Capacity in the "✍️ Site Content" tab to see egg totals here. You can still tap a day to see who's on that route.`;
+      } else if (rawCapacity.unassigned > 0) {
+        warning.classList.remove('hidden');
+        warning.textContent = `⚠️ ${rawCapacity.unassigned} eggs/delivery belong to subscribers with no delivery day assigned yet — tap "Unassigned" above to assign them.`;
       } else if (rawCapacity.isFull) {
         warning.classList.remove('hidden');
         warning.textContent = `🚫 Weekly capacity is full — the website has automatically hidden the "Subscribe Routine" buttons.`;
       } else {
         warning.classList.add('hidden');
       }
+    }
+
+    function filterSubsByDay(day) {
+      daySubsFilter = (daySubsFilter === day) ? null : day; // tap again to clear
+      renderCapacityPanel();
+      renderSubscribers();
+    }
+
+    function clearDayFilter() {
+      daySubsFilter = null;
+      renderCapacityPanel();
+      renderSubscribers();
+    }
+
+    function checkFailedPaymentsBanner() {
+      const banner = document.getElementById('failed-payments-banner');
+      const label = document.getElementById('failed-payments-label');
+      const failedCount = rawSubs.filter(s => s.status === "Payment Failed").length;
+      if (failedCount > 0) {
+        banner.classList.remove('hidden');
+        label.textContent = `⚠️ ${failedCount} subscriber(s) have a failed autopay charge — their delivery may need to pause until it's resolved.`;
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    function showFailedPayments() {
+      daySubsFilter = "PaymentFailed";
+      renderCapacityPanel();
+      renderSubscribers();
+      document.getElementById('subs-filter-bar').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function showTodaysDeliveries() {
+      const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const today = DAYS[new Date().getDay()];
+      daySubsFilter = today;
+      renderCapacityPanel();
+      renderSubscribers();
+      document.getElementById('subs-filter-bar').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     async function saveCapacity() {
@@ -755,11 +790,19 @@
       saveSettings({ DailyEggCapacity: val }, btn, "💾 Save Capacity");
     }
 
+    async function saveRazorpaySettings() {
+      const btn = document.getElementById('btn-save-razorpay');
+      const keyId = document.getElementById('razorpay-keyid-input').value.trim();
+      const cycles = document.getElementById('razorpay-cycles-input').value.trim();
+      if (!keyId) return alert("Enter your Razorpay Key ID first.");
+      saveSettings({ RazorpayKeyId: keyId, RazorpaySubscriptionCycles: cycles || "60" }, btn, "💾 Save Razorpay Settings");
+    }
+
     async function updateSubStatus(rowIndex, newStatus) {
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "update_sub_status", token: ADMIN_TOKEN, rowIndex: rowIndex, newStatus: newStatus })
+          body: JSON.stringify({ action: "update_sub_status", rowIndex: rowIndex, newStatus: newStatus })
         });
         fetchAllData();
       } catch (e) { alert("Failed to update subscriber"); }
@@ -778,6 +821,7 @@
           <div>
             <h4 class="font-bold text-sm text-white">${p.name}</h4>
             <span class="text-xs text-emerald-400 font-serif">₹${p.price}</span> • <span class="text-[11px] text-gray-400">${p.planType}</span>
+            ${p.razorpayPlanId ? `<span class="ml-2 text-[10px] font-bold text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-full">🔁 Autopay Linked</span>` : ''}
           </div>
           <button onclick="toggleStock(${p.rowIndex}, ${!p.inStock})" class="px-4 py-2 rounded-xl text-xs font-bold transition ${p.inStock ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'}">
             ${p.inStock ? '🟢 In Stock' : '🔴 Out of Stock'}
@@ -790,7 +834,7 @@
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "toggle_product_stock", token: ADMIN_TOKEN, rowIndex: rowIndex, inStock: inStockStatus })
+          body: JSON.stringify({ action: "toggle_product_stock", rowIndex: rowIndex, inStock: inStockStatus })
         });
         fetchAllData();
       } catch (e) { alert("Stock update failed"); }
@@ -803,6 +847,7 @@
       const plan = document.getElementById('prod-plan').value;
       const icon = document.getElementById('prod-icon').value.trim() || "🥚";
       const eggCount = document.getElementById('prod-eggcount').value.trim();
+      const razorpayPlanId = document.getElementById('prod-razorpay-plan').value.trim();
 
       if (!name || !price || !desc) return alert("Fill in Name, Price, and Description.");
 
@@ -812,21 +857,27 @@
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "add_product", token: ADMIN_TOKEN, name: name, price: Number(price), description: desc, planType: plan, icon: icon, eggCount: Number(eggCount) || 0 })
+          body: JSON.stringify({ action: "add_product", name: name, price: Number(price), description: desc, planType: plan, icon: icon, eggCount: Number(eggCount) || 0, razorpayPlanId: razorpayPlanId })
         });
         btn.innerText = "✅ Published!";
         document.getElementById('prod-name').value = "";
         document.getElementById('prod-price').value = "";
         document.getElementById('prod-desc').value = "";
         document.getElementById('prod-eggcount').value = "";
+        document.getElementById('prod-razorpay-plan').value = "";
         fetchAllData();
       } catch (err) { btn.innerText = "❌ Error"; }
       setTimeout(() => btn.innerText = "🚀 Publish Product to Store", 2500);
     }
 
-    // --- SITE CONTENT LOGIC (Why മുട്ട section + Social Links) ---
+    // --- SITE CONTENT LOGIC (Why മുട്ട section + Social Links + Razorpay) ---
     function prefillContentForm() {
       const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+
+      set('razorpay-keyid-input', rawSettings.RazorpayKeyId);
+      set('razorpay-cycles-input', rawSettings.RazorpaySubscriptionCycles);
+      const webhookDisplay = document.getElementById('webhook-url-display');
+      if (webhookDisplay) webhookDisplay.textContent = `${GOOGLE_SCRIPT_URL}?source=razorpay_webhook&wh=YOUR_WEBHOOK_SECRET`;
 
       set('daily-capacity-input', rawSettings.DailyEggCapacity);
       set('why-heading-input', rawSettings.WhyHeading);
@@ -847,7 +898,7 @@
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "update_settings", token: ADMIN_TOKEN, settings: settingsObj })
+          body: JSON.stringify({ action: "update_settings", settings: settingsObj })
         });
         btnEl.innerText = "✅ Saved!";
         fetchAllData();
