@@ -221,6 +221,20 @@
       <div class="space-y-2.5">
         <input type="text" id="autopay-name" placeholder="Your Full Name *" class="w-full p-2.5 bg-motta-50 border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600">
         <input type="tel" id="autopay-phone" maxlength="10" placeholder="10-Digit WhatsApp / Mobile Number *" class="w-full p-2.5 bg-motta-50 border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600">
+
+        <button type="button" onclick="openAutopayMap()" class="w-full bg-leaf-50 hover:bg-leaf-100 text-leaf-700 text-xs font-bold py-2.5 rounded-xl border border-leaf-600 border-dashed transition flex justify-center items-center gap-2">
+          <span>📍 Pin Exact Location on Map</span>
+        </button>
+        <div id="autopay-map-wrapper" class="hidden rounded-xl overflow-hidden border border-motta-200 shadow-inner flex-col" style="height: 220px;">
+          <div class="bg-motta-100 flex justify-between items-center px-3 py-2 border-b border-motta-200">
+            <span class="text-[10px] font-bold text-motta-800 uppercase tracking-wide">Drag pin to adjust</span>
+            <button type="button" onclick="locateAutopayUser()" class="bg-leaf-600 hover:bg-leaf-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1 transition">
+              🎯 Auto-Locate Me
+            </button>
+          </div>
+          <div id="autopay-map" style="height: 160px; width: 100%; z-index: 10;"></div>
+        </div>
+
         <textarea id="autopay-address" rows="2" placeholder="Delivery Address *" class="w-full p-2.5 bg-motta-50 border border-motta-200 rounded-xl text-xs focus:outline-none focus:border-leaf-600"></textarea>
       </div>
       <p class="text-[10px] text-motta-700 mt-3 leading-relaxed">You'll approve a UPI Autopay mandate for this amount in your UPI app, charged automatically each delivery cycle. You can cancel anytime from your UPI app or by contacting us.</p>
@@ -248,7 +262,7 @@
     // =========================================================================
     const MY_BUSINESS_NAME = "Motta Organics";
     const MY_WHATSAPP_NUMBER = "919809193616"; // Your WhatsApp
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztMHRFn32tpLkQSAv4mvz6Mo0Q1SWiFUXtCRCgRP5bhwwO7YYsRzTlR9d5aQf7p6XV/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKmMQVosM6bVhpJKvm5uueebh0N1BuiIUb9Iu1srJZqnrMTJ0QrRNvurK8eABoD0W2IA/exec";
     const SERVICED_PINCODES = ["695"];
     // =========================================================================
 
@@ -257,6 +271,8 @@
     let RAZORPAY_KEY_ID = ""; // pulled from Settings (publishable key — safe to expose)
     let routineProducts = [];
     let autopayProduct = null;
+    let autopayMap, autopayMarker;
+    let autopayCustomerGps = "";
 
     // CMS FETCH LOGIC
     async function loadStoreData() {
@@ -425,6 +441,55 @@
       }, { enableHighAccuracy: true });
     }
 
+    // AUTOPAY MAP LOGIC — same pattern as the cart's map, kept separate so both
+    // modals can have their own independent Leaflet instance and pinned GPS.
+    function openAutopayMap() {
+      const mapWrapper = document.getElementById('autopay-map-wrapper');
+      if (!mapWrapper.classList.contains('hidden')) { mapWrapper.classList.add('hidden'); return; }
+      mapWrapper.classList.remove('hidden'); mapWrapper.classList.add('flex');
+
+      if (!autopayMap) {
+        autopayMap = L.map('autopay-map').setView([8.5241, 76.9366], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(autopayMap);
+        autopayMarker = L.marker([8.5241, 76.9366], {draggable: true}).addTo(autopayMap);
+
+        autopayMarker.on('dragend', async function(e) {
+          const pos = autopayMarker.getLatLng();
+          autopayCustomerGps = `${pos.lat},${pos.lng}`;
+          document.getElementById('autopay-address').value = "📍 Fetching address from satellite...";
+          try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.lat}&lon=${pos.lng}`);
+            const data = await res.json();
+            document.getElementById('autopay-address').value = data.display_name;
+          } catch(err) { document.getElementById('autopay-address').value = "Error fetching address. Please type it manually."; }
+        });
+      }
+      setTimeout(() => autopayMap.invalidateSize(), 200);
+    }
+
+    function locateAutopayUser() {
+      if (!navigator.geolocation) return alert("GPS is not supported by your browser.");
+      document.getElementById('autopay-address').value = "🎯 Locating you via GPS... Please allow location access.";
+
+      navigator.geolocation.getCurrentPosition(async function(position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        autopayCustomerGps = `${lat},${lng}`;
+
+        autopayMap.setView([lat, lng], 17);
+        autopayMarker.setLatLng([lat, lng]);
+
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+          const data = await res.json();
+          document.getElementById('autopay-address').value = data.display_name;
+        } catch(err) { document.getElementById('autopay-address').value = "Error fetching address."; }
+      }, function(error) {
+        alert("Unable to retrieve location. Check if GPS is turned on.");
+        document.getElementById('autopay-address').value = "";
+      }, { enableHighAccuracy: true });
+    }
+
     // CHECKOUT LOGIC
     function isDeliverablePincode(pin) { const clean = pin.trim(); if (clean.length !== 6) return false; return SERVICED_PINCODES.some(prefix => clean.startsWith(prefix)); }
     function checkPincodeRealtime() {
@@ -564,6 +629,9 @@
     function openAutopaySubscribeModal(idx) {
       autopayProduct = routineProducts[idx];
       if (!autopayProduct) return;
+      autopayCustomerGps = ""; // reset — don't carry a stale pin from a previous attempt
+      document.getElementById('autopay-address').value = "";
+      document.getElementById('autopay-map-wrapper').classList.add('hidden');
       document.getElementById('autopay-product-name').textContent = autopayProduct.name;
       document.getElementById('autopay-product-price').textContent = `₹${autopayProduct.price} / delivery`;
       document.getElementById('autopay-modal').classList.remove('hidden');
@@ -579,9 +647,12 @@
       if (!autopayProduct) return;
       const name = document.getElementById('autopay-name').value.trim();
       const phone = document.getElementById('autopay-phone').value.trim();
-      const address = document.getElementById('autopay-address').value.trim();
-      if (!name || !phone || !address) return alert("Please fill in your Name, Phone, and Address.");
+      const addressInput = document.getElementById('autopay-address').value.trim();
+      if (!name || !phone || !addressInput) return alert("Please fill in your Name, Phone, and Address.");
       if (!RAZORPAY_KEY_ID) return alert("⚠️ Payments aren't set up yet. Please contact us directly on WhatsApp.");
+
+      let address = addressInput;
+      if (autopayCustomerGps) address += ` | Map: https://maps.google.com/?q=${autopayCustomerGps}`;
 
       const btn = document.getElementById('btn-autopay-submit');
       btn.innerText = "⏳ Setting up subscription..."; btn.disabled = true;
