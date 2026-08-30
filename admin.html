@@ -9,6 +9,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:wght@700;900&family=Noto+Sans+Malayalam:wght@800&display=swap" rel="stylesheet">
 
+  <!-- Leaflet Map CSS & JS (for the delivery Route Map) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <style>
     body { font-family: 'Outfit', sans-serif; }
     .font-serif { font-family: 'Playfair Display', serif; }
@@ -92,16 +96,38 @@
 
         <div class="flex items-center gap-3 flex-wrap">
           <select id="order-filter-status" onchange="filterOrders()" class="bg-gray-950 border border-gray-700 rounded-xl px-3 py-2.5 text-xs text-gray-200 focus:outline-none focus:border-emerald-500">
-            <option value="ACTIVE">Active Pipeline (New & Delivering)</option>
+            <option value="ACTIVE">Active Pipeline (New, Packed & Delivering)</option>
             <option value="New">Status: New</option>
+            <option value="Packed">Status: Packed</option>
             <option value="Out for Delivery">Status: Out for Delivery</option>
-            <option value="Closed">Archived / Closed Orders</option>
+            <option value="Closed">Archived / Delivered Orders</option>
             <option value="ALL">View Everything</option>
           </select>
 
           <button onclick="fetchAllData(true)" class="bg-gray-800 hover:bg-gray-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl border border-gray-700 transition flex items-center gap-1.5 flex-shrink-0">
             <span id="refresh-icon">🔄</span> Refresh
           </button>
+        </div>
+      </div>
+
+      <!-- Packing List & Route Map -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="bg-gray-900 border border-gray-800 rounded-3xl p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-sm text-white">📦 Today's Packing List</h3>
+          </div>
+          <div id="packing-list-container">
+            <div class="text-xs text-gray-500">Loading...</div>
+          </div>
+        </div>
+
+        <div class="bg-gray-900 border border-gray-800 rounded-3xl p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-sm text-white">🗺️ Today's Delivery Route</h3>
+            <span id="route-map-status" class="text-[10px] text-gray-500"></span>
+          </div>
+          <div id="route-map-empty" class="text-xs text-gray-500">Loading...</div>
+          <div id="route-map" class="rounded-2xl overflow-hidden hidden" style="height: 260px;"></div>
         </div>
       </div>
 
@@ -274,6 +300,22 @@
         </div>
       </div>
 
+      <!-- Delivery Page Access -->
+      <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-sm space-y-4 lg:col-span-2">
+        <div class="border-b border-gray-800 pb-3">
+          <h2 class="font-bold text-lg text-white">🚚 Delivery Page Access</h2>
+          <p class="text-xs text-gray-400 mt-0.5">Share <code class="text-emerald-400">delivery.html</code> with your delivery staff — it only shows today's route, not pricing, settings, or your full order history. Set a PIN below and share it with them separately from the link.</p>
+        </div>
+        <div class="max-w-xs">
+          <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Delivery PIN</label>
+          <input type="text" id="delivery-pin-input" placeholder="e.g. 4821" class="w-full bg-gray-950 border border-gray-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <button onclick="saveDeliveryPin()" id="btn-save-delivery-pin" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-xl text-xs transition">
+          💾 Save PIN
+        </button>
+        <p class="text-[11px] text-gray-500">⚠️ This is a basic deterrent, not real security — anyone with both the link and PIN can view/update today's deliveries. There's no login system elsewhere in this project either, so treat both links as semi-private.</p>
+      </div>
+
       <!-- Production Capacity Editor -->
       <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-sm space-y-4 lg:col-span-2">
         <div class="border-b border-gray-800 pb-3">
@@ -372,14 +414,16 @@
   <script>
     // IMPORTANT: This URL MUST be identical to the one in index.html.
     // After you redeploy the Apps Script, paste the new /exec URL here AND in index.html.
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztMHRFn32tpLkQSAv4mvz6Mo0Q1SWiFUXtCRCgRP5bhwwO7YYsRzTlR9d5aQf7p6XV/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKmMQVosM6bVhpJKvm5uueebh0N1BuiIUb9Iu1srJZqnrMTJ0QrRNvurK8eABoD0W2IA/exec";
 
     let rawOrders = [];
     let rawSubs = [];
     let rawProducts = [];
     let rawSettings = {};
     let rawCapacity = null;
-    let daySubsFilter = null; // null = show all, or "Monday"/"Tuesday"/... or "Unassigned"
+    let daySubsFilter = null; // null = show all, or "Monday"/"Tuesday"/... or "Unassigned" or "PaymentFailed"
+    let routeMap = null;
+    let routeMapMarkers = [];
 
     async function initDashboard() {
       fetchAllData();
@@ -433,6 +477,8 @@
         renderCapacityPanel();
         prefillContentForm();
         checkFailedPaymentsBanner();
+        renderPackingList();
+        renderRouteMap();
       } catch (err) {
         console.error("Dashboard error:", err);
       } finally {
@@ -500,6 +546,7 @@
         const status = o.status || "New";
 
         let statusBadgeColor = "bg-rose-500/20 text-rose-300 border-rose-500/30";
+        if (status === "Packed") statusBadgeColor = "bg-indigo-500/20 text-indigo-300 border-indigo-500/30";
         if (status === "Out for Delivery") statusBadgeColor = "bg-amber-500/20 text-amber-300 border-amber-500/30";
         if (status === "Closed") statusBadgeColor = "bg-gray-800 text-gray-400 border-gray-700";
 
@@ -550,11 +597,12 @@
 
             <!-- Action Bar -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-2 border-t border-gray-800 text-xs gap-3">
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-2 flex-wrap">
                 <span class="text-gray-400">Status:</span>
-                <button onclick="updateOrderStatus(${o.rowIndex}, 'New')" class="px-2.5 py-1 rounded-lg font-bold transition ${status === 'New' ? 'bg-rose-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}">New</button>
-                <button onclick="updateOrderStatus(${o.rowIndex}, 'Out for Delivery')" class="px-2.5 py-1 rounded-lg font-bold transition ${status === 'Out for Delivery' ? 'bg-amber-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}">Delivering</button>
-                <button onclick="updateOrderStatus(${o.rowIndex}, 'Closed')" class="px-2.5 py-1 rounded-lg font-bold transition ${status === 'Closed' ? 'bg-emerald-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}">Close Order</button>
+                <button onclick="updateOrderStatus(${o.rowIndex}, 'New', '${cleanPhone}', ${JSON.stringify(o.name)})" class="px-2.5 py-1 rounded-lg font-bold transition ${status === 'New' ? 'bg-rose-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}">New</button>
+                <button onclick="updateOrderStatus(${o.rowIndex}, 'Packed', '${cleanPhone}', ${JSON.stringify(o.name)})" class="px-2.5 py-1 rounded-lg font-bold transition ${status === 'Packed' ? 'bg-indigo-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}">📦 Packed</button>
+                <button onclick="updateOrderStatus(${o.rowIndex}, 'Out for Delivery', '${cleanPhone}', ${JSON.stringify(o.name)})" class="px-2.5 py-1 rounded-lg font-bold transition ${status === 'Out for Delivery' ? 'bg-amber-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}">🚚 Delivering</button>
+                <button onclick="updateOrderStatus(${o.rowIndex}, 'Closed', '${cleanPhone}', ${JSON.stringify(o.name)})" class="px-2.5 py-1 rounded-lg font-bold transition ${status === 'Closed' ? 'bg-emerald-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}">✅ Delivered</button>
               </div>
 
               <a href="https://wa.me/${cleanPhone.startsWith('91') ? cleanPhone : '91' + cleanPhone}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-1.5 rounded-xl transition flex items-center justify-center gap-1">
@@ -567,12 +615,140 @@
       }).join('');
     }
 
-    async function updateOrderStatus(rowIndex, newStatus) {
+    // --- PACKING LIST (aggregates pending one-time orders + today's routine deliveries) ---
+    function parseItemsIntoMap(itemsMap, itemsText, fallbackName) {
+      if (!itemsText) {
+        if (fallbackName) itemsMap[fallbackName] = (itemsMap[fallbackName] || 0) + 1;
+        return;
+      }
+      const parts = String(itemsText).split(',').map(s => s.trim()).filter(Boolean);
+      parts.forEach(part => {
+        const match = part.match(/^(.*?)\s*\(.*?\)\s*x\s*(\d+)$/i);
+        if (match) {
+          const name = match[1].trim();
+          const qty = parseInt(match[2], 10) || 1;
+          itemsMap[name] = (itemsMap[name] || 0) + qty;
+        } else {
+          itemsMap[part] = (itemsMap[part] || 0) + 1;
+        }
+      });
+    }
+
+    function renderPackingList() {
+      const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const todayName = DAYS[new Date().getDay()];
+
+      const itemsMap = {};
+      const pendingOrders = rawOrders.filter(o => o.status === "New" || o.status === "Packed");
+      pendingOrders.forEach(o => parseItemsIntoMap(itemsMap, o.items));
+
+      const todaysSubs = rawSubs.filter(s => s.status === "Active" && s.deliveryDay === todayName);
+      todaysSubs.forEach(s => parseItemsIntoMap(itemsMap, s.eggs, s.planType));
+
+      const container = document.getElementById('packing-list-container');
+      const entries = Object.entries(itemsMap).sort((a, b) => b[1] - a[1]);
+
+      if (entries.length === 0) {
+        container.innerHTML = `<div class="text-xs text-gray-500 py-4 text-center">Nothing to pack right now 🎉</div>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <p class="text-[11px] text-gray-400 mb-3">${pendingOrders.length} pending one-time order(s) + ${todaysSubs.length} routine deliverie(s) today (${todayName})</p>
+        <div class="space-y-2">
+          ${entries.map(([name, qty]) => `
+            <div class="flex items-center justify-between bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5">
+              <span class="text-xs font-semibold text-white">${name}</span>
+              <span class="text-sm font-black text-emerald-400">× ${qty}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // --- ROUTE MAP (pins today's delivery addresses; geocodes text addresses without GPS) ---
+    async function renderRouteMap() {
+      const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const todayName = DAYS[new Date().getDay()];
+      const statusEl = document.getElementById('route-map-status');
+      const emptyEl = document.getElementById('route-map-empty');
+      const mapEl = document.getElementById('route-map');
+
+      const stops = [];
+      rawOrders.filter(o => o.status === "New" || o.status === "Packed").forEach(o => {
+        stops.push({ name: o.name, phone: o.phone, address: o.address || "", items: o.items });
+      });
+      rawSubs.filter(s => s.status === "Active" && s.deliveryDay === todayName).forEach(s => {
+        stops.push({ name: s.name, phone: s.phone, address: s.address || "", items: s.eggs });
+      });
+
+      if (stops.length === 0) {
+        emptyEl.classList.remove('hidden'); emptyEl.textContent = "No pending deliveries to map right now 🎉";
+        mapEl.classList.add('hidden');
+        statusEl.textContent = '';
+        return;
+      }
+
+      emptyEl.classList.add('hidden');
+      mapEl.classList.remove('hidden');
+      statusEl.textContent = `📍 Locating ${stops.length} stop(s)...`;
+
+      if (!routeMap) {
+        routeMap = L.map('route-map').setView([8.5241, 76.9366], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(routeMap);
+      } else {
+        routeMapMarkers.forEach(m => routeMap.removeLayer(m));
+      }
+      routeMapMarkers = [];
+      setTimeout(() => routeMap.invalidateSize(), 200);
+
+      const bounds = [];
+      let located = 0;
+
+      for (const stop of stops) {
+        let lat, lng;
+        const gpsMatch = stop.address.match(/https:\/\/maps\.google\.com\/\?q=(-?[\d.]+),(-?[\d.]+)/);
+        if (gpsMatch) {
+          lat = parseFloat(gpsMatch[1]); lng = parseFloat(gpsMatch[2]);
+        } else {
+          try {
+            const cleanAddr = stop.address.replace(/\|\s*Map:.*$/, '').trim();
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(cleanAddr)}`);
+            const data = await res.json();
+            if (data && data[0]) { lat = parseFloat(data[0].lat); lng = parseFloat(data[0].lon); }
+          } catch (e) { /* skip this stop */ }
+          await new Promise(r => setTimeout(r, 1100)); // stay under Nominatim's rate limit
+        }
+
+        if (lat && lng) {
+          const marker = L.marker([lat, lng]).addTo(routeMap)
+            .bindPopup(`<b>${stop.name}</b><br>${stop.phone}<br>${stop.items || ''}`);
+          routeMapMarkers.push(marker);
+          bounds.push([lat, lng]);
+          located++;
+        }
+      }
+
+      if (bounds.length > 0) routeMap.fitBounds(bounds, { padding: [30, 30] });
+      statusEl.textContent = `📍 ${located} / ${stops.length} stop(s) mapped`;
+    }
+
+    async function updateOrderStatus(rowIndex, newStatus, customerPhone, customerName) {
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "update_order_status", rowIndex: rowIndex, newStatus: newStatus })
         });
+
+        // Auto WhatsApp nudge — opens a prefilled message to the customer the moment
+        // their order is marked "Out for Delivery". Opens in a new tab so it doesn't
+        // interrupt your admin workflow.
+        if (newStatus === "Out for Delivery" && customerPhone) {
+          const waPhone = customerPhone.startsWith('91') ? customerPhone : '91' + customerPhone;
+          const msg = `Hi ${customerName || 'there'}! 🚚 Your മുട്ട (Motta) order is out for delivery and should reach you shortly. 🥚`;
+          window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
         fetchAllData();
       } catch (e) { alert("Failed to update status"); }
     }
@@ -790,6 +966,13 @@
       saveSettings({ DailyEggCapacity: val }, btn, "💾 Save Capacity");
     }
 
+    async function saveDeliveryPin() {
+      const btn = document.getElementById('btn-save-delivery-pin');
+      const val = document.getElementById('delivery-pin-input').value.trim();
+      if (!val) return alert("Enter a PIN first.");
+      saveSettings({ DeliveryPin: val }, btn, "💾 Save PIN");
+    }
+
     async function saveRazorpaySettings() {
       const btn = document.getElementById('btn-save-razorpay');
       const keyId = document.getElementById('razorpay-keyid-input').value.trim();
@@ -880,6 +1063,7 @@
       if (webhookDisplay) webhookDisplay.textContent = `${GOOGLE_SCRIPT_URL}?source=razorpay_webhook&wh=YOUR_WEBHOOK_SECRET`;
 
       set('daily-capacity-input', rawSettings.DailyEggCapacity);
+      set('delivery-pin-input', rawSettings.DeliveryPin);
       set('why-heading-input', rawSettings.WhyHeading);
       for (let i = 1; i <= 4; i++) {
         set(`why-icon-input-${i}`, rawSettings[`WhyPoint${i}Icon`]);
