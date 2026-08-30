@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>മുട്ട (MOTTA) | Delivery Route</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+Malayalam:wght@800&display=swap" rel="stylesheet">
+
+  <!-- Leaflet Map CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    body { font-family: 'Outfit', sans-serif; }
+    .font-malayalam { font-family: 'Noto Sans Malayalam', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen antialiased">
+
+  <!-- PIN GATE -->
+  <div id="pin-gate" class="fixed inset-0 z-50 bg-gray-950 flex items-center justify-center p-6">
+    <div class="w-full max-w-xs text-center">
+      <span class="font-malayalam text-3xl font-black text-amber-500">മുട്ട</span>
+      <h1 class="font-bold text-white text-lg mt-2 mb-1">Delivery Route</h1>
+      <p class="text-xs text-gray-400 mb-6">Enter the delivery PIN to continue.</p>
+      <input type="password" inputmode="numeric" id="pin-input" placeholder="PIN" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-center text-lg tracking-widest text-white focus:outline-none focus:border-emerald-500 mb-3">
+      <button onclick="submitPin()" id="pin-submit-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-sm transition">
+        Unlock
+      </button>
+      <p id="pin-error" class="hidden text-rose-400 text-xs mt-3">Wrong PIN — try again.</p>
+    </div>
+  </div>
+
+  <!-- MAIN APP (hidden until PIN accepted) -->
+  <div id="app" class="hidden">
+    <header class="bg-gray-900/90 backdrop-blur-md border-b border-gray-800 sticky top-0 z-30">
+      <div class="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="font-malayalam text-xl font-black text-amber-500">മുട്ട</span>
+          <div>
+            <h1 class="font-bold text-white text-sm leading-tight">Delivery Route</h1>
+            <span id="today-label" class="text-[10px] text-gray-400"></span>
+          </div>
+        </div>
+        <button onclick="loadDeliveries()" class="bg-gray-800 hover:bg-gray-700 text-white text-xs font-bold px-3 py-2 rounded-xl border border-gray-700 transition flex items-center gap-1.5">
+          <span id="refresh-icon">🔄</span> Refresh
+        </button>
+      </div>
+    </header>
+
+    <main class="max-w-2xl mx-auto px-4 py-5 space-y-5">
+
+      <!-- Summary -->
+      <div id="summary-bar" class="bg-gray-900 border border-gray-800 rounded-2xl px-4 py-3 text-xs text-gray-300"></div>
+
+      <!-- Packing List -->
+      <div class="bg-gray-900 border border-gray-800 rounded-3xl p-5">
+        <h2 class="font-bold text-sm text-white mb-3">📦 Packing List</h2>
+        <div id="packing-list-container">
+          <div class="text-xs text-gray-500">Loading...</div>
+        </div>
+      </div>
+
+      <!-- Route Map -->
+      <div class="bg-gray-900 border border-gray-800 rounded-3xl p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-bold text-sm text-white">🗺️ Route Map</h2>
+          <span id="route-map-status" class="text-[10px] text-gray-500"></span>
+        </div>
+        <div id="route-map-empty" class="text-xs text-gray-500">Loading...</div>
+        <div id="route-map" class="rounded-2xl overflow-hidden hidden" style="height: 240px;"></div>
+      </div>
+
+      <!-- Stops -->
+      <div>
+        <h2 class="font-bold text-sm text-white mb-3 px-1">🚚 Stops</h2>
+        <div id="stops-container" class="space-y-3">
+          <div class="text-center py-10 text-gray-500 text-sm">Loading deliveries...</div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // =========================================================================
+    // ⚙️ Must match the same deployment URL used in index.html and admin.html
+    // =========================================================================
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKmMQVosM6bVhpJKvm5uueebh0N1BuiIUb9Iu1srJZqnrMTJ0QrRNvurK8eABoD0W2IA/exec";
+    // =========================================================================
+
+    let enteredPin = "";
+    let rawDeliveries = [];
+    let routeMap = null;
+    let routeMapMarkers = [];
+
+    // Remember the PIN locally so it doesn't need re-entry every visit
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('motta_delivery_pin');
+      if (saved) {
+        enteredPin = saved;
+        unlockApp();
+      }
+      document.getElementById('pin-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') submitPin();
+      });
+    });
+
+    function submitPin() {
+      enteredPin = document.getElementById('pin-input').value.trim();
+      unlockApp();
+    }
+
+    async function unlockApp() {
+      const btn = document.getElementById('pin-submit-btn');
+      if (btn) { btn.innerText = "Checking..."; btn.disabled = true; }
+
+      const ok = await loadDeliveries();
+
+      if (ok) {
+        localStorage.setItem('motta_delivery_pin', enteredPin);
+        document.getElementById('pin-gate').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
+      } else {
+        document.getElementById('pin-error').classList.remove('hidden');
+        localStorage.removeItem('motta_delivery_pin');
+        if (btn) { btn.innerText = "Unlock"; btn.disabled = false; }
+      }
+    }
+
+    async function loadDeliveries() {
+      const icon = document.getElementById('refresh-icon');
+      if (icon) icon.classList.add('animate-spin');
+
+      try {
+        const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=get_delivery_data&pin=${encodeURIComponent(enteredPin)}`);
+        const data = await res.json();
+
+        if (data.status === "unauthorized") {
+          if (icon) icon.classList.remove('animate-spin');
+          return false;
+        }
+
+        rawDeliveries = data.deliveries || [];
+        document.getElementById('today-label').textContent = data.today || '';
+        renderSummary();
+        renderPackingList();
+        renderStops();
+        renderRouteMap();
+        if (icon) icon.classList.remove('animate-spin');
+        return true;
+      } catch (e) {
+        if (icon) icon.classList.remove('animate-spin');
+        return false;
+      }
+    }
+
+    function renderSummary() {
+      const pending = rawDeliveries.filter(d => d.status !== "Closed" && d.status !== "Delivered Today").length;
+      const done = rawDeliveries.length - pending;
+      document.getElementById('summary-bar').textContent = `${rawDeliveries.length} total stop(s) — ${pending} pending, ${done} done`;
+    }
+
+    // --- PACKING LIST ---
+    function parseItemsIntoMap(itemsMap, itemsText, fallbackName) {
+      if (!itemsText) {
+        if (fallbackName) itemsMap[fallbackName] = (itemsMap[fallbackName] || 0) + 1;
+        return;
+      }
+      const parts = String(itemsText).split(',').map(s => s.trim()).filter(Boolean);
+      parts.forEach(part => {
+        const match = part.match(/^(.*?)\s*\(.*?\)\s*x\s*(\d+)$/i);
+        if (match) {
+          const name = match[1].trim();
+          const qty = parseInt(match[2], 10) || 1;
+          itemsMap[name] = (itemsMap[name] || 0) + qty;
+        } else {
+          itemsMap[part] = (itemsMap[part] || 0) + 1;
+        }
+      });
+    }
+
+    function renderPackingList() {
+      const itemsMap = {};
+      rawDeliveries
+        .filter(d => d.status !== "Closed" && d.status !== "Delivered Today")
+        .forEach(d => parseItemsIntoMap(itemsMap, d.items));
+
+      const container = document.getElementById('packing-list-container');
+      const entries = Object.entries(itemsMap).sort((a, b) => b[1] - a[1]);
+
+      if (entries.length === 0) {
+        container.innerHTML = `<div class="text-xs text-gray-500 py-2 text-center">Nothing to pack 🎉</div>`;
+        return;
+      }
+      container.innerHTML = entries.map(([name, qty]) => `
+        <div class="flex items-center justify-between bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 mb-2">
+          <span class="text-xs font-semibold text-white">${name}</span>
+          <span class="text-sm font-black text-emerald-400">× ${qty}</span>
+        </div>
+      `).join('');
+    }
+
+    // --- STOPS LIST ---
+    function renderStops() {
+      const container = document.getElementById('stops-container');
+      if (rawDeliveries.length === 0) {
+        container.innerHTML = `<div class="text-center py-10 text-gray-500 text-sm bg-gray-900 rounded-3xl border border-gray-800">No deliveries right now 🎉</div>`;
+        return;
+      }
+
+      container.innerHTML = rawDeliveries.map((d) => {
+        const cleanPhone = String(d.phone).replace(/[^0-9]/g, '');
+        const waPhone = cleanPhone.startsWith('91') ? cleanPhone : '91' + cleanPhone;
+        let cleanAddress = (d.address || '').replace(/\|\s*Map:.*$/, '').trim();
+        const mapMatch = (d.address || '').match(/https:\/\/maps\.google\.com\/\?q=[^\s|]+/);
+        const mapLink = mapMatch ? mapMatch[0] : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cleanAddress)}`;
+
+        const isDone = d.status === "Closed" || d.status === "Delivered Today";
+
+        let actionButtons = "";
+        if (d.type === "order") {
+          if (d.status === "New") {
+            actionButtons = `<button onclick="setOrderStatus(${d.rowIndex}, 'Packed', '${waPhone}', ${JSON.stringify(d.name)})" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-xs transition">📦 Mark Packed</button>`;
+          } else if (d.status === "Packed") {
+            actionButtons = `<button onclick="setOrderStatus(${d.rowIndex}, 'Out for Delivery', '${waPhone}', ${JSON.stringify(d.name)})" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl text-xs transition">🚚 Mark Out for Delivery</button>`;
+          } else if (d.status === "Out for Delivery") {
+            actionButtons = `<button onclick="setOrderStatus(${d.rowIndex}, 'Closed', '${waPhone}', ${JSON.stringify(d.name)})" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs transition">✅ Mark Delivered</button>`;
+          }
+        } else {
+          if (!isDone) {
+            actionButtons = `<button onclick="setSubscriberDelivered(${d.rowIndex})" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs transition">✅ Mark Delivered</button>`;
+          } else {
+            actionButtons = `<span class="flex-1 text-center text-emerald-400 font-bold text-xs py-3">✅ Delivered</span>`;
+          }
+        }
+
+        return `
+          <div class="bg-gray-900 border ${isDone ? 'border-gray-800 opacity-60' : 'border-gray-800'} rounded-3xl p-4 space-y-3">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <h3 class="font-bold text-white text-sm">${d.name}</h3>
+                <p class="text-[11px] text-gray-400 mt-0.5">${d.type === 'order' ? '📦 One-Time Order' : '⭐️ Routine Subscriber'} • ${d.slot || ''}</p>
+                <p class="text-[11px] text-gray-300 mt-1">${d.items || ''}</p>
+                ${d.total ? `<p class="text-xs font-bold text-emerald-400 mt-1">${d.total}</p>` : ''}
+              </div>
+              <span class="text-[10px] font-bold uppercase px-2 py-1 rounded-full flex-shrink-0 ${isDone ? 'bg-gray-800 text-gray-400' : 'bg-amber-500/20 text-amber-300'}">${d.status}</span>
+            </div>
+
+            <p class="text-xs text-gray-300 bg-gray-950 border border-gray-800 rounded-xl px-3 py-2">📍 ${cleanAddress}</p>
+
+            <div class="flex items-center gap-2">
+              <a href="tel:${cleanPhone}" class="bg-gray-800 hover:bg-gray-700 text-white font-bold p-3 rounded-xl transition">📞</a>
+              <a href="https://wa.me/${waPhone}" target="_blank" class="bg-gray-800 hover:bg-gray-700 text-white font-bold p-3 rounded-xl transition">💬</a>
+              <a href="${mapLink}" target="_blank" class="bg-gray-800 hover:bg-gray-700 text-white font-bold p-3 rounded-xl transition">🗺️</a>
+              ${actionButtons}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function setOrderStatus(rowIndex, newStatus, waPhone, customerName) {
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "update_order_status", rowIndex: rowIndex, newStatus: newStatus })
+        });
+        if (newStatus === "Out for Delivery") {
+          const msg = `Hi ${customerName || 'there'}! 🚚 Your മുട്ട (Motta) order is out for delivery and should reach you shortly. 🥚`;
+          window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+        loadDeliveries();
+      } catch (e) { alert("Failed to update — check your connection and try again."); }
+    }
+
+    async function setSubscriberDelivered(rowIndex) {
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "mark_subscriber_delivered", rowIndex: rowIndex, pin: enteredPin })
+        });
+        loadDeliveries();
+      } catch (e) { alert("Failed to update — check your connection and try again."); }
+    }
+
+    // --- ROUTE MAP ---
+    async function renderRouteMap() {
+      const statusEl = document.getElementById('route-map-status');
+      const emptyEl = document.getElementById('route-map-empty');
+      const mapEl = document.getElementById('route-map');
+
+      const stops = rawDeliveries.filter(d => d.status !== "Closed" && d.status !== "Delivered Today");
+
+      if (stops.length === 0) {
+        emptyEl.classList.remove('hidden'); emptyEl.textContent = "No pending stops to map 🎉";
+        mapEl.classList.add('hidden');
+        statusEl.textContent = '';
+        return;
+      }
+
+      emptyEl.classList.add('hidden');
+      mapEl.classList.remove('hidden');
+      statusEl.textContent = `📍 Locating ${stops.length} stop(s)...`;
+
+      if (!routeMap) {
+        routeMap = L.map('route-map').setView([8.5241, 76.9366], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(routeMap);
+      } else {
+        routeMapMarkers.forEach(m => routeMap.removeLayer(m));
+      }
+      routeMapMarkers = [];
+      setTimeout(() => routeMap.invalidateSize(), 200);
+
+      const bounds = [];
+      let located = 0;
+
+      for (const stop of stops) {
+        let lat, lng;
+        const gpsMatch = (stop.address || '').match(/https:\/\/maps\.google\.com\/\?q=(-?[\d.]+),(-?[\d.]+)/);
+        if (gpsMatch) {
+          lat = parseFloat(gpsMatch[1]); lng = parseFloat(gpsMatch[2]);
+        } else {
+          try {
+            const cleanAddr = (stop.address || '').replace(/\|\s*Map:.*$/, '').trim();
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(cleanAddr)}`);
+            const data = await res.json();
+            if (data && data[0]) { lat = parseFloat(data[0].lat); lng = parseFloat(data[0].lon); }
+          } catch (e) { /* skip */ }
+          await new Promise(r => setTimeout(r, 1100));
+        }
+        if (lat && lng) {
+          const marker = L.marker([lat, lng]).addTo(routeMap).bindPopup(`<b>${stop.name}</b><br>${stop.items || ''}`);
+          routeMapMarkers.push(marker);
+          bounds.push([lat, lng]);
+          located++;
+        }
+      }
+
+      if (bounds.length > 0) routeMap.fitBounds(bounds, { padding: [30, 30] });
+      statusEl.textContent = `📍 ${located} / ${stops.length} stop(s) mapped`;
+    }
+  </script>
+</body>
+</html>
